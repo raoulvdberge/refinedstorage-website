@@ -324,6 +324,7 @@ function findAndParseWiki($url, $revisionHash = null) {
 
         return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . ($reference == null ? 'style="color: #c00"' : '') . '">' . $name . '</a>';
     }, $revision['body']);
+    $revision['body'] = str_replace('<table>', '<table class="table">', $revision['body']);
 
     $wiki['revision'] = $revision;
 
