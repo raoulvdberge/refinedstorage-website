@@ -15,7 +15,7 @@
   {% endif %}
   <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a></div>
   {% if old %}
-  <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/{{ wiki.revision.id }}/revert" class="btn btn-secondary"><span class="fa fa-pencil"></span> Revert to this version</a></div>
+  <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/{{ wiki.revision.hash }}/revert" class="btn btn-secondary"><span class="fa fa-pencil"></span> Revert to this version</a></div>
   {% endif %}
 {% endif %}
 
@@ -27,9 +27,7 @@
 </ol>
 
 {% if old %}
-<div class="alert alert-warning" role="alert">
-  <strong>Watching specific revision!</strong> <a href="/wiki/{{ wiki.url }}">Click here</a> to go back to current revision.
-</div>
+<div class="alert alert-warning" role="alert">Watching revision <strong>{{ wiki.revision.hash }}</strong>.</div>
 {% endif %}
 
 <div class="row row-offcanvas row-offcanvas-right">
@@ -44,7 +42,7 @@
       <div class="card-block">
         <p {% if wiki.revision.reverted_from == 0 %}style="margin: 0px"{% endif %}>Last edited by {{ wiki.revision.user.username }} at {{ wiki.revision.date|date("m/d/Y H:i:s") }}.</p>
         {% if wiki.revision.reverted_from != 0 %}
-          <p style="margin: 0px">Reverted by {{ wiki.revision.revertedBy.username }} from an <a href="/wiki/{{ wiki.url }}/{{ wiki.revision.revertedFrom.id }}">earlier version</a>.</p>
+          <p style="margin: 0px">Reverted by {{ wiki.revision.revertedBy.username }} from <a href="/wiki/{{ wiki.url }}/{{ wiki.revision.revertedFrom.hash }}">{{ wiki.revision.revertedFrom.hash }}</a>.</p>
         {% endif %}
       </div>
     </div>

@@ -100,12 +100,12 @@ function getWikiByName($name) {
     return $wiki->first();
 }
 
-function getWikiRevision($wiki, $revisionId) {
+function getWikiRevision($wiki, $revisionHash) {
     $revision = $wiki->revisions()->orderBy('date', 'desc');
-    if ($revisionId == null) {
+    if ($revisionHash == null) {
         $revision = $revision->first();
     } else {
-        $revision = $revision->where('id', $revisionId)->first();
+        $revision = $revision->where('hash', $revisionHash)->first();
     }
     return $revision;
 }
@@ -263,14 +263,14 @@ $app->get('/releases/{id}/restore', function(Request $request, Response $respons
     return $response->withHeader('Location', '/releases/' . $release->id);
 })->add(new NeedsAuthentication());
 
-function findAndParseWiki($url, $revisionId = null) {
+function findAndParseWiki($url, $revisionHash = null) {
     $wiki = getWikiByUrl($url);
 
     if ($wiki == null) {
         return null;
     }
 
-    $revision = getWikiRevision($wiki, $revisionId);
+    $revision = getWikiRevision($wiki, $revisionHash);
 
     if ($revision == null) {
         return null;
@@ -350,6 +350,7 @@ $app->post('/wiki/{url}/edit', function(Request $request, Response $response, $a
     $rev->reverted_by = 0;
     $rev->reverted_from = 0;
     $rev->date = time();
+    $rev->hash = md5(microtime());
 
     $rev->save();
 
@@ -390,6 +391,7 @@ $app->get('/wiki/{url}/{revision}/revert', function(Request $request, Response $
     $rev->reverted_by = getUser()->id;
     $rev->reverted_from = $revOld->id;
     $rev->date = time();
+    $rev->hash = md5(microtime());
 
     $rev->save();
 
@@ -403,7 +405,7 @@ $app->get('/wiki/{url}[/{revision}]', function(Request $request, Response $respo
         return $response->withStatus(404);
     }
 
-    return $this->view->render($response, 'wiki.html', ['wiki' => $wiki, 'sidebar' => findAndParseWiki('sidebar'), 'old' => $args['revision'] != null]);
+    return $this->view->render($response, 'wiki.html', ['wiki' => $wiki, 'sidebar' => findAndParseWiki('sidebar'), 'old' => isset($args['revision'])]);
 });
 
 $app->get('/login', function(Request $request, Response $response) {
