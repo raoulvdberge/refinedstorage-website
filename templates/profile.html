@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 
-{% block title %}{{ user.username }}{% endblock %}
+{% block title %}{{ profile.username }}{% endblock %}
 
 {% block content %}
-<h1>{{ user.username }}</h1>
+<h1>{{ profile.username }}</h1>
 <table class="table table-reflow">
   <thead>
     <tr>
@@ -13,8 +13,8 @@
   </thead>
   <tbody>
     <tr>
-      <td>{{ user.date_created|date("m/d/Y") }}</span></td>
-      <td>{{ role(user.role) }}</td>
+      <td>{{ profile.date_created|date("m/d/Y") }}</span></td>
+      <td>{{ role(profile.role) }}</td>
     </tr>
   </tbody>
 </table>

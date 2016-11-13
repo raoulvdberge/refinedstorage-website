@@ -50,11 +50,11 @@ class NeedsAuthentication
     public function __invoke($request, $response, $next)
     {
         if (getUser() == null) {
-            return $response->withHeader('Location', '/login');
+            return $response->withStatus(503)->withHeader('Location', '/login');
         }
 
         if (getUser()->role < $this->accessLevel) {
-            return $response->withHeader('Location', '/login');
+            return $response->withStatus(503)->withHeader('Location', '/503');
         }
 
         return $next($request, $response);
@@ -190,6 +190,7 @@ $container['view'] = function ($container) use ($roles) {
 
     return $view;
 };
+
 $container['notFoundHandler'] = function ($c) {
     return function (Request $request, Response $response) use ($c) {
         return $c->view->render($response->withStatus(404), '404.html');
@@ -505,7 +506,7 @@ $app->get('/logout', function(Request $request, Response $response) {
     unset($_SESSION['user']);
 
     return $response->withHeader('Location', '/');
-});
+})->add(new NeedsAuthentication($roles['user']));
 
 $app->get('/profile/{username}', function(Request $request, Response $response, $args) {
     $user = User::where('username', '=', $args['username'])->first();
@@ -514,7 +515,11 @@ $app->get('/profile/{username}', function(Request $request, Response $response, 
         return $response->withStatus(404);
     }
 
-    return $this->view->render($response, 'profile.html', ['user' => $user]);
+    return $this->view->render($response, 'profile.html', ['profile' => $user]);
+});
+
+$app->get('/503', function(Request $request, Response $response) {
+    return $this->view->render($response->withStatus(503), '503.html');
 });
 
 $app->run();
