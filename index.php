@@ -299,6 +299,14 @@ $app->get('/wiki/create', function(Request $request, Response $response, $args) 
     return $this->view->render($response, 'wiki_create.html');
 })->add(new NeedsAuthentication());
 
+$app->get('/wiki/pages', function(Request $request, Response $response, $args) {
+    $wikis = Wiki::all();
+    foreach ($wikis as $wiki) {
+        $wiki['last_revision'] = getWikiRevision($wiki, null);
+    }
+    return $this->view->render($response, 'wiki_pages.html', ['wikis' => $wikis]);
+})->add(new NeedsAuthentication());
+
 $app->post('/wiki/create', function(Request $request, Response $response, $args) {
     $wiki = new Wiki();
     $wiki->url = $request->getParams()['url'];

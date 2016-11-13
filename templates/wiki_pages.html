@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}Pages{% endblock %}
+
+{% block content %}
+<h1>Pages</h1>
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="/wiki">Wiki</a></li>
+  <li class="breadcrumb-item">Pages</li>
+</ol>
+
+<table class="table">
+  <thead class="thead-default">
+    <tr>
+      <th width="40%">Name</th>
+      <th width="30%">URL</th>
+      <th width="30%">Last modified by</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for wiki in wikis %}
+    <tr {% if wiki.status == 1 %}class="table-danger"{% endif %}>
+      <td><a href="/wiki/{{ wiki.url }}">{{ wiki.name }}</td>
+      <td>{{ wiki.url }}</td>
+      <td>{{ wiki.last_revision.user.username }} at {{ wiki.last_revision.date|date("m/d/Y") }}</td>
+    </tr>
+  </tbody>
+  {% endfor %}
+</table>
+{% endblock %}
