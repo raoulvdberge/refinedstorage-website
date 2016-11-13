@@ -486,7 +486,7 @@ $app->get('/wiki/{url}[/{revision}]', function(Request $request, Response $respo
 });
 
 $app->get('/login', function(Request $request, Response $response) {
-    return $this->view->render($response, 'login.html');
+    return $this->view->render($response, 'login.html', ['failed' => false]);
 });
 
 $app->post('/login', function(Request $request, Response $response) {
@@ -497,9 +497,11 @@ $app->post('/login', function(Request $request, Response $response) {
 
     if ($user != null) {
         $_SESSION['user'] = $user['id'];
+        
+        return $response->withStatus(302)->withHeader('Location', '/');
+    } else {
+        return $this->view->render($response, 'login.html', ['failed' => true]);
     }
-
-    return $response->withStatus(302)->withHeader('Location', '/');
 });
 
 $app->get('/logout', function(Request $request, Response $response) {
