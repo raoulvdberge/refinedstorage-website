@@ -17,8 +17,9 @@
   <thead class="thead-default">
     <tr>
       <th width="10%">#</th>
-      <th width="50%">Date</th>
-      <th width="30%">User</thh
+      <th width="30%">Date</th>
+      <th width="30%">User</th>
+      <th width="30%">Revert?</th>
     </tr>
   </thead>
   <tbody>
@@ -28,6 +29,13 @@
       <td>{{ id }}</td>
       <td><a href="/wiki/{{ wiki.url }}/{{ revision.id }}">{{ revision.date|date("m/d/Y H:i:s") }}</a></td>
       <td>{{ revision.user.username }}</td>
+      <td>
+        {% if revision.reverted_from != 0 %}
+          Yes, by {{ revision.revertedBy.username }} from <a href="/wiki/{{ wiki.url }}/{{ revision.revertedFrom.id }}">here</a>
+        {% else %}
+          No
+        {% endif %}
+      </td>
     </tr>
     {% set id = id - 1 %}
     {% endfor %}

@@ -14,6 +14,9 @@
     <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/restore" class="btn btn-secondary"><span class="fa fa-history"></span> Restore</a></div>
   {% endif %}
   <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a></div>
+  {% if old %}
+  <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/{{ wiki.revision.id }}/revert" class="btn btn-secondary"><span class="fa fa-pencil"></span> Revert to this version</a></div>
+  {% endif %}
 {% endif %}
 
 <div class="clearfix"></div>
@@ -39,7 +42,10 @@
 
     <div class="card card-outline-secondary text-xs">
       <div class="card-block">
-        <p style="margin: 0px">Last edited by {{ wiki.revision.user.username }} at {{ wiki.revision.date|date("m/d/Y H:i:s") }}.</p>
+        <p {% if wiki.revision.reverted_from == 0 %}style="margin: 0px"{% endif %}>Last edited by {{ wiki.revision.user.username }} at {{ wiki.revision.date|date("m/d/Y H:i:s") }}.</p>
+        {% if wiki.revision.reverted_from != 0 %}
+          <p style="margin: 0px">Reverted by {{ wiki.revision.revertedBy.username }} from an <a href="/wiki/{{ wiki.url }}/{{ wiki.revision.revertedFrom.id }}">earlier version</a>.</p>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -47,7 +53,7 @@
     <div class="card">
       <div class="card-block">
         {{ sidebar.revision.body|raw }}
-        
+
         {% if user != null %}
           <a href="/wiki/{{ sidebar.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a>
         {% endif %}

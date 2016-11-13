@@ -100,11 +100,29 @@ function getWikiByName($name) {
     return $wiki->first();
 }
 
+function getWikiRevision($wiki, $revisionId) {
+    $revision = $wiki->revisions()->orderBy('date', 'desc');
+    if ($revisionId == null) {
+        $revision = $revision->first();
+    } else {
+        $revision = $revision->where('id', $revisionId)->first();
+    }
+    return $revision;
+}
+
 class WikiRevision extends Illuminate\Database\Eloquent\Model {
     public $timestamps = false;
 
     public function user() {
         return $this->belongsTo('User');
+    }
+
+    public function revertedBy() {
+        return $this->belongsTo('User', 'reverted_by', 'id');
+    }
+
+    public function revertedFrom() {
+        return $this->belongsTo('WikiRevision', 'reverted_from', 'id');
     }
 }
 
@@ -252,12 +270,7 @@ function findAndParseWiki($url, $revisionId = null) {
         return null;
     }
 
-    $revision = $wiki->revisions()->orderBy('date', 'desc');
-    if ($revisionId == null) {
-        $revision = $revision->first();
-    } else {
-        $revision = $revision->where('id', $revisionId)->first();
-    }
+    $revision = getWikiRevision($wiki, $revisionId);
 
     if ($revision == null) {
         return null;
@@ -334,6 +347,8 @@ $app->post('/wiki/{url}/edit', function(Request $request, Response $response, $a
     $rev->wiki_id = $wiki->id;
     $rev->body = $request->getParams()['body'];
     $rev->user_id = getUser()->id;
+    $rev->reverted_by = 0;
+    $rev->reverted_from = 0;
     $rev->date = time();
 
     $rev->save();
@@ -354,6 +369,32 @@ $app->get('/wiki/{url}/revisions', function(Request $request, Response $response
 
     return $this->view->render($response, 'wiki_revisions.html', ['wiki' => $wiki, 'revisions' => $wiki->revisions()->orderBy('date', 'desc')->get()]);
 });
+
+$app->get('/wiki/{url}/{revision}/revert', function(Request $request, Response $response, $args) {
+    $wiki = getWikiByUrl($args['url']);
+
+    if ($wiki == null) {
+        return $response->withStatus(404);
+    }
+
+    $revOld = getWikiRevision($wiki, $args['revision']);
+
+    if ($revOld == null) {
+        return $response->withStatus(404);
+    }
+
+    $rev = new WikiRevision();
+    $rev->wiki_id = $wiki->id;
+    $rev->body = $revOld->body;
+    $rev->user_id = $revOld->user_id;
+    $rev->reverted_by = getUser()->id;
+    $rev->reverted_from = $revOld->id;
+    $rev->date = time();
+
+    $rev->save();
+
+    return $response->withHeader('Location', '/wiki/' . $wiki->url);
+})->add(new NeedsAuthentication());
 
 $app->get('/wiki/{url}[/{revision}]', function(Request $request, Response $response, $args) {
     $wiki = findAndParseWiki($args['url'], isset($args['revision']) ? $args['revision'] : null);
