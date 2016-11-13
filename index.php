@@ -2,6 +2,8 @@
 
 date_default_timezone_set('Europe/Brussels');
 
+session_start();
+
 require 'vendor/autoload.php';
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
@@ -22,10 +24,55 @@ $capsule->bootEloquent();
 class User extends Illuminate\Database\Eloquent\Model {
 }
 
+function getUser() {
+    if (isset($_SESSION['user'])) {
+        return User::find($_SESSION['user']);
+    }
+    return null;
+}
+
+class NeedsAuthentication
+{
+    public function __invoke($request, $response, $next)
+    {
+        if (getUser() == null) {
+            return $response->withHeader('Location', '/login');
+        }
+
+        return $next($request, $response);
+    }
+}
+
 class Release extends Illuminate\Database\Eloquent\Model {
+    public $timestamps = false;
+
     public function user() {
         return $this->belongsTo('User');
     }
+}
+
+function getReleases() {
+    $releases = Release::orderBy('date', 'desc');
+    if (getUser() == null) {
+        $releases = $releases->where('status', '=', 0);
+    }
+    return $releases;
+}
+
+function getLatestStableRelease() {
+    $releases = Release::orderBy('date', 'desc')->where('type', 'release');
+    if (getUser() == null) {
+        $releases = $releases->where('status', '=', 0);
+    }
+    return $releases->first();
+}
+
+function getRelease($id) {
+    $releases = Release::where('id', '=', $id);;
+    if (getUser() == null) {
+        $releases = $releases->where('status', '=', 0);
+    }
+    return $releases->first();
 }
 
 class Wiki extends Illuminate\Database\Eloquent\Model {
@@ -56,22 +103,59 @@ $container['view'] = function ($container) {
     	return $_SERVER['REQUEST_URI'];
     });
 
-    $view->getEnvironment()->addFunction($function);
+    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('uri', function () {
+        return $_SERVER['REQUEST_URI'];
+    }));
+
+    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('getUser', function () {
+        return getUser();
+    }));
+
+    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('getReleaseBadge', function ($type) {
+        if ($type == 'beta' || $type == 'alpha') {
+            return '<span class="tag ' . ($type == 'alpha' ? 'tag-warning' : 'tag-info') . '">' . ucfirst($type) . '</span>';
+        }
+        return '';
+    }));
 
     return $view;
 };
-$container['uri'] = $_SERVER['REQUEST_URI'];
 
 $app->get('/', function (Request $request, Response $response) {
-    return $this->view->render($response, 'home.html', ['latest' => Release::orderBy('date', 'desc')->first()]);
+    return $this->view->render($response, 'home.html', ['latest' => getLatestStableRelease()]);
 });
 
 $app->get('/releases', function (Request $request, Response $response) {
-    return $this->view->render($response, 'releases.html', ['releases' => Release::orderBy('date', 'desc')->get()]);
+    return $this->view->render($response, 'releases.html', ['releases' => getReleases()->get(), 'latest' => getLatestStableRelease()]);
 });
 
+$app->get('/releases/create', function(Request $request, Response $response) {
+    return $this->view->render($response, 'releases_create.html');
+})->add(new NeedsAuthentication());
+
+$app->post('/releases/create', function(Request $request, Response $response) {
+    $version = $request->getParams()['version'];
+    $type = $request->getParams()['type'];
+    $mc_version = $request->getParams()['mc_version'];
+    $url = $request->getParams()['url'];
+    $changelog = $request->getParams()['changelog'];
+
+    $release = new Release();
+    $release->version = $version;
+    $release->type = $type;
+    $release->mc_version = $mc_version;
+    $release->url = $url;
+    $release->changelog = $changelog;
+    $release->user_id = getUser()->id;
+    $release->date = time();
+    $release->status = 0;
+    $release->save();
+
+    return $response->withHeader('Location', '/releases/' . $release->id);
+})->add(new NeedsAuthentication());
+
 $app->get('/releases/{id}', function (Request $request, Response $response, $args) {
-	$release = Release::find($args['id']);
+	$release = getRelease($args['id']);
 	
     if ($release == null) {
 		return $response->withStatus(404);
@@ -79,6 +163,32 @@ $app->get('/releases/{id}', function (Request $request, Response $response, $arg
 
 	return $this->view->render($response, 'release.html', ['release' => $release]);
 });
+
+$app->get('/releases/{id}/delete', function(Request $request, Response $response, $args) {
+    $release = Release::find($args['id']);
+    
+    if ($release == null) {
+        return $response->withStatus(404);
+    }
+
+    $release->status = 1;
+    $release->save();
+
+    return $response->withHeader('Location', '/releases/' . $release->id);
+})->add(new NeedsAuthentication());
+
+$app->get('/releases/{id}/restore', function(Request $request, Response $response, $args) {
+    $release = Release::find($args['id']);
+    
+    if ($release == null) {
+        return $response->withStatus(404);
+    }
+
+    $release->status = 0;
+    $release->save();
+
+    return $response->withHeader('Location', '/releases/' . $release->id);
+})->add(new NeedsAuthentication());
 
 function findAndParseWiki($url, $revisionId = null) {
     $wiki = Wiki::where(['url' => $url])->first();
@@ -135,6 +245,29 @@ $app->get('/wiki/{url}[/{revision}]', function(Request $request, Response $respo
     }
 
     return $this->view->render($response, 'wiki.html', ['wiki' => $wiki, 'sidebar' => findAndParseWiki('sidebar'), 'old' => $args['revision'] != null]);
+});
+
+$app->get('/login', function(Request $request, Response $response) {
+    return $this->view->render($response, 'login.html');
+});
+
+$app->post('/login', function(Request $request, Response $response) {
+    $username = $request->getParams()['username'];
+    $password = $request->getParams()['password'];
+
+    $user = User::where(['username' => $username, 'password' => $password])->first();
+
+    if ($user != null) {
+        $_SESSION['user'] = $user['id'];
+    }
+
+    return $response->withStatus(302)->withHeader('Location', '/');
+});
+
+$app->get('/logout', function(Request $request, Response $response) {
+    unset($_SESSION['user']);
+
+    return $response->withHeader('Location', '/');
 });
 
 $app->run();

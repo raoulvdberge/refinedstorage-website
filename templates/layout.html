@@ -1,3 +1,4 @@
+{% set user = getUser() %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,7 +38,7 @@
         <li class="nav-item {% if uri() == '/' %}active{% endif %}">
           <a class="nav-link" href="/">Home</a>
         </li>
-        <li class="nav-item {% if uri() == '/releases' %}active{% endif %}">
+        <li class="nav-item {% if 'releases' in uri() %}active{% endif %}">
           <a class="nav-link" href="/releases">Releases</a>
         </li>
         <li class="nav-item {% if 'wiki' in uri() %}active{% endif %}">
@@ -46,6 +47,15 @@
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/raoulvdberge/refinedstorage/issues">Issues</a>
         </li>
+        {% if user == null %}
+        <li class="nav-item {% if uri() == '/login' %}active{% endif %}">
+          <a class="nav-link" href="/login">Login</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="/logout">Logout</a>
+        </li>
+        {% endif %}
       </ul>
 
       <form class="float-xs-right">
@@ -59,7 +69,9 @@
     {% endblock %}
     <hr>
     <footer>
-      <p>&copy; Refined Storage authors</p>
+      <center>
+        <p>&copy; Refined Storage authors</p>
+      </center>
     </footer>
   </div>
 </body>

@@ -3,6 +3,7 @@
         "slim/slim": "^3.5",
         "slim/twig-view": "^2.1",
         "illuminate/database": "5.3.*@dev",
-        "erusev/parsedown": "^1.6"
+        "erusev/parsedown": "^1.6",
+        "slim/flash": "^0.2.0"
     }
 }

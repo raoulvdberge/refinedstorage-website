@@ -7,6 +7,14 @@
 
 <div class="float-lg-right"><a href="{{ release.url }}/download" class="btn btn-secondary"><span class="fa fa-download"></span> Download</a></div>
 
+{% if user != null %}
+  {% if release.status == 0 %}
+    <div class="float-lg-right" style="margin-right: 10px"><a href="/releases/{{ release.id }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Delete</a></div>
+  {% elseif release.status == 1 %}
+    <div class="float-lg-right" style="margin-right: 10px"><a href="/releases/{{ release.id }}/restore" class="btn btn-secondary"><span class="fa fa-history"></span> Restore</a></div>
+  {% endif %}
+{% endif %}
+
 <div class="clearfix"></div>
 
 <ol class="breadcrumb">
@@ -25,7 +33,7 @@
   </thead>
   <tbody>
     <tr>
-      <td>{{ release.version }} <span class="tag tag-warning">Beta</span></td>
+      <td>{{ release.version }} {{ getReleaseBadge(release.type)|raw }}</span></td>
       <td>{{ release.user.username }}</td>
       <td>{{ release.date|date("m/d/Y") }}</td>
       <td>{{ release.mc_version }}</td>

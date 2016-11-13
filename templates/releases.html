@@ -5,7 +5,11 @@
 {% block content %}
 <h1 class="float-lg-left">Releases</h1>
 
-<div class="float-lg-right"><a href="{{ releases[0].url }}/download" class="btn btn-secondary"><span class="fa fa-download"></span> Download latest ({{ releases[0].version }})</a></div>
+<div class="float-lg-right"><a href="{{ latest.url }}/download" class="btn btn-secondary"><span class="fa fa-download"></span> Download latest stable ({{ latest.version }})</a></div>
+
+{% if user != null %}
+  <div class="float-lg-right" style="margin-right: 10px"><a href="/releases/create" class="btn btn-secondary"><span class="fa fa-plus"></span> Create</a></div>
+{% endif %}
 
 <div class="clearfix"></div>
 
@@ -25,8 +29,8 @@
   </thead>
   <tbody>
     {% for release in releases %}
-    <tr>
-      <td><a href="/releases/{{ release.id }}">Refined Storage {{ release.version }}</a> <span class="tag tag-warning">Beta</span></td>
+    <tr {% if release.status == 1 %}class="table-danger"{% endif %}>
+      <td><a href="/releases/{{ release.id }}">Refined Storage {{ release.version }}</a> {{ getReleaseBadge(release.type)|raw }}</td>
       <td>{{ release.date|date("m/d/Y") }}</td>
       <td>{{ release.mc_version }}</td>
       <td>{{ release.user.username }}</td>
