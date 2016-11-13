@@ -7,6 +7,14 @@
 
 <div class="float-lg-right"><a href="/wiki/{{ wiki.url }}/revisions" class="btn btn-secondary"><span class="fa fa-file-o"></span> Revisions</a></div>
 
+{% if user != null %}
+  {% if wiki.status == 0 %}
+    <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Delete</a></div>
+  {% elseif wiki.status == 1 %}
+    <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/restore" class="btn btn-secondary"><span class="fa fa-history"></span> Restore</a></div>
+  {% endif %}
+{% endif %}
+
 <div class="clearfix"></div>
 
 <ol class="breadcrumb">
@@ -30,15 +38,12 @@
 
     <div class="card card-outline-secondary text-xs">
       <div class="card-block">
-        <p style="margin: 0px">Last edited by {{ wiki.revision.user.username }} at {{ wiki.revision.date|date("m/d/Y H:i:s") }}</p>
+        <p style="margin: 0px">Last edited by {{ wiki.revision.user.username }} at {{ wiki.revision.date|date("m/d/Y H:i:s") }}.</p>
       </div>
     </div>
   </div>
   <div class="col-sm-3 sidebar-offcanvas" id="sidebar">
     <div class="card">
-      <div class="card-header">
-        Wiki
-      </div>
       <div class="card-block">
         {{ sidebar.revision.body|raw }}
       </div>

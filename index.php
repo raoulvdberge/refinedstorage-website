@@ -77,10 +77,27 @@ function getRelease($id) {
 
 class Wiki extends Illuminate\Database\Eloquent\Model {
     protected $table = 'wiki';
+    public $timestamps = false;
 
     public function revisions() {
         return $this->hasMany('WikiRevision');
     }
+}
+
+function getWikiByUrl($url) {
+    $wiki = Wiki::where(['url' => $url]);
+    if (getUser() == null) {
+        $wiki = $wiki->where('status', '=', 0);
+    }
+    return $wiki->first();
+}
+
+function getWikiByName($name) {
+    $wiki = Wiki::where(['name' => $name]);
+    if (getUser() == null) {
+        $wiki = $wiki->where('status', '=', 0);
+    }
+    return $wiki->first();
 }
 
 class WikiRevision extends Illuminate\Database\Eloquent\Model {
@@ -227,7 +244,7 @@ $app->get('/releases/{id}/restore', function(Request $request, Response $respons
 })->add(new NeedsAuthentication());
 
 function findAndParseWiki($url, $revisionId = null) {
-    $wiki = Wiki::where(['url' => $url])->first();
+    $wiki = getWikiByUrl($url);
 
     if ($wiki == null) {
         return null;
@@ -249,7 +266,7 @@ function findAndParseWiki($url, $revisionId = null) {
     $revision['body'] = $parser->text($revision['body']);
     $revision['body'] = preg_replace_callback("/\\[\\[.+?\\]\\]/", function ($match) {
         $name = substr($match[0], 2, -2);
-        $reference = Wiki::where(['name' => $name])->first();
+        $reference = getWikiByName($name);
 
         return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . ($reference == null ? 'style="color: #c00"' : '') . '">' . $name . '</a>';
     }, $revision['body']);
@@ -263,8 +280,34 @@ $app->get('/wiki', function(Request $request, Response $response) {
     return $this->view->render($response, 'wiki.html', ['wiki' => findAndParseWiki('home'), 'sidebar' => findAndParseWiki('sidebar'), 'old' => false]);
 });
 
+$app->get('/wiki/{url}/delete', function(Request $request, Response $response, $args) {
+    $wiki = getWikiByUrl($args['url']);
+    
+    if ($wiki == null) {
+        return $response->withStatus(404);
+    }
+
+    $wiki->status = 1;
+    $wiki->save();
+
+    return $response->withHeader('Location', '/wiki/' . $wiki->url);
+})->add(new NeedsAuthentication());
+
+$app->get('/wiki/{url}/restore', function(Request $request, Response $response, $args) {
+    $wiki = getWikiByUrl($args['url']);
+    
+    if ($wiki == null) {
+        return $response->withStatus(404);
+    }
+
+    $wiki->status = 0;
+    $wiki->save();
+
+    return $response->withHeader('Location', '/wiki/' . $wiki->url);
+})->add(new NeedsAuthentication());
+
 $app->get('/wiki/{url}/revisions', function(Request $request, Response $response, $args) {
-    $wiki = Wiki::where(['url' => $args['url']])->first();
+    $wiki = getWikiByUrl($args['url']);
 
     if ($wiki == null) {
         return $response->withStatus(404);
