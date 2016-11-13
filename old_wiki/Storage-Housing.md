@@ -1,0 +1,5 @@
+# Storage Housing
+
+A Storage Housing is a [Storage Disk](https://github.com/raoulvdberge/refinedstorage/wiki/Storage-Disk) or [Fluid Storage Disk](https://github.com/raoulvdberge/refinedstorage/wiki/Fluid-Storage-Disk) without any [Storage Part](https://github.com/raoulvdberge/refinedstorage/wiki/Storage-Part) or [Fluid Storage Part](https://github.com/raoulvdberge/refinedstorage/wiki/Fluid-Storage-Part) assigned to it.
+
+The player can craft another [Storage Disk](https://github.com/raoulvdberge/refinedstorage/wiki/Storage-Disk) or [Fluid Storage Disk](https://github.com/raoulvdberge/refinedstorage/wiki/Fluid-Storage-Disk) with this item by combining the Storage Housing with a [Storage Part](https://github.com/raoulvdberge/refinedstorage/wiki/Storage-Part) or [Fluid Storage Part](https://github.com/raoulvdberge/refinedstorage/wiki/Fluid-Storage-Part) respectively.
