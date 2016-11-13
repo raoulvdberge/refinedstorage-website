@@ -3,6 +3,15 @@
 {% block title %}Create{% endblock %}
 
 {% block content %}
+<script>
+$(document).ready(function() {
+  new SimpleMDE({
+    element: document.getElementById("body"),
+    spellChecker: false
+  });
+});
+</script>
+
 <h1>Create</h1>
 
 <div class="clearfix"></div>
@@ -24,6 +33,7 @@
   <div class="form-group">
     <label for="body">Body</label>
     <textarea class="form-control" rows="20" name="body" id="body"></textarea>
+    <small class="form-text text-muted">To reference other wiki pages, use [[page name here]].</small>
   </div>
   <input type="submit" class="btn btn-primary" name="submit" value="Create">
   <input type="submit" class="btn btn-secondary" name="submit_back" value="Create and view">

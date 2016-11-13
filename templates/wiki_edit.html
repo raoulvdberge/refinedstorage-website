@@ -26,7 +26,7 @@ $(document).ready(function() {
     <div class="form-group">
     <label for="name">Name</label>
     <input type="text" name="name" id="name" class="form-control" value="{{ wiki.name }}">
-    <small class="form-text text-muted">Changing the name of this page won't change the references from other pages to this page!</small>
+    <small class="form-text text-muted">Changing the name of this wiki page won't change the references from other wiki pages to this wiki page!</small>
   </div>
   <div class="form-group">
     <label for="url">URL</label>
@@ -35,6 +35,7 @@ $(document).ready(function() {
   <div class="form-group">
     <label for="body">Body</label>
     <textarea class="form-control" rows="20" name="body" id="body">{{ wiki.revision.body }}</textarea>
+    <small class="form-text text-muted">To reference other wiki pages, use [[page name here]].</small>
   </div>
   <input type="submit" class="btn btn-primary" name="submit" value="Edit">
   <input type="submit" class="btn btn-secondary" name="submit_back" value="Edit and view">
