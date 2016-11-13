@@ -7,7 +7,7 @@
 
 <div class="float-lg-right"><a href="/wiki/{{ wiki.url }}/revisions" class="btn btn-secondary"><span class="fa fa-file-o"></span> Revisions</a></div>
 
-{% if user != null %}
+{% if can('editor') %}
   <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/pages" class="btn btn-secondary"><span class="fa fa-list"></span> Pages</a></div>
   <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/create" class="btn btn-secondary"><span class="fa fa-plus"></span> Create</a></div>
   {% if wiki.status == 0 %}
@@ -54,7 +54,7 @@
       <div class="card-block">
         {{ sidebar.revision.body|raw }}
 
-        {% if user != null %}
+        {% if can('editor') %}
           <a href="/wiki/{{ sidebar.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a>
         {% endif %}
       </div>

@@ -7,7 +7,7 @@
 
 <div class="float-lg-right"><a href="{{ release.url }}/download" class="btn btn-secondary"><span class="fa fa-download"></span> Download</a></div>
 
-{% if user != null %}
+{% if can('contributor') %}
   {% if release.status == 0 %}
     <div class="float-lg-right" style="margin-right: 10px"><a href="/releases/{{ release.id }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Delete</a></div>
   {% elseif release.status == 1 %}

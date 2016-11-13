@@ -1,5 +1,12 @@
 <?php
 
+$roles = [
+    'admin' => 300,
+    'contributor' => 200,
+    'editor' => 100,
+    'user' => 0
+];
+
 date_default_timezone_set('Europe/Brussels');
 
 session_start();
@@ -33,9 +40,20 @@ function getUser() {
 
 class NeedsAuthentication
 {
+    private $accessLevel;
+
+    public function __construct($accessLevel)
+    {
+        $this->accessLevel = $accessLevel;
+    }
+
     public function __invoke($request, $response, $next)
     {
         if (getUser() == null) {
+            return $response->withHeader('Location', '/login');
+        }
+
+        if (getUser()->role < $this->accessLevel) {
             return $response->withHeader('Location', '/login');
         }
 
@@ -129,7 +147,7 @@ class WikiRevision extends Illuminate\Database\Eloquent\Model {
 $app = new \Slim\App;
 
 $container = $app->getContainer();
-$container['view'] = function ($container) {
+$container['view'] = function ($container) use ($roles) {
     $view = new \Slim\Views\Twig('templates');
     
     $basePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
@@ -146,6 +164,12 @@ $container['view'] = function ($container) {
 
     $view->getEnvironment()->addFunction(new Twig_SimpleFunction('getUser', function () {
         return getUser();
+    }));
+
+    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('can', function ($role) use ($roles) {
+        $user = getUser();
+
+        return $user != null && $user->role >= $roles[$role];
     }));
 
     $view->getEnvironment()->addFunction(new Twig_SimpleFunction('getReleaseBadge', function ($type) {
@@ -168,7 +192,7 @@ $app->get('/releases', function (Request $request, Response $response) {
 
 $app->get('/releases/create', function(Request $request, Response $response) {
     return $this->view->render($response, 'releases_create.html');
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['contributor']));
 
 $app->post('/releases/create', function(Request $request, Response $response) {
     $version = $request->getParams()['version'];
@@ -189,7 +213,7 @@ $app->post('/releases/create', function(Request $request, Response $response) {
     $release->save();
 
     return $response->withHeader('Location', '/releases/' . $release->id);
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['contributor']));
 
 $app->get('/releases/{id}/edit', function (Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
@@ -199,7 +223,7 @@ $app->get('/releases/{id}/edit', function (Request $request, Response $response,
     }
 
     return $this->view->render($response, 'releases_edit.html', ['release' => $release]);
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['contributor']));
 
 $app->post('/releases/{id}/edit', function (Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
@@ -225,7 +249,7 @@ $app->post('/releases/{id}/edit', function (Request $request, Response $response
     $release->save();
 
     return $response->withHeader('Location', '/releases/' . $release->id);
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['contributor']));
 
 $app->get('/releases/{id}', function (Request $request, Response $response, $args) {
 	$release = getRelease($args['id']);
@@ -234,7 +258,7 @@ $app->get('/releases/{id}', function (Request $request, Response $response, $arg
 		return $response->withStatus(404);
 	}
 
-	return $this->view->render($response, 'release.html', ['release' => $release]);
+	return $this->view->render($response, 'releases_view.html', ['release' => $release]);
 });
 
 $app->get('/releases/{id}/delete', function(Request $request, Response $response, $args) {
@@ -248,7 +272,7 @@ $app->get('/releases/{id}/delete', function(Request $request, Response $response
     $release->save();
 
     return $response->withHeader('Location', '/releases/' . $release->id);
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['contributor']));
 
 $app->get('/releases/{id}/restore', function(Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
@@ -261,7 +285,7 @@ $app->get('/releases/{id}/restore', function(Request $request, Response $respons
     $release->save();
 
     return $response->withHeader('Location', '/releases/' . $release->id);
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['contributor']));
 
 function findAndParseWiki($url, $revisionHash = null) {
     $wiki = getWikiByUrl($url);
@@ -297,7 +321,7 @@ $app->get('/wiki', function(Request $request, Response $response) {
 
 $app->get('/wiki/create', function(Request $request, Response $response, $args) {
     return $this->view->render($response, 'wiki_create.html');
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['editor']));
 
 $app->get('/wiki/pages', function(Request $request, Response $response, $args) {
     $wikis = Wiki::all();
@@ -305,7 +329,7 @@ $app->get('/wiki/pages', function(Request $request, Response $response, $args) {
         $wiki['last_revision'] = getWikiRevision($wiki, null);
     }
     return $this->view->render($response, 'wiki_pages.html', ['wikis' => $wikis]);
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['editor']));
 
 $app->post('/wiki/create', function(Request $request, Response $response, $args) {
     $wiki = new Wiki();
@@ -330,7 +354,7 @@ $app->post('/wiki/create', function(Request $request, Response $response, $args)
     } else {
         return $response->withHeader('Location', '/wiki/' . $wiki->url . '/edit');
     }
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['editor']));
 
 $app->get('/wiki/{url}/delete', function(Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
@@ -343,7 +367,7 @@ $app->get('/wiki/{url}/delete', function(Request $request, Response $response, $
     $wiki->save();
 
     return $response->withHeader('Location', '/wiki/' . $wiki->url);
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['editor']));
 
 $app->get('/wiki/{url}/restore', function(Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
@@ -356,7 +380,7 @@ $app->get('/wiki/{url}/restore', function(Request $request, Response $response, 
     $wiki->save();
 
     return $response->withHeader('Location', '/wiki/' . $wiki->url);
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['editor']));
 
 $app->get('/wiki/{url}/edit', function(Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
@@ -368,7 +392,7 @@ $app->get('/wiki/{url}/edit', function(Request $request, Response $response, $ar
     $wiki['revision'] = $wiki->revisions()->orderBy('date', 'desc')->first();
 
     return $this->view->render($response, 'wiki_edit.html', ['wiki' => $wiki]);
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['editor']));
 
 $app->post('/wiki/{url}/edit', function(Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
@@ -397,7 +421,7 @@ $app->post('/wiki/{url}/edit', function(Request $request, Response $response, $a
     } else {
         return $response->withHeader('Location', '/wiki/' . $wiki->url . '/edit');
     }
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['editor']));
 
 $app->get('/wiki/{url}/revisions', function(Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
@@ -434,7 +458,7 @@ $app->get('/wiki/{url}/{revision}/revert', function(Request $request, Response $
     $rev->save();
 
     return $response->withHeader('Location', '/wiki/' . $wiki->url);
-})->add(new NeedsAuthentication());
+})->add(new NeedsAuthentication($roles['editor']));
 
 $app->get('/wiki/{url}[/{revision}]', function(Request $request, Response $response, $args) {
     $wiki = findAndParseWiki($args['url'], isset($args['revision']) ? $args['revision'] : null);
