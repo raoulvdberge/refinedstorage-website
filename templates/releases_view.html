@@ -35,7 +35,7 @@
   <tbody>
     <tr>
       <td>{{ release.version }} {{ getReleaseBadge(release.type)|raw }}</span></td>
-      <td>{{ release.user.username }}</td>
+      <td><a href="/profile/{{ release.user.username }}">{{ release.user.username }}</a></td>
       <td>{{ release.date|date("m/d/Y") }}</td>
       <td>{{ release.mc_version }}</td>
     </tr>

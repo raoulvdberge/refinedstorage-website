@@ -28,10 +28,10 @@
     <tr>
       <td>{{ id }}</td>
       <td><a href="/wiki/{{ wiki.url }}/{{ revision.hash }}">{{ revision.date|date("m/d/Y H:i:s") }}</a></td>
-      <td>{{ revision.user.username }}</td>
+      <td><a href="/profile/{{ revision.user.username }}">{{ revision.user.username }}</a></td>
       <td>
         {% if revision.reverted_from != 0 %}
-          Yes, by {{ revision.revertedBy.username }} from <a href="/wiki/{{ wiki.url }}/{{ revision.revertedFrom.hash }}">{{ revision.revertedFrom.hash }}</a>
+          Yes, by <a href="/profile/{{ revision.revertedBy.username }}">{{ revision.revertedBy.username }}</a> from <a href="/wiki/{{ wiki.url }}/{{ revision.revertedFrom.hash }}">{{ revision.revertedFrom.hash }}</a>
         {% else %}
           No
         {% endif %}

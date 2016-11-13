@@ -23,7 +23,7 @@
     <tr {% if wiki.status == 1 %}class="table-danger"{% endif %}>
       <td><a href="/wiki/{{ wiki.url }}">{{ wiki.name }}</td>
       <td>{{ wiki.url }}</td>
-      <td>{{ wiki.last_revision.user.username }} at {{ wiki.last_revision.date|date("m/d/Y") }}</td>
+      <td><a href="/profile/{{ wiki.last_revision.user.username }}">{{ wiki.last_revision.user.username }}</a> at {{ wiki.last_revision.date|date("m/d/Y") }}</td>
     </tr>
   </tbody>
   {% endfor %}

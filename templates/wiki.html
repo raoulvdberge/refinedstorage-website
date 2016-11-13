@@ -42,9 +42,10 @@
 
     <div class="card card-outline-secondary text-xs">
       <div class="card-block">
-        <p {% if wiki.revision.reverted_from == 0 %}style="margin: 0px"{% endif %}>Last modified by {{ wiki.revision.user.username }} at {{ wiki.revision.date|date("m/d/Y H:i:s") }}.</p>
+        <p {% if wiki.revision.reverted_from == 0 %}style="margin: 0px"{% endif %}>Last modified by <a href="/profile/{{ wiki.revision.user.username }}">{{ wiki.revision.user.username }}</a> at {{ wiki.revision.date|date("m/d/Y H:i:s") }}.</p>
+
         {% if wiki.revision.reverted_from != 0 %}
-          <p style="margin: 0px">Reverted by {{ wiki.revision.revertedBy.username }} from <a href="/wiki/{{ wiki.url }}/{{ wiki.revision.revertedFrom.hash }}">{{ wiki.revision.revertedFrom.hash }}</a>.</p>
+          <p style="margin: 0px">Reverted by <a href="/profile/{{ wiki.revision.revertedBy.username }}">{{ wiki.revision.revertedBy.username }}</a> from <a href="/wiki/{{ wiki.url }}/{{ wiki.revision.revertedFrom.hash }}">{{ wiki.revision.revertedFrom.hash }}</a>.</p>
         {% endif %}
       </div>
     </div>

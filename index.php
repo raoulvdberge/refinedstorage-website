@@ -172,6 +172,15 @@ $container['view'] = function ($container) use ($roles) {
         return $user != null && $user->role >= $roles[$role];
     }));
 
+    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('role', function ($role) use ($roles) {
+        foreach ($roles as $name => $value) {
+            if ($role >= $value) {
+                return ucfirst($name);
+            }
+        }
+        return 'Unknown';
+    }));
+
     $view->getEnvironment()->addFunction(new Twig_SimpleFunction('getReleaseBadge', function ($type) {
         if ($type == 'beta' || $type == 'alpha') {
             return '<span class="tag ' . ($type == 'alpha' ? 'tag-warning' : 'tag-info') . '">' . ucfirst($type) . '</span>';
@@ -491,6 +500,16 @@ $app->get('/logout', function(Request $request, Response $response) {
     unset($_SESSION['user']);
 
     return $response->withHeader('Location', '/');
+});
+
+$app->get('/profile/{username}', function(Request $request, Response $response, $args) {
+    $user = User::where('username', '=', $args['username'])->first();
+
+    if ($user == null) {
+        return $response->withStatus(404);
+    }
+
+    return $this->view->render($response, 'profile.html', ['user' => $user]);
 });
 
 $app->run();
