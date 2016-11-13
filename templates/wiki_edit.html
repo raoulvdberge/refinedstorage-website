@@ -3,6 +3,15 @@
 {% block title %}Edit{% endblock %}
 
 {% block content %}
+<script>
+$(document).ready(function() {
+  new SimpleMDE({
+    element: document.getElementById("body"),
+    spellChecker: false
+  });
+});
+</script>
+
 <h1>Edit</h1>
 
 <div class="clearfix"></div>

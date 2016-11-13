@@ -1,0 +1,16 @@
+html, body {
+  overflow-x: hidden; /* Prevent scroll on narrow devices */
+} 
+
+body {
+  padding-top: 80px;
+}
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 24px;
+}
