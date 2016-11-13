@@ -520,6 +520,33 @@ $app->get('/profile/{username}', function(Request $request, Response $response, 
     return $this->view->render($response, 'profile.html', ['profile' => $user]);
 });
 
+$app->get('/search', function(Request $request, Response $response) {
+    return $this->view->render($response, 'search.html', ['show' => false, 'query' => '']);
+});
+
+$app->post('/search', function(Request $request, Response $response) {
+    $query = $request->getParams()['query'];
+    $wikis = [];
+
+    if (!empty($query)) {
+        $allWikis = Wiki::where('status', '=', 0)->get();
+
+        foreach ($allWikis as $wiki) {
+            if (stristr($wiki->name, $query)) {
+                $wikis[] = $wiki;
+            } else {
+                $rev = getWikiRevision($wiki, null);
+
+                if (stristr($rev->body, $query)) {
+                    $wikis[] = $wiki;
+                }
+            }
+        }
+    }
+
+    return $this->view->render($response, 'search.html', ['show' => !empty($query), 'results' => $wikis, 'query' => $query]);
+});
+
 $app->get('/503', function(Request $request, Response $response) {
     return $this->view->render($response->withStatus(503), '503.html');
 });
