@@ -295,6 +295,35 @@ $app->get('/wiki', function(Request $request, Response $response) {
     return $this->view->render($response, 'wiki.html', ['wiki' => findAndParseWiki('home'), 'sidebar' => findAndParseWiki('sidebar'), 'old' => false]);
 });
 
+$app->get('/wiki/create', function(Request $request, Response $response, $args) {
+    return $this->view->render($response, 'wiki_create.html');
+})->add(new NeedsAuthentication());
+
+$app->post('/wiki/create', function(Request $request, Response $response, $args) {
+    $wiki = new Wiki();
+    $wiki->url = $request->getParams()['url'];
+    $wiki->name = $request->getParams()['name'];
+    $wiki->status = 0;
+    $wiki->save();
+
+    $rev = new WikiRevision();
+    $rev->wiki_id = $wiki->id;
+    $rev->body = $request->getParams()['body'];
+    $rev->user_id = getUser()->id;
+    $rev->reverted_by = 0;
+    $rev->reverted_from = 0;
+    $rev->date = time();
+    $rev->hash = md5(microtime());
+
+    $rev->save();
+
+    if (isset($request->getParams()['submit_back'])) {
+        return $response->withHeader('Location', '/wiki/' . $wiki->url);
+    } else {
+        return $response->withHeader('Location', '/wiki/' . $wiki->url . '/edit');
+    }
+})->add(new NeedsAuthentication());
+
 $app->get('/wiki/{url}/delete', function(Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
     
@@ -341,6 +370,7 @@ $app->post('/wiki/{url}/edit', function(Request $request, Response $response, $a
     }
 
     $wiki->name = $request->getParams()['name'];
+    $wiki->url = $request->getParams()['url'];
     $wiki->save();
 
     $rev = new WikiRevision();

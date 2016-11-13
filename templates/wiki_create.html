@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}Create{% endblock %}
+
+{% block content %}
+<h1>Create</h1>
+
+<div class="clearfix"></div>
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="/wiki">Wiki</a></li>
+  <li class="breadcrumb-item">Create</li>
+</ol>
+
+<form method="post">
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name" class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="url">URL</label>
+    <input type="text" name="url" id="url" class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="body">Body</label>
+    <textarea class="form-control" rows="20" name="body" id="body"></textarea>
+  </div>
+  <input type="submit" class="btn btn-primary" name="submit" value="Create">
+  <input type="submit" class="btn btn-secondary" name="submit_back" value="Create and view">
+</form>
+{% endblock %}

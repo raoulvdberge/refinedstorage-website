@@ -20,10 +20,14 @@
     <small class="form-text text-muted">Changing the name of this page won't change the references from other pages to this page!</small>
   </div>
   <div class="form-group">
+    <label for="url">URL</label>
+    <input type="text" name="url" id="url" value="{{ wiki.url }}" class="form-control">
+  </div>
+  <div class="form-group">
     <label for="body">Body</label>
     <textarea class="form-control" rows="20" name="body" id="body">{{ wiki.revision.body }}</textarea>
   </div>
   <input type="submit" class="btn btn-primary" name="submit" value="Edit">
-  <input type="submit" class="btn btn-secondary" name="submit_back" value="Edit and go back">
+  <input type="submit" class="btn btn-secondary" name="submit_back" value="Edit and view">
 </form>
 {% endblock %}
