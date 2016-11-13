@@ -154,6 +154,42 @@ $app->post('/releases/create', function(Request $request, Response $response) {
     return $response->withHeader('Location', '/releases/' . $release->id);
 })->add(new NeedsAuthentication());
 
+$app->get('/releases/{id}/edit', function (Request $request, Response $response, $args) {
+    $release = getRelease($args['id']);
+    
+    if ($release == null) {
+        return $response->withStatus(404);
+    }
+
+    return $this->view->render($response, 'releases_edit.html', ['release' => $release]);
+})->add(new NeedsAuthentication());
+
+$app->post('/releases/{id}/edit', function (Request $request, Response $response, $args) {
+    $release = getRelease($args['id']);
+    
+    if ($release == null) {
+        return $response->withStatus(404);
+    }
+
+    $version = $request->getParams()['version'];
+    $type = $request->getParams()['type'];
+    $mc_version = $request->getParams()['mc_version'];
+    $url = $request->getParams()['url'];
+    $changelog = $request->getParams()['changelog'];
+
+    $release->version = $version;
+    $release->type = $type;
+    $release->mc_version = $mc_version;
+    $release->url = $url;
+    $release->changelog = $changelog;
+    $release->user_id = getUser()->id;
+    $release->date = time();
+    $release->status = 0;
+    $release->save();
+
+    return $response->withHeader('Location', '/releases/' . $release->id);
+})->add(new NeedsAuthentication());
+
 $app->get('/releases/{id}', function (Request $request, Response $response, $args) {
 	$release = getRelease($args['id']);
 	

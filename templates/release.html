@@ -13,6 +13,7 @@
   {% elseif release.status == 1 %}
     <div class="float-lg-right" style="margin-right: 10px"><a href="/releases/{{ release.id }}/restore" class="btn btn-secondary"><span class="fa fa-history"></span> Restore</a></div>
   {% endif %}
+  <div class="float-lg-right" style="margin-right: 10px"><a href="/releases/{{ release.id }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a></div>
 {% endif %}
 
 <div class="clearfix"></div>
@@ -41,5 +42,5 @@
   </tbody>
 </table>
 
-<samp>{{ release.changelog }}</samp>
+<samp>{{ release.changelog|nl2br }}</samp>
 {% endblock %}
