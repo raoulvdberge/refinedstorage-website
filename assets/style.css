@@ -14,3 +14,12 @@ h1 {
 h2 {
   font-size: 24px;
 }
+
+.navbar-brand {
+	background: url(/assets/logo.png);
+	background-repeat: no-repeat;
+	background-size: 105px 30px;
+	width: 105px;
+	height: 30px;
+	margin-top: 3px;
+}
