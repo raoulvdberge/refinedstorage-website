@@ -190,6 +190,11 @@ $container['view'] = function ($container) use ($roles) {
 
     return $view;
 };
+$container['notFoundHandler'] = function ($c) {
+    return function (Request $request, Response $response) use ($c) {
+        return $c->view->render($response->withStatus(404), '404.html');
+    };
+};
 
 $app->get('/', function (Request $request, Response $response) {
     return $this->view->render($response, 'home.html', ['latest' => getLatestStableRelease()]);
