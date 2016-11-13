@@ -101,6 +101,8 @@ function getWikiByName($name) {
 }
 
 class WikiRevision extends Illuminate\Database\Eloquent\Model {
+    public $timestamps = false;
+
     public function user() {
         return $this->belongsTo('User');
     }
@@ -218,7 +220,7 @@ $app->get('/releases/{id}', function (Request $request, Response $response, $arg
 });
 
 $app->get('/releases/{id}/delete', function(Request $request, Response $response, $args) {
-    $release = Release::find($args['id']);
+    $release = getRelease($args['id']);
     
     if ($release == null) {
         return $response->withStatus(404);
@@ -231,7 +233,7 @@ $app->get('/releases/{id}/delete', function(Request $request, Response $response
 })->add(new NeedsAuthentication());
 
 $app->get('/releases/{id}/restore', function(Request $request, Response $response, $args) {
-    $release = Release::find($args['id']);
+    $release = getRelease($args['id']);
     
     if ($release == null) {
         return $response->withStatus(404);
@@ -306,6 +308,43 @@ $app->get('/wiki/{url}/restore', function(Request $request, Response $response, 
     return $response->withHeader('Location', '/wiki/' . $wiki->url);
 })->add(new NeedsAuthentication());
 
+$app->get('/wiki/{url}/edit', function(Request $request, Response $response, $args) {
+    $wiki = getWikiByUrl($args['url']);
+    
+    if ($wiki == null) {
+        return $response->withStatus(404);
+    }
+
+    $wiki['revision'] = $wiki->revisions()->orderBy('date', 'desc')->first();
+
+    return $this->view->render($response, 'wiki_edit.html', ['wiki' => $wiki]);
+})->add(new NeedsAuthentication());
+
+$app->post('/wiki/{url}/edit', function(Request $request, Response $response, $args) {
+    $wiki = getWikiByUrl($args['url']);
+    
+    if ($wiki == null) {
+        return $response->withStatus(404);
+    }
+
+    $wiki->name = $request->getParams()['name'];
+    $wiki->save();
+
+    $rev = new WikiRevision();
+    $rev->wiki_id = $wiki->id;
+    $rev->body = $request->getParams()['body'];
+    $rev->user_id = getUser()->id;
+    $rev->date = time();
+
+    $rev->save();
+
+    if (isset($request->getParams()['submit_back'])) {
+        return $response->withHeader('Location', '/wiki/' . $wiki->url);
+    } else {
+        return $response->withHeader('Location', '/wiki/' . $wiki->url . '/edit');
+    }
+})->add(new NeedsAuthentication());
+
 $app->get('/wiki/{url}/revisions', function(Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
 
@@ -317,7 +356,7 @@ $app->get('/wiki/{url}/revisions', function(Request $request, Response $response
 });
 
 $app->get('/wiki/{url}[/{revision}]', function(Request $request, Response $response, $args) {
-    $wiki = findAndParseWiki($args['url'], $args['revision']);
+    $wiki = findAndParseWiki($args['url'], isset($args['revision']) ? $args['revision'] : null);
 
     if ($wiki == null) {
         return $response->withStatus(404);

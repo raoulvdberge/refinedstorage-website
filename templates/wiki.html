@@ -13,6 +13,7 @@
   {% elseif wiki.status == 1 %}
     <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/restore" class="btn btn-secondary"><span class="fa fa-history"></span> Restore</a></div>
   {% endif %}
+  <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a></div>
 {% endif %}
 
 <div class="clearfix"></div>
@@ -46,6 +47,10 @@
     <div class="card">
       <div class="card-block">
         {{ sidebar.revision.body|raw }}
+        
+        {% if user != null %}
+          <a href="/wiki/{{ sidebar.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a>
+        {% endif %}
       </div>
     </div>
   </div>
