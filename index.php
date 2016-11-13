@@ -493,9 +493,9 @@ $app->post('/login', function(Request $request, Response $response) {
     $username = $request->getParams()['username'];
     $password = $request->getParams()['password'];
 
-    $user = User::where(['username' => $username, 'password' => $password])->first();
+    $user = User::where(['username' => $username])->first();
 
-    if ($user != null) {
+    if ($user != null && password_verify($password, $user->password)) {
         $_SESSION['user'] = $user['id'];
         
         return $response->withStatus(302)->withHeader('Location', '/');
