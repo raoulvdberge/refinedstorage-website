@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ wiki.title }}{% endblock %}
+
+{% block content %}
+{{ wiki.body|raw }}
+{% endblock %}
