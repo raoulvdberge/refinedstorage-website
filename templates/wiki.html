@@ -1,7 +1,48 @@
 {% extends "layout.html" %}
 
-{% block title %}{{ wiki.title }}{% endblock %}
+{% block title %}{{ wiki.name }}{% endblock %}
 
 {% block content %}
-{{ wiki.body|raw }}
+<h1 class="float-lg-left">{{ wiki.name }}</h1>
+
+<div class="float-lg-right"><a href="/wiki/{{ wiki.url }}/revisions" class="btn btn-secondary"><span class="fa fa-file-o"></span> Revisions</a></div>
+
+<div class="clearfix"></div>
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="/wiki">Wiki</a></li>
+  <li class="breadcrumb-item active">{{ wiki.name }}</li>
+</ol>
+
+{% if old %}
+<div class="alert alert-warning" role="alert">
+  <strong>Watching specific revision!</strong> <a href="/wiki/{{ wiki.url }}">Click here</a> to go back to current revision.
+</div>
+{% endif %}
+
+<div class="row row-offcanvas row-offcanvas-right">
+  <div class="col-sm-9">
+    <p class="float-xs-right hidden-sm-up">
+      <button type="button" class="btn btn-primary btn-sm" data-toggle="offcanvas">Toggle nav</button>
+    </p>
+
+    {{ wiki.revision.body|raw }}
+
+    <div class="card card-outline-secondary text-xs">
+      <div class="card-block">
+        <p style="margin: 0px">Last edited by {{ wiki.revision.user.username }} at {{ wiki.revision.date|date("m/d/Y H:i:s") }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-3 sidebar-offcanvas" id="sidebar">
+    <div class="card">
+      <div class="card-header">
+        Wiki
+      </div>
+      <div class="card-block">
+        {{ sidebar.revision.body|raw }}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

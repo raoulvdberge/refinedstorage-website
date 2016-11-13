@@ -2,6 +2,7 @@
     "require": {
         "slim/slim": "^3.5",
         "slim/twig-view": "^2.1",
-        "illuminate/database": "5.3.*@dev"
+        "illuminate/database": "5.3.*@dev",
+        "erusev/parsedown": "^1.6"
     }
 }

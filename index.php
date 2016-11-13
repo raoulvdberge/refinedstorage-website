@@ -19,9 +19,27 @@ $capsule->addConnection([
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
-class Release extends Illuminate\Database\Eloquent\Model {}
+class User extends Illuminate\Database\Eloquent\Model {
+}
+
+class Release extends Illuminate\Database\Eloquent\Model {
+    public function user() {
+        return $this->belongsTo('User');
+    }
+}
+
 class Wiki extends Illuminate\Database\Eloquent\Model {
     protected $table = 'wiki';
+
+    public function revisions() {
+        return $this->hasMany('WikiRevision');
+    }
+}
+
+class WikiRevision extends Illuminate\Database\Eloquent\Model {
+    public function user() {
+        return $this->belongsTo('User');
+    }
 }
 
 $app = new \Slim\App;
@@ -45,11 +63,11 @@ $container['view'] = function ($container) {
 $container['uri'] = $_SERVER['REQUEST_URI'];
 
 $app->get('/', function (Request $request, Response $response) {
-    return $this->view->render($response, 'home.html');
+    return $this->view->render($response, 'home.html', ['latest' => Release::orderBy('date', 'desc')->first()]);
 });
 
 $app->get('/releases', function (Request $request, Response $response) {
-    return $this->view->render($response, 'releases.html', ['releases' => Release::all()]);
+    return $this->view->render($response, 'releases.html', ['releases' => Release::orderBy('date', 'desc')->get()]);
 });
 
 $app->get('/releases/{id}', function (Request $request, Response $response, $args) {
@@ -62,21 +80,61 @@ $app->get('/releases/{id}', function (Request $request, Response $response, $arg
 	return $this->view->render($response, 'release.html', ['release' => $release]);
 });
 
-$app->get('/wiki/{url}', function(Request $request, Response $response, $args) {
+function findAndParseWiki($url, $revisionId = null) {
+    $wiki = Wiki::where(['url' => $url])->first();
+
+    if ($wiki == null) {
+        return null;
+    }
+
+    $revision = $wiki->revisions()->orderBy('date', 'desc');
+    if ($revisionId == null) {
+        $revision = $revision->first();
+    } else {
+        $revision = $revision->where('id', $revisionId)->first();
+    }
+
+    if ($revision == null) {
+        return null;
+    }
+
+    $parser = new Parsedown();
+
+    $revision['body'] = $parser->text($revision['body']);
+    $revision['body'] = preg_replace_callback("/\\[\\[.+?\\]\\]/", function ($match) {
+        $name = substr($match[0], 2, -2);
+        $reference = Wiki::where(['name' => $name])->first();
+
+        return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . ($reference == null ? 'style="color: #c00"' : '') . '">' . $name . '</a>';
+    }, $revision['body']);
+
+    $wiki['revision'] = $revision;
+
+    return $wiki;
+}
+
+$app->get('/wiki', function(Request $request, Response $response) {
+    return $this->view->render($response, 'wiki.html', ['wiki' => findAndParseWiki('home'), 'sidebar' => findAndParseWiki('sidebar'), 'old' => false]);
+});
+
+$app->get('/wiki/{url}/revisions', function(Request $request, Response $response, $args) {
     $wiki = Wiki::where(['url' => $args['url']])->first();
 
     if ($wiki == null) {
         return $response->withStatus(404);
     }
 
-    $wiki['body'] = preg_replace_callback("/\\[\\[.+?\\]\\]/", function ($match) {
-        $name = substr($match[0], 2, -2);
-        $reference = Wiki::where(['name' => $name])->first();
+    return $this->view->render($response, 'wiki_revisions.html', ['wiki' => $wiki, 'revisions' => $wiki->revisions()->orderBy('date', 'desc')->get()]);
+});
 
-        return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . ($reference == null ? 'style="color: #c00"' : '') . '">' . $name . '</a>';
-    }, $wiki['body']);
+$app->get('/wiki/{url}[/{revision}]', function(Request $request, Response $response, $args) {
+    $wiki = findAndParseWiki($args['url'], $args['revision']);
 
-    return $this->view->render($response, 'wiki.html', ['wiki' => $wiki]);
+    if ($wiki == null) {
+        return $response->withStatus(404);
+    }
+
+    return $this->view->render($response, 'wiki.html', ['wiki' => $wiki, 'sidebar' => findAndParseWiki('sidebar'), 'old' => $args['revision'] != null]);
 });
 
 $app->run();

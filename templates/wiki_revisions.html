@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}Revisions{% endblock %}
+
+{% block content %}
+<h1 class="float-lg-left">Revisions</h1>
+
+<div class="clearfix"></div>
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="/wiki">Wiki</a></li>
+  <li class="breadcrumb-item"><a href="/wiki/{{ wiki.url }}">{{ wiki.name }}</a></li>
+  <li class="breadcrumb-item">Revisions</li>
+</ol>
+
+<table class="table">
+  <thead class="thead-default">
+    <tr>
+      <th width="10%">#</th>
+      <th width="50%">Date</th>
+      <th width="30%">User</thh
+    </tr>
+  </thead>
+  <tbody>
+    {% set id = revisions|length %}
+    {% for revision in revisions %}
+    <tr>
+      <td>{{ id }}</td>
+      <td><a href="/wiki/{{ wiki.url }}/{{ revision.id }}">{{ revision.date|date("m/d/Y H:i:s") }}</a></td>
+      <td>{{ revision.user.username }}</td>
+    </tr>
+    {% set id = id - 1 %}
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

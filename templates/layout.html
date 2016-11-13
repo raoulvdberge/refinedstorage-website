@@ -40,11 +40,11 @@
         <li class="nav-item {% if uri() == '/releases' %}active{% endif %}">
           <a class="nav-link" href="/releases">Releases</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://github.com/raoulvdberge/refinedstorage/issues">Issues</a>
+        <li class="nav-item {% if 'wiki' in uri() %}active{% endif %}">
+          <a class="nav-link" href="/wiki">Wiki</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/">Guides</a>
+          <a class="nav-link" href="https://github.com/raoulvdberge/refinedstorage/issues">Issues</a>
         </li>
       </ul>
 
