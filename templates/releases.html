@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}Releases{% endblock %}
+
+{% block content %}
+<h1 class="float-lg-left">Releases</h1>
+
+<div class="float-lg-right"><a href="x/download" class="btn btn-secondary"><span class="fa fa-download"></span> Download latest (1.2.4)</a></div>
+
+<div class="clearfix"></div>
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item active">Releases</li>
+</ol>
+
+<table class="table">
+  <thead class="thead-default">
+    <tr>
+      <th width="40%">Version</th>
+      <th width="30%">Date released</th>
+      <th width="25%">Minecraft version</th>
+      <th width="15%">Download</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for release in releases %}
+    <tr>
+      <td><a href="/releases/{{ release.id }}">Refined Storage {{ release.version }}</a> <span class="tag tag-warning">Beta</span></td>
+      <td>{{ release.date|date("m/d/Y") }}</td>
+      <td>{{ release.mc_version }}</td>
+      <td><center><a href="{{ release.url }}/download" class="btn btn-secondary btn-sm"><span class="fa fa-download"></span></a></center></td>
+    </tr>
+  </tbody>
+  {% endfor %}
+</table>
+{% endblock %}

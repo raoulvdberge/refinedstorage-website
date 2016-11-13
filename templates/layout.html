@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Refined Storage">
+  <meta name="author" content="Refined Storage authors">
+  <title>Refined Storage - {% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <style>
+    html,
+    body {
+      overflow-x: hidden; /* Prevent scroll on narrow devices */
+    } 
+    body {
+      padding-top: 80px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    h2 {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-fixed-top navbar-dark bg-inverse">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+      	<img src="https://raw.githubusercontent.com/raoulvdberge/refinedstorage/mc1.10/src/main/resources/assets/refinedstorage/textures/logo.png" width="100" height="30">
+      </a>
+      <ul class="nav navbar-nav">
+        <li class="nav-item {% if uri() == '/' %}active{% endif %}">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item {% if uri() == '/releases' %}active{% endif %}">
+          <a class="nav-link" href="/releases">Releases</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/raoulvdberge/refinedstorage/issues">Issues</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/">Guides</a>
+        </li>
+      </ul>
+
+      <form class="float-xs-right">
+        <input type="text" class="form-control" placeholder="Search...">
+      </form>
+    </div>
+
+  </nav>
+  <div class="container">
+    {% block content %}
+    {% endblock %}
+    <hr>
+    <footer>
+      <p>&copy; Refined Storage authors</p>
+    </footer>
+  </div>
+</body>
+</html>

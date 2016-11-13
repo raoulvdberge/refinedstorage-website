@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ release.version }}{% endblock %}
+
+{% block content %}
+<h1 class="float-lg-left">Releases</h1>
+
+<div class="float-lg-right"><a href="{{ release.url }}/download" class="btn btn-secondary"><span class="fa fa-download"></span> Download</a></div>
+
+<div class="clearfix"></div>
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="/releases">Releases</a></li>
+  <li class="breadcrumb-item active">{{ release.version }}</li>
+</ol>
+
+<table class="table table-reflow">
+  <thead>
+    <tr>
+      <th>Version</th>
+      <th>Released by</th>
+      <th>Date released</th>
+      <th>Minecraft version</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ release.version }} <span class="tag tag-warning">Beta</span></td>
+      <td>raoulvdberge</td>
+      <td>{{ release.date|date("m/d/Y") }}</td>
+      <td>{{ release.mc_version }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<samp>{{ release.changelog }}</samp>
+{% endblock %}
