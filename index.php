@@ -318,11 +318,15 @@ function findAndParseWiki($url, $revisionHash = null) {
     $parser = new Parsedown();
 
     $revision['body'] = $parser->text($revision['body']);
-    $revision['body'] = preg_replace_callback("/\\[\\[.+?\\]\\]/", function ($match) {
-        $name = substr($match[0], 2, -2);
-        $reference = getWikiByName($name);
+    $revision['body'] = preg_replace_callback("/\\[\\[(.+?)\=(.+?)\\]\\]/", function ($match) {
+        $reference = getWikiByName($match[2]);
 
-        return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . ($reference == null ? 'style="color: #c00"' : '') . '">' . $name . '</a>';
+        return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . ($reference == null ? 'style="color: #c00"' : '') . '">' . $match[1] . '</a>';
+    }, $revision['body']);
+    $revision['body'] = preg_replace_callback("/\\[\\[(.+?)\\]\\]/", function ($match) {
+        $reference = getWikiByName($match[1]);
+
+        return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . ($reference == null ? 'style="color: #c00"' : '') . '">' . $match[1] . '</a>';
     }, $revision['body']);
     $revision['body'] = str_replace('<table>', '<table class="table">', $revision['body']);
 
