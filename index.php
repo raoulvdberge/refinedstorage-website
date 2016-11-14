@@ -336,7 +336,7 @@ function findAndParseWiki($url, $revisionHash = null) {
 }
 
 $app->get('/wiki', function(Request $request, Response $response) {
-    return $this->view->render($response, 'wiki.html', ['wiki' => findAndParseWiki('home'), 'sidebar' => findAndParseWiki('sidebar'), 'old' => false]);
+    return $this->view->render($response, 'wiki.html', ['wiki' => findAndParseWiki('_home'), 'sidebar' => findAndParseWiki('_sidebar'), 'old' => false]);
 });
 
 $app->get('/wiki/create', function(Request $request, Response $response, $args) {
@@ -487,7 +487,7 @@ $app->get('/wiki/{url}[/{revision}]', function(Request $request, Response $respo
         return $response->withStatus(404);
     }
 
-    return $this->view->render($response, 'wiki.html', ['wiki' => $wiki, 'sidebar' => findAndParseWiki('sidebar'), 'old' => isset($args['revision'])]);
+    return $this->view->render($response, 'wiki.html', ['wiki' => $wiki, 'sidebar' => findAndParseWiki('_sidebar'), 'old' => isset($args['revision'])]);
 });
 
 $app->get('/login', function(Request $request, Response $response) {

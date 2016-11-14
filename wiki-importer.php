@@ -37,9 +37,9 @@ foreach($files as $file)
 		return "[[".$n[1]."]]";
 	}, $body);
 
-	if ($file=='_Sidebar.md')
+	if ($file=='Home.md')
 	{
-		$file='Sidebar.md';
+		$file='_home.md';
 	}
 	
 	$url=strtolower(str_replace('.md', '', $file));
