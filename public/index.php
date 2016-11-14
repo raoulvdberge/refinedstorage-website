@@ -11,7 +11,7 @@ date_default_timezone_set('Europe/Brussels');
 
 session_start();
 
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
@@ -148,7 +148,7 @@ $app = new \Slim\App;
 
 $container = $app->getContainer();
 $container['view'] = function ($container) use ($roles) {
-    $view = new \Slim\Views\Twig('templates');
+    $view = new \Slim\Views\Twig('../templates');
     
     $basePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
 
