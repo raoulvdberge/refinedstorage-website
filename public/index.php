@@ -206,8 +206,25 @@ $app->get('/releases', function (Request $request, Response $response) {
 });
 
 $app->get('/releases/create', function(Request $request, Response $response) {
-    return $this->view->render($response, 'releases_create.html');
+    return $this->view->render($response, 'releases_create.html', ['errors' => []]);
 })->add(new NeedsAuthentication($roles['contributor']));
+
+function validateRelease($version, $type, $mc_version, $url) {
+    $errors = [];
+    if (empty($version)) {
+        $errors[] = 'Missing version';
+    }
+    if ($type != 'alpha' && $type != 'beta' && $type != 'release') {
+        $errors[] = 'Invalid release type';
+    }
+    if (empty($mc_version)) {
+        $errors[] = 'Missing Minecraft version';
+    }
+    if (!filter_var($url, FILTER_VALIDATE_URL)) {
+        $errors[] = 'Invalid URL';
+    }
+    return $errors;
+}
 
 $app->post('/releases/create', function(Request $request, Response $response) {
     $version = $request->getParams()['version'];
@@ -216,18 +233,24 @@ $app->post('/releases/create', function(Request $request, Response $response) {
     $url = $request->getParams()['url'];
     $changelog = $request->getParams()['changelog'];
 
-    $release = new Release();
-    $release->version = $version;
-    $release->type = $type;
-    $release->mc_version = $mc_version;
-    $release->url = $url;
-    $release->changelog = $changelog;
-    $release->user_id = getUser()->id;
-    $release->date = time();
-    $release->status = 0;
-    $release->save();
+    $errors = validateRelease($version, $type, $mc_version, $url);
 
-    return $response->withHeader('Location', '/releases/' . $release->id);
+    if (count($errors) == 0) {
+        $release = new Release();
+        $release->version = $version;
+        $release->type = $type;
+        $release->mc_version = $mc_version;
+        $release->url = $url;
+        $release->changelog = $changelog;
+        $release->user_id = getUser()->id;
+        $release->date = time();
+        $release->status = 0;
+        $release->save();
+
+        return $response->withHeader('Location', '/releases/' . $release->id);
+    } else {
+        return $this->view->render($response, 'releases_create.html', ['errors' => $errors]);
+    }
 })->add(new NeedsAuthentication($roles['contributor']));
 
 $app->get('/releases/{id}/edit', function (Request $request, Response $response, $args) {
@@ -237,7 +260,7 @@ $app->get('/releases/{id}/edit', function (Request $request, Response $response,
         return $response->withStatus(404);
     }
 
-    return $this->view->render($response, 'releases_edit.html', ['release' => $release]);
+    return $this->view->render($response, 'releases_edit.html', ['release' => $release, 'errors' => []]);
 })->add(new NeedsAuthentication($roles['contributor']));
 
 $app->post('/releases/{id}/edit', function (Request $request, Response $response, $args) {
@@ -253,17 +276,23 @@ $app->post('/releases/{id}/edit', function (Request $request, Response $response
     $url = $request->getParams()['url'];
     $changelog = $request->getParams()['changelog'];
 
-    $release->version = $version;
-    $release->type = $type;
-    $release->mc_version = $mc_version;
-    $release->url = $url;
-    $release->changelog = $changelog;
-    $release->user_id = getUser()->id;
-    $release->date = time();
-    $release->status = 0;
-    $release->save();
+    $errors = validateRelease($version, $type, $mc_version, $url);
 
-    return $response->withHeader('Location', '/releases/' . $release->id);
+    if (count($errors) == 0) {
+        $release->version = $version;
+        $release->type = $type;
+        $release->mc_version = $mc_version;
+        $release->url = $url;
+        $release->changelog = $changelog;
+        $release->user_id = getUser()->id;
+        $release->date = time();
+        $release->status = 0;
+        $release->save();
+
+        return $response->withHeader('Location', '/releases/' . $release->id);
+    } else {
+        return $this->view->render($response, 'releases_edit.html', ['release' => $release, 'errors' => $errors]);
+    }
 })->add(new NeedsAuthentication($roles['contributor']));
 
 $app->get('/releases/{id}', function (Request $request, Response $response, $args) {
