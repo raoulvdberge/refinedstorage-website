@@ -369,7 +369,7 @@ $app->get('/wiki', function(Request $request, Response $response) {
 });
 
 $app->get('/wiki/create', function(Request $request, Response $response, $args) {
-    return $this->view->render($response, 'wiki_create.html');
+    return $this->view->render($response, 'wiki_create.html', ['errors' => []]);
 })->add(new NeedsAuthentication($roles['editor']));
 
 $app->get('/wiki/pages', function(Request $request, Response $response, $args) {
@@ -381,29 +381,58 @@ $app->get('/wiki/pages', function(Request $request, Response $response, $args) {
 })->add(new NeedsAuthentication($roles['editor']));
 
 $app->post('/wiki/create', function(Request $request, Response $response, $args) {
-    $wiki = new Wiki();
-    $wiki->url = $request->getParams()['url'];
-    $wiki->name = $request->getParams()['name'];
-    $wiki->status = 0;
-    $wiki->save();
+    $url = $request->getParams()['url'];
+    $name = $request->getParams()['name'];
+    $body = $request->getParams()['body'];
 
-    $rev = new WikiRevision();
-    $rev->wiki_id = $wiki->id;
-    $rev->body = $request->getParams()['body'];
-    $rev->user_id = getUser()->id;
-    $rev->reverted_by = 0;
-    $rev->reverted_from = 0;
-    $rev->date = time();
-    $rev->hash = md5(microtime());
+    $errors = validateWiki(null, $url, null, $name);
 
-    $rev->save();
+    if (count($errors) == 0) {
+        $wiki = new Wiki();
+        $wiki->url = $url;
+        $wiki->name = $name;
+        $wiki->status = 0;
+        $wiki->save();
 
-    if (isset($request->getParams()['submit_back'])) {
-        return $response->withHeader('Location', '/wiki/' . $wiki->url);
+        $rev = new WikiRevision();
+        $rev->wiki_id = $wiki->id;
+        $rev->body = $body;
+        $rev->user_id = getUser()->id;
+        $rev->reverted_by = 0;
+        $rev->reverted_from = 0;
+        $rev->date = time();
+        $rev->hash = md5(microtime());
+
+        $rev->save();
+
+        if (isset($request->getParams()['submit_back'])) {
+            return $response->withHeader('Location', '/wiki/' . $wiki->url);
+        } else {
+            return $response->withHeader('Location', '/wiki/' . $wiki->url . '/edit');
+        }
     } else {
-        return $response->withHeader('Location', '/wiki/' . $wiki->url . '/edit');
+        return $this->view->render($response, 'wiki_create.html', ['errors' => $errors]);
     }
 })->add(new NeedsAuthentication($roles['editor']));
+
+function validateWiki($currentUrl, $url, $currentName, $name) {
+    $errors = [];
+    if (empty($url)) {
+        $errors[] = 'Missing URL';
+    } else if ($currentUrl != $url) {
+        if (getWikiByUrl($url) != null) {
+            $errors[] = 'URL conflict';
+        }
+    }
+    if (empty($name)) {
+        $errors[] = 'Missing name';
+    } else if ($currentName != $name) {
+        if (getWikiByName($name) != null) {
+            $errors[] = 'Name conflict';
+        }
+    }
+    return $errors;
+}
 
 $app->get('/wiki/{url}/delete', function(Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
@@ -440,7 +469,7 @@ $app->get('/wiki/{url}/edit', function(Request $request, Response $response, $ar
 
     $wiki['revision'] = $wiki->revisions()->orderBy('date', 'desc')->first();
 
-    return $this->view->render($response, 'wiki_edit.html', ['wiki' => $wiki]);
+    return $this->view->render($response, 'wiki_edit.html', ['wiki' => $wiki, 'errors' => [], 'body' => $wiki->body]);
 })->add(new NeedsAuthentication($roles['editor']));
 
 $app->post('/wiki/{url}/edit', function(Request $request, Response $response, $args) {
@@ -450,25 +479,35 @@ $app->post('/wiki/{url}/edit', function(Request $request, Response $response, $a
         return $response->withStatus(404);
     }
 
-    $wiki->name = $request->getParams()['name'];
-    $wiki->url = $request->getParams()['url'];
-    $wiki->save();
+    $url = $request->getParams()['url'];
+    $name = $request->getParams()['name'];
+    $body = $request->getParams()['body'];
 
-    $rev = new WikiRevision();
-    $rev->wiki_id = $wiki->id;
-    $rev->body = $request->getParams()['body'];
-    $rev->user_id = getUser()->id;
-    $rev->reverted_by = 0;
-    $rev->reverted_from = 0;
-    $rev->date = time();
-    $rev->hash = md5(microtime());
+    $errors = validateWiki($wiki->url, $url, $wiki->name, $name);
 
-    $rev->save();
+    if (count($errors) == 0) {
+        $wiki->name = $request->getParams()['name'];
+        $wiki->url = $request->getParams()['url'];
+        $wiki->save();
 
-    if (isset($request->getParams()['submit_back'])) {
-        return $response->withHeader('Location', '/wiki/' . $wiki->url);
+        $rev = new WikiRevision();
+        $rev->wiki_id = $wiki->id;
+        $rev->body = $request->getParams()['body'];
+        $rev->user_id = getUser()->id;
+        $rev->reverted_by = 0;
+        $rev->reverted_from = 0;
+        $rev->date = time();
+        $rev->hash = md5(microtime());
+
+        $rev->save();
+
+        if (isset($request->getParams()['submit_back'])) {
+            return $response->withHeader('Location', '/wiki/' . $wiki->url);
+        } else {
+            return $response->withHeader('Location', '/wiki/' . $wiki->url . '/edit');
+        }
     } else {
-        return $response->withHeader('Location', '/wiki/' . $wiki->url . '/edit');
+        return $this->view->render($response, 'wiki_edit.html', ['wiki' => $wiki, 'errors' => $errors, 'body' => $body]);
     }
 })->add(new NeedsAuthentication($roles['editor']));
 
