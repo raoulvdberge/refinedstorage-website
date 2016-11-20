@@ -347,15 +347,16 @@ function findAndParseWiki($url, $revisionHash = null) {
     $parser = new Parsedown();
 
     $revision['body'] = $parser->text($revision['body']);
-    $revision['body'] = preg_replace_callback("/\\[\\[(.+?)\=(.+?)\\]\\]/", function ($match) {
-        $reference = getWikiByName($match[2]);
+    $revision['body'] = preg_replace_callback("/\\[\\[(.+?)(\\=(.+?))?\\]\\]/", function ($matches) {
+        if (count($matches) == 4) {
+            $reference = getWikiByName($matches[3]);
 
-        return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . ($reference == null ? 'style="color: #c00"' : '') . '">' . $match[1] . '</a>';
-    }, $revision['body']);
-    $revision['body'] = preg_replace_callback("/\\[\\[(.+?)\\]\\]/", function ($match) {
-        $reference = getWikiByName($match[1]);
+            return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . ($reference == null ? 'style="color: #c00"' : '') . '">' . $matches[1] . '</a>';
+        } else if (count($matches) == 2) {
+            $reference = getWikiByName($matches[1]);
 
-        return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . ($reference == null ? 'style="color: #c00"' : '') . '">' . $match[1] . '</a>';
+            return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . ($reference == null ? 'style="color: #c00"' : '') . '">' . $matches[1] . '</a>';
+        }
     }, $revision['body']);
     $revision['body'] = str_replace('<table>', '<table class="table">', $revision['body']);
 
