@@ -490,13 +490,13 @@ $app->post('/wiki/{url}/edit', function(Request $request, Response $response, $a
     $errors = validateWiki($wiki->url, $url, $wiki->name, $name);
 
     if (count($errors) == 0) {
-        $wiki->name = $request->getParams()['name'];
-        $wiki->url = $request->getParams()['url'];
+        $wiki->name = $name;
+        $wiki->url = $url;
         $wiki->save();
 
         $rev = new WikiRevision();
         $rev->wiki_id = $wiki->id;
-        $rev->body = $request->getParams()['body'];
+        $rev->body = $body;
         $rev->user_id = getUser()->id;
         $rev->reverted_by = 0;
         $rev->reverted_from = 0;
