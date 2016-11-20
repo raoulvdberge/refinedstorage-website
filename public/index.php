@@ -424,6 +424,9 @@ function validateWiki($currentUrl, $url, $currentName, $name) {
             $errors[] = 'URL conflict';
         }
     }
+    if (!empty($url) && !ctype_alnum(str_replace(['-', '_'], '', $url))) { 
+        $errors[] = 'Invalid URL, allowed: alphabetical letters, numbers, - and _.';
+    }
     if (empty($name)) {
         $errors[] = 'Missing name';
     } else if ($currentName != $name) {
