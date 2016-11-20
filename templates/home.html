@@ -9,13 +9,11 @@
       <button type="button" class="btn btn-primary btn-sm" data-toggle="offcanvas">Toggle nav</button>
     </p>
 
-    <h1>Refined Storage is a mass storage mod for Minecraft 1.10.2.</h1>
+    {{ landing.revision.body|raw }}
 
-    <p>Refined Storage gives players access to all their items and fluids at once. These are stored safely in one of the many storage capabilities that the mod offers.</p>
-
-    <p>The mod is not only used to get access to items in one handy interface, but it is also used to manipulate items and blocks in the world and from the system with importers, exporters, constructors, destructors, and more!</p>
-
-    <p>Refined Storage takes the storage aspect of the mod one step further by allowing the player to set up autocrafting.</p>
+    {% if can('editor') %}
+      <a href="/wiki/{{ landing.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a>
+    {% endif %}
   </div>
   <div class="col-sm-3 sidebar-offcanvas" id="sidebar">
     <div class="card">

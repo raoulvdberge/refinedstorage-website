@@ -198,7 +198,7 @@ $container['notFoundHandler'] = function ($c) {
 };
 
 $app->get('/', function (Request $request, Response $response) {
-    return $this->view->render($response, 'home.html', ['latest' => getLatestStableRelease()]);
+    return $this->view->render($response, 'home.html', ['latest' => getLatestStableRelease(), 'landing' => findAndParseWiki('_landing')]);
 });
 
 $app->get('/releases', function (Request $request, Response $response) {
