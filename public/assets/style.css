@@ -31,3 +31,7 @@ ul {
 	height: 30px;
 	margin-top: 3px;
 }
+
+.alert ul {
+	margin-bottom: 0px;
+}
