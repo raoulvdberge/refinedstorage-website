@@ -8,7 +8,7 @@ $capsule = new Capsule;
 
 $capsule->addConnection([
     'driver'    => 'sqlite',
-    'database'  => __DIR__.'/../refinedstorage.sqlite',
+    'database'  => __DIR__.'/refinedstorage.sqlite',
     'prefix' => ''
 ]);
 
@@ -36,6 +36,9 @@ foreach($files as $file)
 		$n=explode('[', $n[0]);
 		return "[[".$n[1]."]]";
 	}, $body);
+
+	$body=substr($body, stripos($body, "\n")); // skip the first newline as it contains the title
+	$body=substr($body, 1); // skip the second newline as it contains another newline
 
 	if ($file=='Home.md')
 	{
