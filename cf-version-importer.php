@@ -21,6 +21,8 @@ class Release extends Illuminate\Database\Eloquent\Model {
 
 $pages=4;
 
+$cfdata=[];
+
 for($i=1;$i<=$pages;++$i)
 {
 
@@ -81,15 +83,20 @@ for($i=1;$i<=$pages;++$i)
 		print_r($d);
 		echo '</pre>';
 
-		$r = new Release;
-		$r->version=$version;
-		$r->changelog=$cl;
-		$r->url=$url;
-		$r->date=$date;
-		$r->mc_version=$mc_version;
-		$r->user_id=1;
-		$r->status=0;
-		$r->type=$type;
-		$r->save();
+		$cfdata[] = $d;
 	}
+}
+
+foreach (array_reverse($cfdata) as $d)
+{
+	$r = new Release;
+	$r->version=$d['version'];
+	$r->changelog=$d['changelog'];
+	$r->url=$d['url'];
+	$r->date=$d['date'];
+	$r->mc_version=$d['mc_version'];
+	$r->user_id=1;
+	$r->status=0;
+	$r->type=$d['type'];
+	$r->save();
 }
