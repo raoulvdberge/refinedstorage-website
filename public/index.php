@@ -61,6 +61,18 @@ class NeedsAuthentication
     }
 }
 
+class Maintenance
+{
+    public function __invoke($request, $response, $next)
+    {
+        if (getenv('RS_MAINTENANCE') == 'true' && $_SERVER['REQUEST_URI'] != '/maintenance') {
+            return $response->withStatus(503)->withHeader('Location', '/maintenance');
+        }
+
+        return $next($request, $response);
+    }
+}
+
 class Release extends Illuminate\Database\Eloquent\Model {
     public $timestamps = false;
 
@@ -145,6 +157,8 @@ class WikiRevision extends Illuminate\Database\Eloquent\Model {
 }
 
 $app = new \Slim\App;
+
+$app->add(new Maintenance());
 
 $container = $app->getContainer();
 $container['view'] = function ($container) use ($roles) {
@@ -626,6 +640,10 @@ $app->post('/search', function(Request $request, Response $response) {
 
 $app->get('/503', function(Request $request, Response $response) {
     return $this->view->render($response->withStatus(503), '503.html');
+});
+
+$app->get('/maintenance', function(Request $request, Response $response) {
+    return $this->view->render($response->withStatus(503), 'maintenance.html');
 });
 
 $app->run();
