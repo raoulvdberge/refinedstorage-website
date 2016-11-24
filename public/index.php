@@ -567,10 +567,10 @@ $app->get('/login', function(Request $request, Response $response) {
 });
 
 $app->post('/login', function(Request $request, Response $response) {
-    $username = $request->getParams()['username'];
+    $email = $request->getParams()['email'];
     $password = $request->getParams()['password'];
 
-    $user = User::where(['username' => $username])->first();
+    $user = User::where(['email' => $email])->first();
 
     if ($user != null && password_verify($password, $user->password)) {
         $_SESSION['user'] = $user['id'];
