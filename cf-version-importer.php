@@ -75,7 +75,7 @@ for($i=1;$i<=$pages;++$i)
 			'url'=>$url,
 			'version'=>$version,
 			'date'=>$date,
-			'mc_version'=>$version,
+			'mc_version'=>$mc_version,
 			'changelog'=>$cl
 		];
 
