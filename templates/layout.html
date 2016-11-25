@@ -33,15 +33,9 @@
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/raoulvdberge/refinedstorage/issues">Issues</a>
         </li>
-        {% if user == null %}
-        <li class="nav-item {% if uri() == '/login' %}active{% endif %}">
-          <a class="nav-link" href="/login">Login</a>
-        </li>
-        {% else %}
         <li class="nav-item">
-          <a class="nav-link" href="/logout">Logout</a>
+          <a class="nav-link" href="https://minecraft.curseforge.com/projects/refined-storage">CurseForge</a>
         </li>
-        {% endif %}
       </ul>
 
       <form class="float-xs-right" method="post" action="/search">
@@ -56,6 +50,13 @@
     <hr>
     <footer>
       <center>
+        <p>
+          {% if user == null %}
+            <a href="/login">Log in</a>
+          {% else %}
+            <a href="/logout">Log out</a>
+          {% endif %}
+        </p>
         <p>&copy; Refined Storage authors</p>
       </center>
     </footer>

@@ -5,7 +5,9 @@
 {% block content %}
 <h1 class="float-lg-left">{{ release.version }}</h1>
 
-<div class="float-lg-right"><a href="{{ release.url }}/download" class="btn btn-secondary"><span class="fa fa-download"></span> Download</a></div>
+<div class="float-lg-right"><a href="{{ release.url }}" class="btn btn-secondary"><span class="fa fa-external-link"></span> View on CurseForge</a></div>
+
+<div class="float-lg-right" style="margin-right: 10px"><a href="{{ release.url }}/download" class="btn btn-secondary"><span class="fa fa-download"></span> Download</a></div>
 
 {% if can('contributor') %}
   {% if release.status == 0 %}
