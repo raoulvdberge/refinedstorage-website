@@ -18,4 +18,50 @@
     </tr>
   </tbody>
 </table>
+
+<h2>Release activity</h2>
+{% if releaseActivity|length == 0 %}
+  <p>This user has no release activity yet.</p>
+{% else %}
+  <table class="table">
+    <thead class="thead-default">
+      <tr>
+        <th width="40%">Version</th>
+        <th width="30%">Date released</th>
+        <th width="30%">Minecraft version</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for release in releaseActivity %}
+      <tr {% if release.status == 1 %}class="table-danger"{% endif %}>
+        <td><a href="/releases/{{ release.id }}">Refined Storage {{ release.version }}</a> {{ getReleaseBadge(release.type)|raw }}</td>
+        <td>{{ release.date|date("m/d/Y") }}</td>
+        <td>{{ release.mc_version }}</td>
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+{% endif %}
+
+<h2>Wiki activity</h2>
+{% if wikiActivity|length == 0 %}
+  <p>This user has no wiki activity yet.</p>
+{% else %}
+  <table class="table">
+    <thead class="thead-default">
+      <tr>
+        <th width="40%">Wiki</th>
+        <th width="60%">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for revision in wikiActivity %}
+      <tr>
+        <td><a href="/wiki/{{ revision.wiki.url }}/{{ revision.hash }}">{{ revision.wiki.name }}</a></td>
+        <td>{{ revision.date|date("m/d/Y H:i:s") }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
 {% endblock %}

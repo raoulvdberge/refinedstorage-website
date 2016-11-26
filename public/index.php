@@ -28,16 +28,6 @@ $capsule->addConnection([
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
-class User extends Illuminate\Database\Eloquent\Model {
-}
-
-function getUser() {
-    if (isset($_SESSION['user'])) {
-        return User::find($_SESSION['user']);
-    }
-    return null;
-}
-
 class NeedsAuthentication
 {
     private $accessLevel;
@@ -73,7 +63,28 @@ class Maintenance
     }
 }
 
-class Release extends Illuminate\Database\Eloquent\Model {
+class User extends Illuminate\Database\Eloquent\Model
+{
+    public function wikiRevisions()
+    {
+        return $this->hasMany('WikiRevision');
+    }
+
+    public function releases()
+    {
+        return $this->hasMany('Release');
+    }
+}
+
+function getUser() {
+    if (isset($_SESSION['user'])) {
+        return User::find($_SESSION['user']);
+    }
+    return null;
+}
+
+class Release extends Illuminate\Database\Eloquent\Model
+{
     public $timestamps = false;
 
     public function user() {
@@ -105,7 +116,8 @@ function getRelease($id) {
     return $releases->first();
 }
 
-class Wiki extends Illuminate\Database\Eloquent\Model {
+class Wiki extends Illuminate\Database\Eloquent\Model
+{
     protected $table = 'wiki';
     public $timestamps = false;
 
@@ -140,11 +152,16 @@ function getWikiRevision($wiki, $revisionHash) {
     return $revision;
 }
 
-class WikiRevision extends Illuminate\Database\Eloquent\Model {
+class WikiRevision extends Illuminate\Database\Eloquent\Model
+{
     public $timestamps = false;
 
     public function user() {
         return $this->belongsTo('User');
+    }
+
+    public function wiki() {
+        return $this->belongsTo('Wiki');
     }
 
     public function revertedBy() {
@@ -608,7 +625,10 @@ $app->get('/profile/{username}', function(Request $request, Response $response, 
         return $response->withStatus(404);
     }
 
-    return $this->view->render($response, 'profile.html', ['profile' => $user]);
+    $wikiActivity = $user->wikiRevisions()->orderBy('date', 'desc')->limit(10)->get();
+    $releaseActivity = $user->releases()->orderBy('date', 'desc')->limit(10)->get();
+
+    return $this->view->render($response, 'profile.html', ['profile' => $user, 'wikiActivity' => $wikiActivity, 'releaseActivity' => $releaseActivity]);
 });
 
 $app->get('/search', function(Request $request, Response $response) {
