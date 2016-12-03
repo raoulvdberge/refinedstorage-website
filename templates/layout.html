@@ -54,7 +54,7 @@
           {% if user == null %}
             <a href="/login">Log in</a>
           {% else %}
-            <a href="/logout">Log out</a>
+            <a href="/logout">Log out ({{ user.username }})</a>
           {% endif %}
         </p>
         <p>&copy; Refined Storage authors</p>

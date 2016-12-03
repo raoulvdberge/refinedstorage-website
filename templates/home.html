@@ -5,10 +5,6 @@
 {% block content %}
 <div class="row row-offcanvas row-offcanvas-right">
   <div class="col-sm-9">
-    <p class="float-xs-right hidden-sm-up">
-      <button type="button" class="btn btn-primary btn-sm" data-toggle="offcanvas">Toggle nav</button>
-    </p>
-
     {{ landing.revision.body|raw }}
 
     {% if can('editor') %}
@@ -23,11 +19,16 @@
       <div class="card-block text-xs-center">
         <h5 class="card-title">Refined Storage {{ latest.version }}</h5>
         <p class="card-text">For Minecraft {{ latest.mc_version }}.</p>
-        <a href="/releases/{{ latest.id }}" class="btn btn-primary">Download &raquo;</a>
+        <a href="/releases/{{ latest.id }}" class="btn btn-primary">Download</a>
 
         <div class="clearfix" style="margin-bottom: 15px"></div>
 
         <small class="card-text">Requires <a href="https://minecraft.curseforge.com/projects/mcmultipart">MCMultiPart</a>.</small>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-block">
+        <a class="twitter-timeline" data-theme="light" data-chrome="noheader noborders nofooter" data-tweet-limit="5" href="https://twitter.com/vdbergeraoul">Tweets by vdbergeraoul</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
       </div>
     </div>
   </div>
