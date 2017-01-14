@@ -1,5 +1,10 @@
 {% extends "layout.html" %}
 
+{% block js %}
+  {{ parent() }}
+  <script src="/assets/simplemde.min.js"></script>
+{% endblock %}
+
 {% block title %}Create{% endblock %}
 
 {% block content %}

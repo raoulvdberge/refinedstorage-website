@@ -5,10 +5,12 @@
 {% block content %}
 <div class="row row-offcanvas row-offcanvas-right">
   <div class="col-sm-9">
-    {{ landing.revision.body|raw }}
+    <h1>{{ home.name }}</h1>
+    
+    {{ home.revision.body|raw }}
 
     {% if can('editor') %}
-      <p><a href="/wiki/{{ landing.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a></p>
+      <p><a href="/wiki/{{ home.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a></p>
     {% endif %}
 
     <h2>Blocks</h2>
