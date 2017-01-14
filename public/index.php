@@ -214,9 +214,28 @@ $container['view'] = function ($container) use ($roles) {
 
     $view->getEnvironment()->addFunction(new Twig_SimpleFunction('getReleaseBadge', function ($type) {
         if ($type == 'beta' || $type == 'alpha') {
-            return '<span class="tag ' . ($type == 'alpha' ? 'tag-warning' : 'tag-info') . '">' . ucfirst($type) . '</span>';
+            return '<span class="badge ' . ($type == 'alpha' ? 'badge-warning' : 'badge-info') . '">' . ucfirst($type) . '</span>';
         }
         return '';
+    }));
+
+    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('icons', function($icons) {
+        $wikiPages = explode(',', $icons);
+        $data = '';
+
+        foreach ($wikiPages as $wikiPage) {
+            $wiki = getWikiByName($wikiPage);
+
+            if ($wiki != null && $wiki->icon != null) {
+                $data .= '<a href="/wiki/' . $wiki->url . '"><img src="' . $wiki->icon . '" class="wiki-icon-list" data-toggle="tooltip" data-placement="top" title="' . $wiki->name . '"></a>';
+            }
+        }
+
+        return $data;
+    }));
+
+    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('wikiLink', function($name) {
+        return wikiLink([$name, $name], true);
     }));
 
     return $view;
@@ -362,7 +381,7 @@ $app->get('/releases/{id}/restore', function(Request $request, Response $respons
     return $response->withHeader('Location', '/releases/' . $release->id);
 })->add(new NeedsAuthentication($roles['contributor']));
 
-function findAndParseWiki($url, $revisionHash = null) {
+function findAndParseWiki($url, $revisionHash = null, $parent = null) {
     $wiki = getWikiByUrl($url);
 
     if ($wiki == null) {
@@ -378,18 +397,61 @@ function findAndParseWiki($url, $revisionHash = null) {
     $parser = new Parsedown();
 
     $revision['body'] = $parser->text($revision['body']);
+    $revision['body'] = preg_replace_callback('/\\[\\[\\#(.+?)\\]\\]/', function ($matches) use ($wiki, $parent) {
+        $var = $matches[1];
+
+        switch ($var) {
+            case 'name':
+                return $parent != null ? $parent['name'] : $wiki['name'];
+            default:
+                return 'Unknown variable';
+        }
+    }, $revision['body']);
+    $revision['body'] = preg_replace_callback('/\\[\\[\\@(.+?)\\]\\]/', function ($matches) use ($wiki) {
+        $otherWiki = getWikiByName($matches[1]);
+
+        if ($otherWiki != null) {
+            if ($otherWiki->url == $wiki->url) {
+                return 'Circular wiki include';
+            }
+            return findAndParseWiki($otherWiki->url, null, $wiki)['revision']['body'];
+        } else {
+            return 'Unknown wiki reference';
+        }
+        return '';
+    }, $revision['body']);
     $revision['body'] = preg_replace_callback("/\\[\\[(.+?)(\\=(.+?))?\\]\\]/", function ($matches) {
+        $tags = function($reference) {
+            $additionalTags = [];
+
+            if ($reference == null) {
+                $additionalTags[] = 'style="color: #c00"';
+            } else if ($reference->icon != null) {
+                $additionalTags[] = 'data-toggle="tooltip"';
+                $additionalTags[] = 'data-placement="right"';
+                $additionalTags[] = 'data-html="true"';
+                $additionalTags[] = 'title="<img src=\'' . $reference->icon . '\' class=\'wiki-icon-tooltip\'>"';
+            }
+
+            return implode(' ', $additionalTags);
+        };
+
         if (count($matches) == 4) {
             $reference = getWikiByName($matches[3]);
 
-            return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . ($reference == null ? 'style="color: #c00"' : '') . '">' . $matches[1] . '</a>';
+            return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '">' . $matches[1] . '</a>';
         } else if (count($matches) == 2) {
             $reference = getWikiByName($matches[1]);
 
-            return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . ($reference == null ? 'style="color: #c00"' : '') . '">' . $matches[1] . '</a>';
+            return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '">' . $matches[1] . '</a>';
         }
     }, $revision['body']);
     $revision['body'] = str_replace('<table>', '<table class="table">', $revision['body']);
+
+    // omit <p> tags
+    if ($parent != null) {
+        $revision['body'] = substr($revision['body'], 3, -4);
+    }
 
     $wiki['revision'] = $revision;
 
@@ -401,7 +463,15 @@ $app->get('/wiki', function(Request $request, Response $response) {
 });
 
 $app->get('/wiki/create', function(Request $request, Response $response, $args) {
-    return $this->view->render($response, 'wiki_create.html', ['errors' => []]);
+    $copy = isset($request->getParams()['copy']) ? $request->getParams()['copy'] : null;
+    $copyRevision = null;
+
+    if ($copy != null) {
+        $copy = getWikiByUrl($copy);
+        $copyRevision = getWikiRevision($copy, null);
+    }
+
+    return $this->view->render($response, 'wiki_create.html', ['errors' => [], 'copy' => $copy, 'copyRevision' => $copyRevision]);
 })->add(new NeedsAuthentication($roles['editor']));
 
 $app->get('/wiki/pages', function(Request $request, Response $response, $args) {
@@ -416,6 +486,7 @@ $app->post('/wiki/create', function(Request $request, Response $response, $args)
     $url = $request->getParams()['url'];
     $name = $request->getParams()['name'];
     $body = $request->getParams()['body'];
+    $icon = $request->getParams()['icon'];
 
     $errors = validateWiki(null, $url, null, $name);
 
@@ -424,6 +495,7 @@ $app->post('/wiki/create', function(Request $request, Response $response, $args)
         $wiki->url = $url;
         $wiki->name = $name;
         $wiki->status = 0;
+        $wiki->icon = $icon;
         $wiki->save();
 
         $rev = new WikiRevision();
@@ -517,12 +589,14 @@ $app->post('/wiki/{url}/edit', function(Request $request, Response $response, $a
     $url = $request->getParams()['url'];
     $name = $request->getParams()['name'];
     $body = $request->getParams()['body'];
+    $icon = $request->getParams()['icon'];
 
     $errors = validateWiki($wiki->url, $url, $wiki->name, $name);
 
     if (count($errors) == 0) {
-        $wiki->name = $request->getParams()['name'];
-        $wiki->url = $request->getParams()['url'];
+        $wiki->name = $name;
+        $wiki->url = $url;
+        $wiki->icon = $icon;
         $wiki->save();
 
         $rev = new WikiRevision();

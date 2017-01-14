@@ -8,15 +8,22 @@
     {{ landing.revision.body|raw }}
 
     {% if can('editor') %}
-      <a href="/wiki/{{ landing.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a>
+      <p><a href="/wiki/{{ landing.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a></p>
     {% endif %}
+
+    <h2>Blocks</h2>
+    <div class="card">
+      <div class="card-block">
+        {{ icons('Controller,Grid')|raw }}
+      </div>
+    </div>
   </div>
   <div class="col-sm-3 sidebar-offcanvas" id="sidebar">
     <div class="card">
       <div class="card-header">
         Latest stable version
       </div>
-      <div class="card-block text-xs-center">
+      <div class="card-block mx-auto">
         <h5 class="card-title">Refined Storage {{ latest.version }}</h5>
         <p class="card-text">For Minecraft {{ latest.mc_version }}.</p>
         <a href="/releases/{{ latest.id }}" class="btn btn-primary">Download</a>
@@ -24,11 +31,6 @@
         <div class="clearfix" style="margin-bottom: 15px"></div>
 
         <small class="card-text">Requires <a href="https://minecraft.curseforge.com/projects/mcmultipart">MCMultiPart</a>.</small>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-block">
-        <a class="twitter-timeline" data-theme="light" data-chrome="noheader noborders nofooter" data-tweet-limit="5" href="https://twitter.com/vdbergeraoul">Tweets by vdbergeraoul</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
       </div>
     </div>
   </div>

@@ -30,22 +30,22 @@
 {% endif %}
 
 <table class="table table-reflow">
-  <thead>
-    <tr>
-      <th>Version</th>
-      <th>Released by</th>
-      <th>Date released</th>
-      <th>Minecraft version</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>{{ release.version }} {{ getReleaseBadge(release.type)|raw }}</span></td>
-      <td><a href="/profile/{{ release.user.username }}">{{ release.user.username }}</a></td>
-      <td>{{ release.date|date("m/d/Y") }}</td>
-      <td>{{ release.mc_version }}</td>
-    </tr>
-  </tbody>
+  <tr>
+    <th scope="row" width="20%">Version</th>
+    <td>{{ release.version }} {{ getReleaseBadge(release.type)|raw }}</span></td>
+  </tr>
+  <tr>
+    <th scope="row" class="thead-default">Released by</th>
+    <td><a href="/profile/{{ release.user.username }}">{{ release.user.username }}</a></td>
+  </tr>
+  <tr>
+    <th scope="row" class="thead-default">Date released</th>
+    <td>{{ release.date|date("m/d/Y") }}</td>
+  </tr>
+  <tr>
+    <th scope="row" class="thead-default">Minecraft version</th>
+    <td>{{ release.mc_version }}</td>
+  </tr>
 </table>
 
 <samp>{{ release.changelog|nl2br }}</samp>

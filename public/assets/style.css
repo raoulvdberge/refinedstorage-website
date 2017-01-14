@@ -19,7 +19,7 @@ h3 {
 	font-size: 18px;
 }
 
-ul {
+.container ul {
 	margin-left: -18px;
 }
 
@@ -34,4 +34,24 @@ ul {
 
 .alert ul {
 	margin-bottom: 0px;
+}
+
+img.wiki-icon {
+	width: 32px;
+	height: 32px;
+	margin-top: -5px;
+}
+
+img.wiki-icon-list {
+	width: 64px;
+	height: 64px;
+}
+
+img.wiki-icon-tooltip {
+	width: 32px;
+	height: 32px;
+}
+
+.wiki-button {
+	margin-right: 10px;
 }

@@ -34,17 +34,23 @@ $(document).ready(function() {
 <form method="post">
   <div class="form-group">
     <label for="name">Name</label>
-    <input type="text" name="name" id="name" class="form-control">
+    <input type="text" name="name" id="name" value="{{ copy.name }}" class="form-control">
   </div>
   <div class="form-group">
     <label for="url">URL</label>
-    <input type="text" name="url" id="url" class="form-control">
+    <input type="text" name="url" id="url" value="{{ copy.url }}" class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="icon">Icon</label>
+    <input type="text" name="icon" id="icon" value="{{ copy.icon }}" class="form-control">
   </div>
   <div class="form-group">
     <label for="body">Body</label>
-    <textarea class="form-control" rows="20" name="body" id="body"></textarea>
+    <textarea class="form-control" rows="20" name="body" id="body">{{ copyRevision.body }}</textarea>
     <small class="form-text text-muted">To reference other wiki pages, use [[page name here]].</small>
     <small class="form-text text-muted">To reference other wiki pages with another label for the link, use [[label=page name here]].</small>
+    <small class="form-text text-muted">To include other wiki pages, use [[@page name here]].</small>
+    <small class="form-text text-muted">To include the current wiki's name, use [[#name]].</small>
   </div>
   <input type="submit" class="btn btn-primary" name="submit" value="Create">
   <input type="submit" class="btn btn-secondary" name="submit_back" value="Create and view">

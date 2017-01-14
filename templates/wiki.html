@@ -3,21 +3,28 @@
 {% block title %}{{ wiki.name }}{% endblock %}
 
 {% block content %}
-<h1 class="float-lg-left">{{ wiki.name }}</h1>
+<h1 class="float-lg-left">
+  {% if wiki.icon != null %}
+    <img src="{{ wiki.icon }}" class="wiki-icon">
+  {% endif %}
+
+  {{ wiki.name }}
+</h1>
 
 <div class="float-lg-right"><a href="/wiki/{{ wiki.url }}/revisions" class="btn btn-secondary"><span class="fa fa-file-o"></span> Revisions</a></div>
 
 {% if can('editor') %}
-  <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/pages" class="btn btn-secondary"><span class="fa fa-list"></span> Pages</a></div>
-  <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/create" class="btn btn-secondary"><span class="fa fa-plus"></span> Create</a></div>
+  <div class="float-lg-right wiki-button"><a href="/wiki/pages" class="btn btn-secondary"><span class="fa fa-list"></span> Pages</a></div>
+  <div class="float-lg-right wiki-button"><a href="/wiki/create" class="btn btn-secondary"><span class="fa fa-plus"></span> Create</a></div>
+  <div class="float-lg-right wiki-button"><a href="/wiki/create?copy={{ wiki.url }}" class="btn btn-secondary"><span class="fa fa-files-o"></span> Copy</a></div>
   {% if wiki.status == 0 %}
-    <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Delete</a></div>
+    <div class="float-lg-right wiki-button"><a href="/wiki/{{ wiki.url }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Delete</a></div>
   {% elseif wiki.status == 1 %}
-    <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/restore" class="btn btn-secondary"><span class="fa fa-history"></span> Restore</a></div>
+    <div class="float-lg-right wiki-button"><a href="/wiki/{{ wiki.url }}/restore" class="btn btn-secondary"><span class="fa fa-history"></span> Restore</a></div>
   {% endif %}
-  <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a></div>
+  <div class="float-lg-right wiki-button"><a href="/wiki/{{ wiki.url }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a></div>
   {% if old %}
-  <div class="float-lg-right" style="margin-right: 10px"><a href="/wiki/{{ wiki.url }}/{{ wiki.revision.hash }}/revert" class="btn btn-secondary"><span class="fa fa-pencil"></span> Revert to this version</a></div>
+  <div class="float-lg-right wiki-button"><a href="/wiki/{{ wiki.url }}/{{ wiki.revision.hash }}/revert" class="btn btn-secondary"><span class="fa fa-pencil"></span> Revert to this version</a></div>
   {% endif %}
 {% endif %}
 
@@ -32,12 +39,12 @@
 <div class="alert alert-warning" role="alert">Watching revision <strong>{{ wiki.revision.hash }}</strong>.</div>
 {% endif %}
 
+{% if wiki.status == 1 %}
+<div class="alert alert-danger" role="alert">This wiki page is deleted.</div>
+{% endif %}
+
 <div class="row row-offcanvas row-offcanvas-right">
   <div class="col-sm-9">
-    <p class="float-xs-right hidden-sm-up">
-      <button type="button" class="btn btn-primary btn-sm" data-toggle="offcanvas">Toggle nav</button>
-    </p>
-
     {{ wiki.revision.body|raw }}
 
     <div class="card card-outline-secondary text-xs">
