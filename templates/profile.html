@@ -5,18 +5,18 @@
 {% block content %}
 <h1>{{ profile.username }}</h1>
 <table class="table table-reflow">
-  <thead>
-    <tr>
-      <th>Registration date</th>
-      <th>Role</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>{{ profile.date_created|date("m/d/Y H:i:s") }}</span></td>
-      <td>{{ role(profile.role) }}</td>
-    </tr>
-  </tbody>
+  <tr>
+    <th scope="row" width="20%">Version</th>
+    <td><span>{{ profile.date_created|date("m/d/Y H:i:s") }}</span></td>
+  </tr>
+  <tr>
+    <th scope="row">Registration date</th>
+    <td><span>{{ profile.date_created|date("m/d/Y H:i:s") }}</span></td>
+  </tr>
+  <tr>
+    <th scope="row">Role</th>
+    <td><span>{{ role(profile.role) }}</span></td>
+  </tr>
 </table>
 
 <h2>Release activity</h2>

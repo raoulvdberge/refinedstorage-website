@@ -231,7 +231,7 @@ $container['view'] = function ($container) use ($roles) {
             } else if ($wiki->icon != null) {
                 $data .= '<div class="card pull-left" style="margin: 5px">';
                 $data .= '<div class="card-block" style="padding: 5px">';
-                $data .= '<a href="/wiki/' . $wiki->url . '"><img src="' . $wiki->icon . '" class="wiki-icon-list" data-toggle="tooltip" data-placement="top" title="' . $wiki->name . '"></a>';
+                $data .= '<a href="/wiki/' . $wiki->url . '"><img src="' . getIcon($wiki->icon) . '" class="wiki-icon-list" data-toggle="tooltip" data-placement="top" title="' . $wiki->name . '"></a>';
                 $data .= '</div>';
                 $data .= '</div>';
             }
@@ -240,12 +240,21 @@ $container['view'] = function ($container) use ($roles) {
         return $data;
     }));
 
+    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('icon', function($name) {
+        return getIcon($name);
+    }));
+
     $view->getEnvironment()->addFunction(new Twig_SimpleFunction('wikiLink', function($name) {
         return wikiLink([$name, $name], true);
     }));
 
     return $view;
 };
+
+function getIcon($name) {
+    $name = str_replace('..', '', $name); // evil
+    return 'data:image/png;base64,' . base64_encode(file_get_contents(__DIR__ . $name));
+}
 
 $container['notFoundHandler'] = function ($c) {
     return function (Request $request, Response $response) use ($c) {
@@ -346,9 +355,6 @@ $app->post('/releases/{id}/edit', function (Request $request, Response $response
         $release->mc_version = $mc_version;
         $release->url = $url;
         $release->changelog = $changelog;
-        $release->user_id = getUser()->id;
-        $release->date = time();
-        $release->status = 0;
         $release->save();
 
         return $response->withHeader('Location', '/releases/' . $release->id);
@@ -442,7 +448,7 @@ function findAndParseWiki($url, $revisionHash = null, $parent = null) {
                 $additionalTags[] = 'data-toggle="tooltip"';
                 $additionalTags[] = 'data-placement="right"';
                 $additionalTags[] = 'data-html="true"';
-                $additionalTags[] = 'title="<img src=\'' . $reference->icon . '\' class=\'wiki-icon-tooltip\'>"';
+                $additionalTags[] = 'title="<img src=\'' . getIcon($reference->icon) . '\' class=\'wiki-icon-tooltip\'>"';
             }
 
             return implode(' ', $additionalTags);

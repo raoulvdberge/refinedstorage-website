@@ -5,7 +5,7 @@
 {% block content %}
 <h1 class="float-lg-left">
   {% if wiki.icon != null %}
-    <img src="{{ wiki.icon }}" class="wiki-icon">
+    <img src="{{ icon(wiki.icon) }}" class="wiki-icon">
   {% endif %}
 
   {{ wiki.name }}
