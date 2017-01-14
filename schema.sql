@@ -31,7 +31,7 @@ CREATE TABLE "wiki" (
   "url" text NOT NULL,
   "name" text NOT NULL,
   "status" integer NOT NULL
-);
+, "icon" text NULL);
 
 
 DROP TABLE IF EXISTS "wiki_revisions";
