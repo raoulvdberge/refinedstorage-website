@@ -12,18 +12,19 @@
     {% endif %}
 
     <h2>Blocks</h2>
-    <div class="card">
-      <div class="card-block">
-        {{ icons('Controller,Grid')|raw }}
-      </div>
-    </div>
+    {{ icons('Controller,Grid,Crafting Grid,Pattern Grid,Fluid Grid,Crafting Monitor,Crafter,Processing Pattern Encoder,Disk Drive,1k Storage Block,4k Storage Block,16k Storage Block,64k Storage Block,Creative Storage Block,64k Fluid Storage Block,128k Fluid Storage Block,256k Fluid Storage Block,512k Fluid Storage Block,Creative Fluid Storage Block,Solderer,Cable,Importer,Exporter,External Storage,Constructor,Destructor,Detector,Relay,Interface,Fluid Interface,Wireless Transmitter,Machine Casing,Network Transmitter,Network Receiver,Disk Manipulator')|raw }}
+
+    <div class="clearfix"></div>
+
+    <h2>Items</h2>
+    {{ icons('Quartz Enriched Iron,1k Storage Disk,4k Storage Disk,16k Storage Disk,64k Storage Disk,Creative Storage Disk,64k Fluid Storage Disk,128k Fluid Storage Disk,256k Fluid Storage Disk,512k Fluid Storage Disk,Creative Fluid Storage Disk,Storage Housing,Pattern,1k Storage Part,4k Storage Part,16k Storage Part,64k Storage Part,64k Fluid Storage Part,128k Fluid Storage Part,256k Fluid Storage Part,512k Fluid Storage Part,Wireless Grid,Wireless Crafting Monitor,Printed Basic Processor,Printed Improved Processor,Printed Advanced Processor,Basic Processor,Improved Processor,Advanced Processor,Printed Silicon,Construction Core,Destruction Core,Silicon,Upgrade,Range Upgrade,Speed Upgrade,Crafting Upgrade,Stack Upgrade,Interdimensional Upgrade,Silk Touch Upgrade,Fortune Upgrade,Grid Filter,Network Card,Wrench')|raw }}
   </div>
   <div class="col-sm-3 sidebar-offcanvas" id="sidebar">
-    <div class="card">
+    <div class="card" style="margin-bottom: 15px">
       <div class="card-header">
-        Latest stable version
+        Latest stable release
       </div>
-      <div class="card-block mx-auto">
+      <div class="card-block text-center">
         <h5 class="card-title">Refined Storage {{ latest.version }}</h5>
         <p class="card-text">For Minecraft {{ latest.mc_version }}.</p>
         <a href="/releases/{{ latest.id }}" class="btn btn-primary">Download</a>
@@ -31,6 +32,29 @@
         <div class="clearfix" style="margin-bottom: 15px"></div>
 
         <small class="card-text">Requires <a href="https://minecraft.curseforge.com/projects/mcmultipart">MCMultiPart</a>.</small>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        Recent releases
+      </div>
+      <div class="card-block">
+        <h6>Minecraft 1.11</h6>
+        <p>
+          Refined Storage {{ release111.version }}
+          <a href="/releases/{{ release111.id }}" class="btn btn-primary btn-sm pull-right"><span class="fa fa-download"></span></a>
+        </p>
+        <h6>Minecraft 1.10</h6>
+        <p>
+          Refined Storage {{ release110.version }}
+          <a href="/releases/{{ release110.id }}" class="btn btn-primary btn-sm pull-right"><span class="fa fa-download"></span></a>
+        </p>
+        <h6>Minecraft 1.9</h6>
+        <p style="margin-bottom: 0px">
+          Refined Storage {{ release19.version }}
+          <a href="/releases/{{ release19.id }}" class="btn btn-primary btn-sm pull-right"><span class="fa fa-download"></span></a>
+        </p>
       </div>
     </div>
   </div>

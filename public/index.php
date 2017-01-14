@@ -209,7 +209,7 @@ $container['view'] = function ($container) use ($roles) {
                 return ucfirst($name);
             }
         }
-        return 'Unknown';
+        return 'Unknown role';
     }));
 
     $view->getEnvironment()->addFunction(new Twig_SimpleFunction('getReleaseBadge', function ($type) {
@@ -226,8 +226,14 @@ $container['view'] = function ($container) use ($roles) {
         foreach ($wikiPages as $wikiPage) {
             $wiki = getWikiByName($wikiPage);
 
-            if ($wiki != null && $wiki->icon != null) {
+            if ($wiki == null) {
+                $data .= 'Unknown wiki page "' . $wikiPage . '"';
+            } else if ($wiki->icon != null) {
+                $data .= '<div class="card pull-left" style="margin: 5px">';
+                $data .= '<div class="card-block" style="padding: 5px">';
                 $data .= '<a href="/wiki/' . $wiki->url . '"><img src="' . $wiki->icon . '" class="wiki-icon-list" data-toggle="tooltip" data-placement="top" title="' . $wiki->name . '"></a>';
+                $data .= '</div>';
+                $data .= '</div>';
             }
         }
 
@@ -248,7 +254,13 @@ $container['notFoundHandler'] = function ($c) {
 };
 
 $app->get('/', function (Request $request, Response $response) {
-    return $this->view->render($response, 'home.html', ['latest' => getLatestStableRelease(), 'landing' => findAndParseWiki('_landing')]);
+    return $this->view->render($response, 'home.html', [
+        'latest' => getLatestStableRelease(),
+        'release111' => getReleases()->where('mc_version', '1.11.2')->first(),
+        'release110' => getReleases()->where('mc_version', '1.10.2')->first(),
+        'release19' => getReleases()->where('mc_version', '1.9.4')->first(),
+        'landing' => findAndParseWiki('_landing')
+    ]);
 });
 
 $app->get('/releases', function (Request $request, Response $response) {
