@@ -19,6 +19,16 @@
   <li class="breadcrumb-item active">Releases</li>
 </ol>
 
+<center>
+  <div class="btn-group" role="group">
+    <a class="btn btn-secondary {% if page == 0 %}disabled{% endif %}" href="?page={{ page }}"><span class="fa fa-angle-left"></span></a>
+    {% for i in 1..pagesTotal %}
+      <a class="btn btn-secondary {% if page + 1 == i %}active{% endif %}" href="?page={{ i }}">{{ i }}</a>
+    {% endfor %}
+    <a class="btn btn-secondary {% if page == pagesTotal - 1 %}disabled{% endif %}" href="?page={{ page + 2 }}"><span class="fa fa-angle-right"></span></a>
+  </div>
+</center>
+
 <table class="table">
   <thead class="thead-default">
     <tr>
@@ -41,4 +51,14 @@
   </tbody>
   {% endfor %}
 </table>
+
+<center>
+  <div class="btn-group" role="group">
+    <a class="btn btn-secondary {% if page == 0 %}disabled{% endif %}" href="?page={{ page }}"><span class="fa fa-angle-left"></span></a>
+    {% for i in 1..pagesTotal %}
+      <a class="btn btn-secondary {% if page + 1 == i %}active{% endif %}" href="?page={{ i }}">{{ i }}</a>
+    {% endfor %}
+    <a class="btn btn-secondary {% if page == pagesTotal - 1 %}disabled{% endif %}" href="?page={{ page + 2 }}"><span class="fa fa-angle-right"></span></a>
+  </div>
+</center>
 {% endblock %}

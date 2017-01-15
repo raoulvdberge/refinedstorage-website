@@ -229,7 +229,7 @@ $container['view'] = function ($container) use ($roles) {
             if ($wiki == null) {
                 $data .= 'Unknown wiki page "' . $wikiPage . '"';
             } else if ($wiki->icon != null) {
-                $data .= '<div class="card pull-left" style="margin: 5px">';
+                $data .= '<div class="card pull-left" style="margin: 5px; margin-left: 1px;">';
                 $data .= '<div class="card-block" style="padding: 5px">';
                 $data .= '<a href="/wiki/' . $wiki->url . '"><img src="' . getIcon($wiki->icon) . '" class="wiki-icon-list" data-toggle="tooltip" data-placement="top" title="' . $wiki->name . '"></a>';
                 $data .= '</div>';
@@ -263,17 +263,33 @@ $container['notFoundHandler'] = function ($c) {
 };
 
 $app->get('/', function (Request $request, Response $response) {
+    $releases = getReleases();
+
     return $this->view->render($response, 'home.html', [
         'latest' => getLatestStableRelease(),
-        'release111' => getReleases()->where('mc_version', '1.11.2')->first(),
-        'release110' => getReleases()->where('mc_version', '1.10.2')->first(),
-        'release19' => getReleases()->where('mc_version', '1.9.4')->first(),
+        'release111' => $releases->where('mc_version', '1.11.2')->first(),
+        'release110' => $releases->where('mc_version', '1.10.2')->first(),
+        'release19' => $releases->where('mc_version', '1.9.4')->first(),
         'home' => findAndParseWiki('_home')
     ]);
 });
 
 $app->get('/releases', function (Request $request, Response $response) {
-    return $this->view->render($response, 'releases.html', ['releases' => getReleases()->get(), 'latest' => getLatestStableRelease()]);
+    $releases = getReleases();
+
+    $perPage = 20;
+    $page = 0;
+    $pagesTotal = ceil(count($releases->get()) / $perPage);
+
+    if (isset($request->getParams()['page']) && ctype_digit($request->getParams()['page'])) {
+        $page = $request->getParams()['page'] - 1;
+        $page = max($page, 0);
+        $page = min($page, $pagesTotal - 1);
+    }
+
+    $releases = $releases->skip($perPage * $page)->take($perPage);
+
+    return $this->view->render($response, 'releases.html', ['releases' => $releases->get(), 'page' => $page, 'pagesTotal' => $pagesTotal, 'latest' => getLatestStableRelease()]);
 });
 
 $app->get('/releases/create', function(Request $request, Response $response) {
@@ -493,7 +509,7 @@ $app->get('/wiki/create', function(Request $request, Response $response, $args) 
 })->add(new NeedsAuthentication($roles['editor']));
 
 $app->get('/wiki/pages', function(Request $request, Response $response, $args) {
-    $wikis = Wiki::all();
+    $wikis = Wiki::orderBy('url', 'ASC')->get();
     foreach ($wikis as $wiki) {
         $wiki['last_revision'] = getWikiRevision($wiki, null);
     }
