@@ -263,13 +263,11 @@ $container['notFoundHandler'] = function ($c) {
 };
 
 $app->get('/', function (Request $request, Response $response) {
-    $releases = getReleases();
-
     return $this->view->render($response, 'home.html', [
         'latest' => getLatestStableRelease(),
-        'release111' => $releases->where('mc_version', '1.11.2')->first(),
-        'release110' => $releases->where('mc_version', '1.10.2')->first(),
-        'release19' => $releases->where('mc_version', '1.9.4')->first(),
+        'release111' => getReleases()->where('mc_version', '1.11.2')->first(),
+        'release110' => getReleases()->where('mc_version', '1.10.2')->first(),
+        'release19' => getReleases()->where('mc_version', '1.9.4')->first(),
         'home' => findAndParseWiki('_home')
     ]);
 });
