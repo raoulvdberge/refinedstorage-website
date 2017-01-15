@@ -5,18 +5,19 @@
 {% block content %}
 <h1 class="float-lg-left">{{ release.version }}</h1>
 
-<div class="float-lg-right"><a href="{{ release.url }}/download" class="btn btn-secondary"><span class="fa fa-download"></span> Download</a></div>
+<div class="btn-group float-lg-right" role="group">
+  <a href="{{ release.url }}/download" class="btn btn-secondary"><span class="fa fa-download"></span> Download</a>
+  <a href="{{ release.url }}" class="btn btn-secondary"><span class="fa fa-external-link"></span> View on CurseForge</a>
 
-<div class="float-lg-right" style="margin-right: 10px"><a href="{{ release.url }}" class="btn btn-secondary"><span class="fa fa-external-link"></span> View on CurseForge</a></div>
-
-{% if can('contributor') %}
-  {% if release.status == 0 %}
-    <div class="float-lg-right" style="margin-right: 10px"><a href="/releases/{{ release.id }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Delete</a></div>
-  {% elseif release.status == 1 %}
-    <div class="float-lg-right" style="margin-right: 10px"><a href="/releases/{{ release.id }}/restore" class="btn btn-secondary"><span class="fa fa-history"></span> Restore</a></div>
+  {% if can('contributor') %}
+    {% if release.status == 0 %}
+      <a href="/releases/{{ release.id }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Delete</a>
+    {% elseif release.status == 1 %}
+      <a href="/releases/{{ release.id }}/restore" class="btn btn-secondary"><span class="fa fa-history"></span> Restore</a>
+    {% endif %}
+    <a href="/releases/{{ release.id }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a>
   {% endif %}
-  <div class="float-lg-right" style="margin-right: 10px"><a href="/releases/{{ release.id }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a></div>
-{% endif %}
+</div>
 
 <div class="clearfix"></div>
 

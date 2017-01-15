@@ -5,13 +5,13 @@
 {% block content %}
 <h1 class="float-lg-left">Releases</h1>
 
-<div class="float-lg-right"><a href="{{ latest.url }}/download" class="btn btn-secondary"><span class="fa fa-download"></span> Download latest stable ({{ latest.version }})</a></div>
-
-<div class="float-lg-right" style="margin-right: 10px"><a href="{{ latest.url }}" class="btn btn-secondary"><span class="fa fa-external-link"></span> View latest stable on CurseForge ({{ latest.version }})</a></div>
-
-{% if can('contributor') %}
-  <div class="float-lg-right" style="margin-right: 10px"><a href="/releases/create" class="btn btn-secondary"><span class="fa fa-plus"></span> Create</a></div>
-{% endif %}
+<div class="btn-group float-lg-right" role="group">
+  <a href="{{ latest.url }}/download" class="btn btn-secondary"><span class="fa fa-download"></span> Download latest stable ({{ latest.version }})</a>
+  <a href="{{ latest.url }}" class="btn btn-secondary"><span class="fa fa-external-link"></span> View latest stable on CurseForge ({{ latest.version }})</a>
+  {% if can('contributor') %}
+    <a href="/releases/create" class="btn btn-secondary"><span class="fa fa-plus"></span> Create</a>
+  {% endif %}
+</div>
 
 <div class="clearfix"></div>
 

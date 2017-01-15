@@ -11,22 +11,23 @@
   {{ wiki.name }}
 </h1>
 
-<div class="float-lg-right"><a href="/wiki/{{ wiki.url }}/revisions" class="btn btn-secondary"><span class="fa fa-file-o"></span> Revisions</a></div>
-
-{% if can('editor') %}
-  <div class="float-lg-right wiki-button"><a href="/wiki/pages" class="btn btn-secondary"><span class="fa fa-list"></span> Pages</a></div>
-  <div class="float-lg-right wiki-button"><a href="/wiki/create" class="btn btn-secondary"><span class="fa fa-plus"></span> Create</a></div>
-  <div class="float-lg-right wiki-button"><a href="/wiki/create?copy={{ wiki.url }}" class="btn btn-secondary"><span class="fa fa-files-o"></span> Copy</a></div>
-  {% if wiki.status == 0 %}
-    <div class="float-lg-right wiki-button"><a href="/wiki/{{ wiki.url }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Delete</a></div>
-  {% elseif wiki.status == 1 %}
-    <div class="float-lg-right wiki-button"><a href="/wiki/{{ wiki.url }}/restore" class="btn btn-secondary"><span class="fa fa-history"></span> Restore</a></div>
+<div class="btn-group float-lg-right" role="group">
+  <a href="/wiki/{{ wiki.url }}/revisions" class="btn btn-secondary"><span class="fa fa-file-o"></span> Revisions</a>
+  {% if can('editor') %}
+    <a href="/wiki/pages" class="btn btn-secondary"><span class="fa fa-list"></span> Pages</a>
+    <a href="/wiki/create" class="btn btn-secondary"><span class="fa fa-plus"></span> Create</a>
+    <a href="/wiki/create?copy={{ wiki.url }}" class="btn btn-secondary"><span class="fa fa-files-o"></span> Copy</a>
+    {% if wiki.status == 0 %}
+      <a href="/wiki/{{ wiki.url }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Delete</a>
+    {% elseif wiki.status == 1 %}
+      <a href="/wiki/{{ wiki.url }}/restore" class="btn btn-secondary"><span class="fa fa-history"></span> Restore</a>
+    {% endif %}
+    <a href="/wiki/{{ wiki.url }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a>
+    {% if old %}
+    <a href="/wiki/{{ wiki.url }}/{{ wiki.revision.hash }}/revert" class="btn btn-secondary"><span class="fa fa-pencil"></span> Revert to this version</a>
+    {% endif %}
   {% endif %}
-  <div class="float-lg-right wiki-button"><a href="/wiki/{{ wiki.url }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a></div>
-  {% if old %}
-  <div class="float-lg-right wiki-button"><a href="/wiki/{{ wiki.url }}/{{ wiki.revision.hash }}/revert" class="btn btn-secondary"><span class="fa fa-pencil"></span> Revert to this version</a></div>
-  {% endif %}
-{% endif %}
+</div>
 
 <div class="clearfix"></div>
 
@@ -47,7 +48,7 @@
   <div class="col-sm-9">
     {{ wiki.revision.body|raw }}
 
-    <div class="card card-outline-secondary text-xs">
+    <div class="card card-outline-secondary text-xs" style="margin-bottom: 15px">
       <div class="card-block">
         <p {% if wiki.revision.reverted_from == 0 %}style="margin: 0px"{% endif %}>Last modified by <a href="/profile/{{ wiki.revision.user.username }}">{{ wiki.revision.user.username }}</a> at {{ wiki.revision.date|date("m/d/Y H:i:s") }}.</p>
 
