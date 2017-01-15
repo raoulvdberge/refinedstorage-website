@@ -1,5 +1,10 @@
 {% extends "layout.html" %}
 
+{% block css %}
+  {{ parent() }}
+  <link rel="stylesheet" href="/assets/simplemde.min.css">
+{% endblock %}
+
 {% block js %}
   {{ parent() }}
   <script src="/assets/simplemde.min.js"></script>
