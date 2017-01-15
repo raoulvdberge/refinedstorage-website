@@ -59,12 +59,29 @@
   </div>
   <div class="col-sm-3 sidebar-offcanvas" id="sidebar">
     <div class="card">
+      <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" data-tab="guides" href="#">Guides</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" data-tab="blocks" href="#">Blocks</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" data-tab="items" href="#">Items</a>
+          </li>
+        </ul>
+      </div>
       <div class="card-block">
-        {{ sidebar.revision.body|raw }}
+      {% for sidebarTab in sidebarTabs %}
+        <div style="display: none" class="sidebar" id="{{ sidebarTab.url }}">
+          {{ sidebarTab.revision.body|raw }}
 
-        {% if can('editor') %}
-          <a href="/wiki/{{ sidebar.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a>
-        {% endif %}
+          {% if can('editor') %}
+            <a href="/wiki/{{ sidebarTab.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a>
+          {% endif %}
+        </div>
+      {% endfor %}
       </div>
     </div>
   </div>

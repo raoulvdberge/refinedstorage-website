@@ -477,7 +477,7 @@ function findAndParseWiki($url, $revisionHash = null, $parent = null) {
 }
 
 $app->get('/wiki', function(Request $request, Response $response) {
-    return $this->view->render($response, 'wiki.html', ['wiki' => findAndParseWiki('_home'), 'sidebar' => findAndParseWiki('_sidebar'), 'old' => false]);
+    return handleWiki($this->view, $request, $response, ['url' => '_home']);
 });
 
 $app->get('/wiki/create', function(Request $request, Response $response, $args) {
@@ -676,14 +676,23 @@ $app->get('/wiki/{url}/{revision}/revert', function(Request $request, Response $
 })->add(new NeedsAuthentication($roles['editor']));
 
 $app->get('/wiki/{url}[/{revision}]', function(Request $request, Response $response, $args) {
+    return handleWiki($this->view, $request, $response, $args);
+});
+
+function handleWiki($view, Request $request, Response $response, $args) {
     $wiki = findAndParseWiki($args['url'], isset($args['revision']) ? $args['revision'] : null);
 
     if ($wiki == null) {
         return $response->withStatus(404);
     }
 
-    return $this->view->render($response, 'wiki.html', ['wiki' => $wiki, 'sidebar' => findAndParseWiki('_sidebar'), 'old' => isset($args['revision'])]);
-});
+    $sidebarTabs = [];
+    foreach (['guides', 'blocks', 'items'] as $item) {
+        $sidebarTabs[] = findAndParseWiki('_sidebar_' . $item);
+    }
+
+    return $view->render($response, 'wiki.html', ['wiki' => $wiki, 'sidebarTabs' => $sidebarTabs, 'old' => isset($args['revision'])]);
+}
 
 $app->get('/login', function(Request $request, Response $response) {
     return $this->view->render($response, 'login.html', ['failed' => false]);
