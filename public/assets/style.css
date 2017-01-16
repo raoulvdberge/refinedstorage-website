@@ -36,7 +36,7 @@ h3 {
 	margin-top: 3px;
 }
 
-.sidebar ul {
+.sidebar ul:last-child {
 	margin-bottom: 0px;
 }
 
