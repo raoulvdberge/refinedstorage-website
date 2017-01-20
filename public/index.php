@@ -262,6 +262,18 @@ $container['notFoundHandler'] = function ($c) {
     };
 };
 
+$app->add(function ($request, $response, $next) use ($container) {
+    $response = $next($request, $response);
+
+    if ($response->getStatusCode() == 404) {
+        $handler = $container['notFoundHandler'];
+
+        return $handler($request, $response);
+    }
+
+    return $response;
+});
+
 $app->get('/', function (Request $request, Response $response) {
     return $this->view->render($response, 'home.html', [
         'latest' => getLatestStableRelease(),
