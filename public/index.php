@@ -253,7 +253,11 @@ $container['view'] = function ($container) use ($roles) {
 
 function getIcon($name) {
     $name = str_replace('..', '', $name); // evil
-    return 'data:image/png;base64,' . base64_encode(file_get_contents(__DIR__ . $name));
+    $contents = @file_get_contents(__DIR__ . $name);
+    if ($contents == null) {
+        return '';
+    }
+    return 'data:image/png;base64,' . base64_encode($contents);
 }
 
 $container['notFoundHandler'] = function ($c) {
@@ -265,7 +269,9 @@ $container['notFoundHandler'] = function ($c) {
 $app->add(function ($request, $response, $next) use ($container) {
     $response = $next($request, $response);
 
-    if ($response->getStatusCode() == 404) {
+    // ugly hack - prevents displaying the 404 page twice - once for the notFoundHandler and once for the middleware.
+    // the notFoundHandler is only called on bad routes, not when we call ->withStatus(404) manually.
+    if ($response->getStatusCode() == 404 && !stristr($response->getBody(), '404')) {
         $handler = $container['notFoundHandler'];
 
         return $handler($request, $response);
