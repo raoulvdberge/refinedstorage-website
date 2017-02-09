@@ -189,6 +189,8 @@ $container['view'] = function ($container) use ($roles) {
     	return $_SERVER['REQUEST_URI'];
     });
 
+    $view->getEnvironment()->addExtension(new Twig_Extensions_Extension_Date());
+
     $view->getEnvironment()->addFunction(new Twig_SimpleFunction('uri', function () {
         return $_SERVER['REQUEST_URI'];
     }));
@@ -283,9 +285,11 @@ $app->add(function ($request, $response, $next) use ($container) {
 $app->get('/', function (Request $request, Response $response) {
     return $this->view->render($response, 'home.html', [
         'latest' => getLatestStableRelease(),
-        'release111' => getReleases()->where('mc_version', '1.11.2')->first(),
-        'release110' => getReleases()->where('mc_version', '1.10.2')->first(),
-        'release19' => getReleases()->where('mc_version', '1.9.4')->first(),
+        'releases' => [
+            '1.11' => getReleases()->where('mc_version', '1.11.2')->first(),
+            '1.10' => getReleases()->where('mc_version', '1.10.2')->first(),
+            '1.9' => getReleases()->where('mc_version', '1.9.4')->first()
+        ],
         'home' => findAndParseWiki('_home')
     ]);
 });

@@ -42,21 +42,17 @@
         Recent releases
       </div>
       <div class="card-block">
-        <b>Minecraft 1.11</b>
-        <p>
-          Refined Storage {{ release111.version }}
-          <a href="/releases/{{ release111.id }}" class="btn btn-primary btn-sm pull-right"><span class="fa fa-download"></span></a>
-        </p>
-        <b>Minecraft 1.10</b>
-        <p>
-          Refined Storage {{ release110.version }}
-          <a href="/releases/{{ release110.id }}" class="btn btn-primary btn-sm pull-right"><span class="fa fa-download"></span></a>
-        </p>
-        <b>Minecraft 1.9</b>
-        <p style="margin-bottom: 0px">
-          Refined Storage {{ release19.version }}
-          <a href="/releases/{{ release19.id }}" class="btn btn-primary btn-sm pull-right"><span class="fa fa-download"></span></a>
-        </p>
+        {% for name, release in releases %}
+          <b>Minecraft {{ name }}</b>
+          <div class="pull-left">
+            <p style="margin-bottom: 0px">Refined Storage {{ release.version }}</p>
+            <p style="padding-top: 0px; {% if loop.last %}margin-bottom: 0px;{% endif %}"><i class="text-muted">{{ release.date|time_diff }}</i></p>
+          </div>
+          <div class="pull-right" style="margin-top: 7px">
+            <a href="/releases/{{ release.id }}" class="btn btn-primary btn-sm pull-right"><span class="fa fa-download"></span></a>
+          </div>
+          <div class="clearfix"></div>
+        {% endfor %}
       </div>
     </div>
   </div>
