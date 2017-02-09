@@ -26,8 +26,8 @@
   <li class="breadcrumb-item active">{{ release.version }}</li>
 </ol>
 
-{% if release.type == 'alpha' %}
-<div class="alert alert-warning" role="alert">This is an alpha version of Refined Storage. Don't forget to <b>back up your world</b> before playing!</div>
+{% if release.type == 'alpha' or release.type == 'beta' %}
+<div class="alert alert-warning" role="alert">This is a{% if release.type == 'alpha' %}n{% endif %} {{ release.type }} version of Refined Storage. Don't forget to <b>back up your world</b> before playing!</div>
 {% endif %}
 
 <table class="table table-reflow">
