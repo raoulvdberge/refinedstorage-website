@@ -71,6 +71,9 @@
             <a href="/logout">Log out ({{ user.username }})</a>
           {% endif %}
         </p>
+        {% if can('contributor') %}
+          <p><a href="/sessions"><i class="fa fa-eye" aria-hidden="true"></i> Sessions</a></p>
+        {% endif %}
         <p>&copy; Refined Storage authors</p>
       </center>
     </footer>
