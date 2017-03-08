@@ -173,6 +173,11 @@ class WikiRevision extends Illuminate\Database\Eloquent\Model
     }
 }
 
+class Session extends Illuminate\Database\Eloquent\Model
+{
+    public $timestamps = false;
+}
+
 $app = new \Slim\App;
 
 $app->add(new Maintenance());
@@ -796,6 +801,10 @@ $app->post('/search', function(Request $request, Response $response) {
 });
 
 $app->get('/update', function(Request $request, Response $response) {
+    $session = new Session();
+    $session->date = time();
+    $session->save();
+
     $data = [];
 
     $data['website'] = 'https://refinedstorage.raoulvdberge.com/';
