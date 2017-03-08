@@ -795,6 +795,28 @@ $app->post('/search', function(Request $request, Response $response) {
     return $this->view->render($response, 'search.html', ['show' => !empty($query), 'results' => $wikis, 'query' => $query]);
 });
 
+$app->get('/update', function(Request $request, Response $response) {
+    $data = [];
+
+    $data['website'] = 'https://refinedstorage.raoulvdberge.com/';
+    $data['promos'] = [];
+
+    foreach (['1.11.2', '1.10.2', '1.9.4', '1.9'] as $mcVersion) {
+        $data[$mcVersion] = [];
+
+        $versions = getReleases()->where('mc_version', '=', $mcVersion)->get();
+
+        foreach ($versions as $version) {
+            $data[$mcVersion][$version->version] = 'Visit https://refinedstorage.raoulvdberge.com/releases/' . $version->id . ' to view the changelog.';
+        }
+
+        $data['promos'][$mcVersion . '-latest'] = $versions[0]->version;
+        $data['promos'][$mcVersion . '-recommended'] = $versions[0]->version;
+    }
+
+    return $response->withJson($data, 200, JSON_PRETTY_PRINT);
+});
+
 $app->get('/503', function(Request $request, Response $response) {
     return $this->view->render($response->withStatus(503), '503.html');
 });
