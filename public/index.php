@@ -849,7 +849,7 @@ $app->get('/update', function(Request $request, Response $response) {
         $versions = getReleases()->where('mc_version', '=', $mcVersion)->get();
 
         foreach ($versions as $version) {
-            $data[$mcVersion][$version->version] = 'Visit https://refinedstorage.raoulvdberge.com/releases/' . $version->id . ' to view the changelog.';
+            $data[$mcVersion][$version->version] = str_replace("\r", "", $version->changelog);
         }
 
         $data['promos'][$mcVersion . '-latest'] = $versions[0]->version;
