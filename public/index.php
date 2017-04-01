@@ -16,6 +16,7 @@ require '../vendor/autoload.php';
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Illuminate\Database\Capsule\Manager as Capsule;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 $capsule = new Capsule;
 
@@ -187,6 +188,9 @@ $app = new \Slim\App;
 $app->add(new Maintenance());
 
 $container = $app->getContainer();
+$container['cache'] = function($container) {
+    return new FilesystemAdapter();
+};
 $container['view'] = function ($container) use ($roles) {
     $view = new \Slim\Views\Twig('../templates');
     
@@ -363,6 +367,8 @@ $app->post('/releases/create', function(Request $request, Response $response) {
         $release->status = 0;
         $release->save();
 
+        $this->cache->deleteItem('update');
+
         return $response->withHeader('Location', '/releases/' . $release->id);
     } else {
         return $this->view->render($response, 'releases_create.html', ['errors' => $errors]);
@@ -402,6 +408,8 @@ $app->post('/releases/{id}/edit', function (Request $request, Response $response
         $release->changelog = $changelog;
         $release->save();
 
+        $this->cache->deleteItem('update');
+
         return $response->withHeader('Location', '/releases/' . $release->id);
     } else {
         return $this->view->render($response, 'releases_edit.html', ['release' => $release, 'errors' => $errors]);
@@ -428,6 +436,8 @@ $app->get('/releases/{id}/delete', function(Request $request, Response $response
     $release->status = 1;
     $release->save();
 
+    $this->cache->deleteItem('update');
+
     return $response->withHeader('Location', '/releases/' . $release->id);
 })->add(new NeedsAuthentication($roles['contributor']));
 
@@ -440,6 +450,8 @@ $app->get('/releases/{id}/restore', function(Request $request, Response $respons
 
     $release->status = 0;
     $release->save();
+
+    $this->cache->deleteItem('update');
 
     return $response->withHeader('Location', '/releases/' . $release->id);
 })->add(new NeedsAuthentication($roles['contributor']));
@@ -838,25 +850,33 @@ $app->get('/update', function(Request $request, Response $response) {
     $session->date = time();
     $session->save();
 
-    $data = [];
+    $updateData = $this->cache->getItem('update');
 
-    $data['website'] = 'https://refinedstorage.raoulvdberge.com/';
-    $data['promos'] = [];
+    if (!$updateData->isHit()) {
+        $data = [];
 
-    foreach (['1.11.2', '1.11', '1.10.2', '1.9.4', '1.9'] as $mcVersion) {
-        $data[$mcVersion] = [];
+        $data['website'] = 'https://refinedstorage.raoulvdberge.com/';
+        $data['promos'] = [];
 
-        $versions = getReleases()->where('mc_version', '=', $mcVersion)->get();
+        foreach (['1.11.2', '1.11', '1.10.2', '1.9.4', '1.9'] as $mcVersion) {
+            $data[$mcVersion] = [];
 
-        foreach ($versions as $version) {
-            $data[$mcVersion][$version->version] = str_replace("\r", "", $version->changelog);
+            $versions = getReleases()->where('mc_version', '=', $mcVersion)->where('status', '=', '0')->get();
+
+            foreach ($versions as $version) {
+                $data[$mcVersion][$version->version] = str_replace("\r", "", $version->changelog);
+            }
+
+            $data['promos'][$mcVersion . '-latest'] = $versions[0]->version;
+            $data['promos'][$mcVersion . '-recommended'] = $versions[0]->version;
         }
 
-        $data['promos'][$mcVersion . '-latest'] = $versions[0]->version;
-        $data['promos'][$mcVersion . '-recommended'] = $versions[0]->version;
+        $updateData->set($data);
+
+        $this->cache->save($updateData);
     }
 
-    return $response->withJson($data, 200, JSON_PRETTY_PRINT);
+    return $response->withJson($updateData->get(), 200, JSON_PRETTY_PRINT);
 });
 
 $app->get('/503', function(Request $request, Response $response) {

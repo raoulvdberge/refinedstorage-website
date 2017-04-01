@@ -5,6 +5,7 @@
         "illuminate/database": "5.3.*@dev",
         "erusev/parsedown": "^1.6",
         "slim/flash": "^0.2.0",
-        "twig/extensions": "^1.4"
+        "twig/extensions": "^1.4",
+        "symfony/cache": "^3.2"
     }
 }
