@@ -64,17 +64,17 @@
     <hr>
     <footer>
       <center>
-        <p>
+        <div class="btn-group btn-group-sm" role="group">
           {% if user == null %}
-            <a href="/login">Log in</a>
+            <a class="btn btn-secondary" href="/login">Log in</a>
           {% else %}
-            <a href="/logout">Log out ({{ user.username }})</a>
+            <a class="btn btn-secondary" href="/logout">Log out</a>
           {% endif %}
-        </p>
-        {% if can('contributor') %}
-          <p><a href="/sessions"><i class="fa fa-eye" aria-hidden="true"></i> Sessions</a></p>
-        {% endif %}
-        <p>&copy; Refined Storage authors</p>
+          {% if can('contributor') %}
+            <a class="btn btn-secondary" href="/sessions">Sessions</a>
+          {% endif %}
+        </div>
+        <p>&copy; Refined Storage contributors</p>
       </center>
     </footer>
   </div>

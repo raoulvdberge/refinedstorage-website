@@ -535,7 +535,7 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
 
         $container->cache->save($body);
     } else {
-        $revision['body'] = $body->get()."<br><h1>FROM CACHE!</h1>";
+        $revision['body'] = $body->get();
     }
 
     $wiki['revision'] = $revision;
