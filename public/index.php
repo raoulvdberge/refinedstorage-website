@@ -303,7 +303,7 @@ $app->get('/', function (Request $request, Response $response) {
             '1.10' => getReleases()->where('mc_version', '1.10.2')->first(),
             '1.9' => getReleases()->where('mc_version', '1.9.4')->first()
         ],
-        'home' => findAndParseWiki('_home')
+        'home' => findAndParseWiki($this, '_home')
     ]);
 });
 
@@ -456,7 +456,7 @@ $app->get('/releases/{id}/restore', function(Request $request, Response $respons
     return $response->withHeader('Location', '/releases/' . $release->id);
 })->add(new NeedsAuthentication($roles['contributor']));
 
-function findAndParseWiki($url, $revisionHash = null, $parent = null) {
+function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null, $parent = null) {
     $wiki = getWikiByUrl($url);
 
     if ($wiki == null) {
@@ -469,63 +469,73 @@ function findAndParseWiki($url, $revisionHash = null, $parent = null) {
         return null;
     }
 
-    $parser = new Parsedown();
+    $body = $container->cache->getItem('wiki.revision.' . $revision->hash);
 
-    $revision['body'] = $parser->text($revision['body']);
-    $revision['body'] = preg_replace_callback('/\\[\\[\\#(.+?)\\]\\]/', function ($matches) use ($wiki, $parent) {
-        $var = $matches[1];
+    if (!$body->isHit()) {
+        $parser = new Parsedown();
 
-        switch ($var) {
-            case 'name':
-                return $parent != null ? $parent['name'] : $wiki['name'];
-            default:
-                return 'Unknown variable';
-        }
-    }, $revision['body']);
-    $revision['body'] = preg_replace_callback('/\\[\\[\\@(.+?)\\]\\]/', function ($matches) use ($wiki) {
-        $otherWiki = getWikiByName($matches[1]);
+        $revision['body'] = $parser->text($revision['body']);
+        $revision['body'] = preg_replace_callback('/\\[\\[\\#(.+?)\\]\\]/', function ($matches) use ($wiki, $parent) {
+            $var = $matches[1];
 
-        if ($otherWiki != null) {
-            if ($otherWiki->url == $wiki->url) {
-                return 'Circular wiki include';
+            switch ($var) {
+                case 'name':
+                    return $parent != null ? $parent['name'] : $wiki['name'];
+                default:
+                    return 'Unknown variable';
             }
-            return findAndParseWiki($otherWiki->url, null, $wiki)['revision']['body'];
-        } else {
-            return 'Unknown wiki reference';
-        }
-        return '';
-    }, $revision['body']);
-    $revision['body'] = preg_replace_callback("/\\[\\[(.+?)(\\=(.+?))?\\]\\]/", function ($matches) {
-        $tags = function($reference) {
-            $additionalTags = [];
+        }, $revision['body']);
+        $revision['body'] = preg_replace_callback('/\\[\\[\\@(.+?)\\]\\]/', function ($matches) use ($wiki) {
+            $otherWiki = getWikiByName($matches[1]);
 
-            if ($reference == null) {
-                $additionalTags[] = 'style="color: #c00"';
-            } else if ($reference->icon != null) {
-                $additionalTags[] = 'data-toggle="tooltip"';
-                $additionalTags[] = 'data-placement="right"';
-                $additionalTags[] = 'data-html="true"';
-                $additionalTags[] = 'title="<img src=\'' . getIcon($reference->icon) . '\' class=\'wiki-icon-tooltip\'>"';
+            if ($otherWiki != null) {
+                if ($otherWiki->url == $wiki->url) {
+                    return 'Circular wiki include';
+                }
+                return findAndParseWiki($app, $otherWiki->url, null, $wiki)['revision']['body'];
+            } else {
+                return 'Unknown wiki reference';
             }
+            return '';
+        }, $revision['body']);
+        $revision['body'] = preg_replace_callback("/\\[\\[(.+?)(\\=(.+?))?\\]\\]/", function ($matches) {
+            $tags = function($reference) {
+                $additionalTags = [];
 
-            return implode(' ', $additionalTags);
-        };
+                if ($reference == null) {
+                    $additionalTags[] = 'style="color: #c00"';
+                } else if ($reference->icon != null) {
+                    $additionalTags[] = 'data-toggle="tooltip"';
+                    $additionalTags[] = 'data-placement="right"';
+                    $additionalTags[] = 'data-html="true"';
+                    $additionalTags[] = 'title="<img src=\'' . getIcon($reference->icon) . '\' class=\'wiki-icon-tooltip\'>"';
+                }
 
-        if (count($matches) == 4) {
-            $reference = getWikiByName($matches[3]);
+                return implode(' ', $additionalTags);
+            };
 
-            return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '">' . $matches[1] . '</a>';
-        } else if (count($matches) == 2) {
-            $reference = getWikiByName($matches[1]);
+            if (count($matches) == 4) {
+                $reference = getWikiByName($matches[3]);
 
-            return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '">' . $matches[1] . '</a>';
+                return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '">' . $matches[1] . '</a>';
+            } else if (count($matches) == 2) {
+                $reference = getWikiByName($matches[1]);
+
+                return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '">' . $matches[1] . '</a>';
+            }
+        }, $revision['body']);
+        $revision['body'] = str_replace('<table>', '<table class="table">', $revision['body']);
+
+        // omit <p> tags
+        if ($parent != null) {
+            $revision['body'] = substr($revision['body'], 3, -4);
         }
-    }, $revision['body']);
-    $revision['body'] = str_replace('<table>', '<table class="table">', $revision['body']);
 
-    // omit <p> tags
-    if ($parent != null) {
-        $revision['body'] = substr($revision['body'], 3, -4);
+        $body->set($revision['body']);
+
+        $container->cache->save($body);
+    } else {
+        $revision['body'] = $body->get()."<br><h1>FROM CACHE!</h1>";
     }
 
     $wiki['revision'] = $revision;
@@ -534,7 +544,7 @@ function findAndParseWiki($url, $revisionHash = null, $parent = null) {
 }
 
 $app->get('/wiki', function(Request $request, Response $response) {
-    return handleWiki($this->view, $request, $response, ['url' => '_home']);
+    return handleWiki($this, $request, $response, ['url' => '_home']);
 });
 
 $app->get('/wiki/create', function(Request $request, Response $response, $args) {
@@ -733,11 +743,11 @@ $app->get('/wiki/{url}/{revision}/revert', function(Request $request, Response $
 })->add(new NeedsAuthentication($roles['editor']));
 
 $app->get('/wiki/{url}[/{revision}]', function(Request $request, Response $response, $args) {
-    return handleWiki($this->view, $request, $response, $args);
+    return handleWiki($this, $request, $response, $args);
 });
 
-function handleWiki($view, Request $request, Response $response, $args) {
-    $wiki = findAndParseWiki($args['url'], isset($args['revision']) ? $args['revision'] : null);
+function handleWiki(\Slim\Container $container, Request $request, Response $response, $args) {
+    $wiki = findAndParseWiki($container, $args['url'], isset($args['revision']) ? $args['revision'] : null);
 
     if ($wiki == null) {
         return $response->withStatus(404);
@@ -745,10 +755,10 @@ function handleWiki($view, Request $request, Response $response, $args) {
 
     $sidebarTabs = [];
     foreach (['guides', 'blocks', 'items'] as $item) {
-        $sidebarTabs[] = findAndParseWiki('_sidebar_' . $item);
+        $sidebarTabs[] = findAndParseWiki($container, '_sidebar_' . $item);
     }
 
-    return $view->render($response, 'wiki.html', ['wiki' => $wiki, 'sidebarTabs' => $sidebarTabs, 'old' => isset($args['revision'])]);
+    return $container->view->render($response, 'wiki.html', ['wiki' => $wiki, 'sidebarTabs' => $sidebarTabs, 'old' => isset($args['revision'])]);
 }
 
 $app->get('/login', function(Request $request, Response $response) {
