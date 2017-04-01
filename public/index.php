@@ -485,14 +485,14 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
                     return 'Unknown variable';
             }
         }, $revision['body']);
-        $revision['body'] = preg_replace_callback('/\\[\\[\\@(.+?)\\]\\]/', function ($matches) use ($wiki) {
+        $revision['body'] = preg_replace_callback('/\\[\\[\\@(.+?)\\]\\]/', function ($matches) use ($wiki, $container) {
             $otherWiki = getWikiByName($matches[1]);
 
             if ($otherWiki != null) {
                 if ($otherWiki->url == $wiki->url) {
                     return 'Circular wiki include';
                 }
-                return findAndParseWiki($app, $otherWiki->url, null, $wiki)['revision']['body'];
+                return findAndParseWiki($container, $otherWiki->url, null, $wiki)['revision']['body'];
             } else {
                 return 'Unknown wiki reference';
             }
