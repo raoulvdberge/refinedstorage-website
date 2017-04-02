@@ -244,10 +244,8 @@ $container['view'] = function ($container) use ($roles) {
             if ($wiki == null) {
                 $data .= 'Unknown wiki page "' . $wikiPage . '"';
             } else if ($wiki->icon != null) {
-                $data .= '<div class="pull-left" style="margin: 5px; margin-left: 1px;">';
-                $data .= '<div class="" style="padding: 5px">';
+                $data .= '<div class="pull-left" style="margin: 5px; margin-top: 0px; margin-left: 1px">';
                 $data .= '<a href="/wiki/' . $wiki->url . '"><img src="' . getIcon($wiki->icon) . '" class="wiki-icon-list" data-toggle="tooltip" data-placement="top" title="' . $wiki->name . '"></a>';
-                $data .= '</div>';
                 $data .= '</div>';
             }
         }
