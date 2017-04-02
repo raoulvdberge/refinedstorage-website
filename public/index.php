@@ -265,12 +265,13 @@ $container['view'] = function ($container) use ($roles) {
 };
 
 function getIcon($name) {
-    $name = str_replace('..', '', $name); // evil
+    /*$name = str_replace('..', '', $name); // evil
     $contents = @file_get_contents(__DIR__ . $name);
     if ($contents == null) {
         return '';
     }
-    return 'data:image/png;base64,' . base64_encode($contents);
+    return 'data:image/png;base64,' . base64_encode($contents);*/
+    return $name;
 }
 
 $container['notFoundHandler'] = function ($c) {
