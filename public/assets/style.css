@@ -3,20 +3,25 @@ html, body {
 } 
 
 body {
-  padding-top: 80px;
+	padding-top: 80px;
+	font-size: 15px;
 }
 
 h1 {
-  font-size: 28px;
-  margin-bottom: 20px;
+	font-size: 28px;
+	margin-bottom: 20px;
 }
 
 h2 {
-  font-size: 22px;
+	font-size: 22px;
 }
 
 h3 {
 	font-size: 18px;
+}
+
+h1, h2, h3, h4, h5, .card-header {
+	font-family: 'Montserrat', sans-serif;
 }
 
 .container ul {

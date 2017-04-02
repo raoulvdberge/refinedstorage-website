@@ -18,7 +18,7 @@
 
     <div class="clearfix"></div>
 
-    <h2 style="margin-top: 4px">Items</h2>
+    <h2 style="margin-top: 13px">Items</h2>
     {{ icons('Quartz Enriched Iron,1k Storage Disk,4k Storage Disk,16k Storage Disk,64k Storage Disk,Creative Storage Disk,64k Fluid Storage Disk,128k Fluid Storage Disk,256k Fluid Storage Disk,512k Fluid Storage Disk,Creative Fluid Storage Disk,Storage Housing,Pattern,1k Storage Part,4k Storage Part,16k Storage Part,64k Storage Part,64k Fluid Storage Part,128k Fluid Storage Part,256k Fluid Storage Part,512k Fluid Storage Part,Wireless Grid,Wireless Fluid Grid,Wireless Crafting Monitor,Printed Basic Processor,Printed Improved Processor,Printed Advanced Processor,Basic Processor,Improved Processor,Advanced Processor,Printed Silicon,Construction Core,Destruction Core,Silicon,Upgrade,Range Upgrade,Speed Upgrade,Crafting Upgrade,Stack Upgrade,Interdimensional Upgrade,Silk Touch Upgrade,Fortune Upgrade,Filter,Network Card,Security Card,Wrench')|raw }}
   </div>
   <div class="col-sm-3 sidebar-offcanvas" id="sidebar">
@@ -43,13 +43,12 @@
       </div>
       <div class="card-block">
         {% for name, release in releases %}
-          <b>Minecraft {{ name }}</b>
           <div class="pull-left">
-            <p style="margin-bottom: 0px">Refined Storage {{ release.version }}</p>
-            <p style="padding-top: 0px; {% if loop.last %}margin-bottom: 0px;{% endif %}"><i class="text-muted">{{ release.date|time_diff }}</i></p>
+            <b>Minecraft {{ name }}</b>
+            <p {% if loop.last %}style="margin-bottom: 0px"{% endif %}>Refined Storage {{ release.version }}</p>
           </div>
-          <div class="pull-right" style="margin-top: 7px">
-            <a href="/releases/{{ release.id }}" class="btn btn-primary btn-sm pull-right"><span class="fa fa-download"></span></a>
+          <div class="pull-right">
+            <a style="margin-top: 9px" href="/releases/{{ release.id }}" class="btn btn-primary btn-sm pull-right"><span class="fa fa-download"></span></a>
           </div>
           <div class="clearfix"></div>
         {% endfor %}
