@@ -103,9 +103,7 @@ header .branding {
 }
 
 header .subtitle {
-	font-family: 'Merriweather', serif;
 	color: #686868;
-	font-size: 13px;
 	padding-top: 13px;
 }
 
@@ -116,7 +114,7 @@ header .subtitle {
 }
 
 header nav {
-	margin-top: 33px;
+	margin-top: 35px;
 	float: right;
 }
 
