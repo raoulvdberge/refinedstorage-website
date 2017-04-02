@@ -47,16 +47,6 @@
 <div class="row row-offcanvas row-offcanvas-right">
   <div class="col-sm-9">
     {{ wiki.revision.body|raw }}
-
-    <div class="card card-outline-secondary text-xs" style="margin-bottom: 15px">
-      <div class="card-block">
-        <p {% if wiki.revision.reverted_from == 0 %}style="margin: 0px"{% endif %}>Last modified by <a href="/profile/{{ wiki.revision.user.username }}">{{ wiki.revision.user.username }}</a> at {{ wiki.revision.date|date("m/d/Y H:i:s") }}.</p>
-
-        {% if wiki.revision.reverted_from != 0 %}
-          <p style="margin: 0px">Reverted by <a href="/profile/{{ wiki.revision.revertedBy.username }}">{{ wiki.revision.revertedBy.username }}</a> from <a href="/wiki/{{ wiki.url }}/{{ wiki.revision.revertedFrom.hash }}">{{ wiki.revision.revertedFrom.hash }}</a>.</p>
-        {% endif %}
-      </div>
-    </div>
   </div>
   <div class="col-sm-3 sidebar-offcanvas" id="sidebar">
     <div class="card">

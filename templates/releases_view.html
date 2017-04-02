@@ -26,10 +26,6 @@
   <li class="breadcrumb-item active">{{ release.version }}</li>
 </ol>
 
-{% if release.type == 'alpha' or release.type == 'beta' %}
-<div class="alert alert-warning" role="alert">This is a{% if release.type == 'alpha' %}n{% endif %} {{ release.type }} version of Refined Storage. Don't forget to <b>back up your world</b> before playing!</div>
-{% endif %}
-
 <table class="table table-reflow">
   <tr>
     <th scope="row" width="20%">Version</th>
@@ -47,7 +43,9 @@
     <th scope="row" class="thead-default">Minecraft version</th>
     <td>{{ release.mc_version }}</td>
   </tr>
+  <tr>
+    <th scope="row" class="thead-default">Changelog</th>
+    <td><samp>{{ release.changelog|nl2br }}</samp></td>
+  </tr>
 </table>
-
-<samp>{{ release.changelog|nl2br }}</samp>
 {% endblock %}

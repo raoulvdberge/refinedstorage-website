@@ -7,17 +7,16 @@
 
 <form method="post">
   <div class="form-group">
-    <input type="text" name="query" class="form-control" placeholder="Query" value="{{ query }}" id="query">
+    <input type="text" name="query" class="form-control" placeholder="Enter your search query..." value="{{ query }}" id="query">
   </div>
   <button type="submit" class="btn btn-primary">Search</button>
 </form>
 
 {% if show %}
-  <hr>
-  <h5>Results for '{{ query }}' ({{ results|length }})</h5>
+  <h5 style="margin-top: 17px;">Results for '{{ query }}' ({{ results|length }})</h5>
 
   {% if results|length == 0 %}
-  <p>No results were found.</p>
+    <p>No results were found.</p>
   {% endif %}
 
   <ul>

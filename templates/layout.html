@@ -8,13 +8,14 @@
   <meta name="description" content="Refined Storage is a mass storage mod for Minecraft that offers the player a network-based storage system, allowing them to store items and fluids on a massively expandable device network">
   <meta name="robots" content="index, follow">
   <meta property="og:title" content="{{ block('title') }}">
-  <meta property="og:image" content="/assets/logo.png">
+  <meta property="og:image" content="https://refinedstorage.raoulvdberge.com/assets/logo.png">
   <meta property="og:url" content="https://refinedstorage.raoulvdberge.com{{ uri() }}">
   <meta property="og:locale" content="en_US">
   <meta property="og:site_name" content="Refined Storage">
   <title>Refined Storage - {% block title %}{% endblock %}</title>
   {% block css %}
   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="/assets/style.css">
@@ -26,59 +27,35 @@
   {% endblock %}
 </head>
 <body>
-  <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top">
-    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    
-    <a class="navbar-brand" href="/"></a>
-
-    <div class="collapse navbar-collapse" id="navbar">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item {% if uri() == '/' %}active{% endif %}">
-          <a class="nav-link" href="/">Home</a>
-        </li>
-        <li class="nav-item {% if 'wiki' in uri() %}active{% endif %}">
-          <a class="nav-link" href="/wiki">Wiki</a>
-        </li>
-        <li class="nav-item {% if 'releases' in uri() %}active{% endif %}">
-          <a class="nav-link" href="/releases">Releases</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://github.com/raoulvdberge/refinedstorage/issues">Issues</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://minecraft.curseforge.com/projects/refined-storage">CurseForge</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://patreon.com/raoulvdberge">Patreon</a>
-        </li>
-      </ul>
-      <form class="form-inline my-2 my-lg-0" method="post" action="/search">
-        <input class="form-control mr-sm-2" type="text" name="query" placeholder="Search">
-      </form>
+  <header>
+    <div class="container">
+      <div class="logo">
+        <a href="/"><div class="branding"></div></a>
+        <div class="subtitle">An elegant solution to your hoarding problem</div>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/wiki">Wiki</a></li>
+          <li><a href="/releases">Releases</a></li>
+          <li><a href="https://github.com/raoulvdberge/refinedstorage/issues">Issues</a></li>
+          <li><a href="https://minecraft.curseforge.com/projects/refined-storage">CurseForge</a></li>
+          <li><a href="https://patreon.com/raoulvdberge">Patreon</a></li>
+        </ul>
+      </nav>
+      <div class="clearfix"></div>
     </div>
-  </nav>
+    <div class="clearfix"></div>
+  </header>
   <div class="container">
     {% block content %}
     {% endblock %}
-    <hr>
-    <footer>
-      <center>
-        <div class="btn-group btn-group-sm" role="group">
-          {% if user == null %}
-            <a class="btn btn-secondary" href="/login">Log in</a>
-          {% else %}
-            <a class="btn btn-secondary" href="/logout">Log out</a>
-          {% endif %}
-          {% if can('contributor') %}
-            <a class="btn btn-secondary" href="/sessions">Sessions</a>
-          {% endif %}
-        </div>
-        <p>&copy; Refined Storage contributors</p>
-      </center>
-    </footer>
   </div>
+  <footer class="footer">
+    <div class="container">
+      <p class="text-muted">&copy; Refined Storage contributors</p>
+    </div>
+  </footer>
   <script>
     $(function() {
       initTabs = function() {
