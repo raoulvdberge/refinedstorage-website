@@ -159,7 +159,7 @@ header nav ul li a {
 .carousel-image-1 {
 	width: 100%;
 	height: 250px;
-	background: url('/assets/carousel-1.jpg');
+	background: url('https://i.imgur.com/PkXejMC.jpg');
 	background-repeat: no-repeat;
 	background-position: 20% 75%;
 	background-size: cover;
@@ -168,7 +168,7 @@ header nav ul li a {
 .carousel-image-2 {
 	width: 100%;
 	height: 250px;
-	background: url('/assets/carousel-2.jpg');
+	background: url('https://i.imgur.com/QczLPjt.jpg');
 	background-repeat: no-repeat;
 	background-position: 20% 75%;
 	background-size: cover;
@@ -177,7 +177,7 @@ header nav ul li a {
 .carousel-image-3 {
 	width: 100%;
 	height: 250px;
-	background: url('/assets/carousel-3.jpg');
+	background: url('https://i.imgur.com/OLPN0AJ.jpg');
 	background-repeat: no-repeat;
 	background-position: 20% 75%;
 	background-size: cover;
