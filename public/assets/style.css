@@ -3,7 +3,8 @@ html, body {
 }
 
 body, .form-control {
-	font-size: 15px;
+	font-size: 16px;
+	font-family: 'Source Sans Pro', sans-serif;
 }
 
 h1 {
@@ -28,6 +29,28 @@ h3 {
 	background: #fff;
 }
 
+a {
+	color: #04dfd9;
+}
+
+a:hover {
+	color: #04cde3;
+}
+
+.form-control:focus {
+	border: 1px solid #04dfd9;
+}
+
+.btn-primary {
+	background: linear-gradient(45deg, #33C5F2, #0CCFBF);
+	border: none;
+}
+
+.btn-primary:hover {
+	background: linear-gradient(45deg, #49d4ff, #25f0df);
+	border: none;
+}
+
 .btn-secondary {
 	border: 1px solid rgba(0, 0, 0, .125);
 }
@@ -45,7 +68,7 @@ h3 {
 }
 
 h1, h2, h3, h4, .card-header, header nav ul li {
-	font-family: 'Montserrat', sans-serif;
+	font-family: 'Open Sans', sans-serif;
 }
 
 header {
@@ -127,7 +150,7 @@ footer {
     height: 60px;
     background-color: #f7f7f9;
 	margin-top: 20px;
-	padding-top: 20px;
+	padding-top: 18px;
 	color: #636c72;
 }
 
