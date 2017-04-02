@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="/assets/style.css?version=170403">
+  <link rel="stylesheet" href="/assets/style.css?version=170403-2">
   {% endblock %}
   {% block js %}
   <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
@@ -46,6 +46,29 @@
     </div>
     <div class="clearfix"></div>
   </header>
+  {% if uri() == '/' %}
+    <div id="carousel-controls" class="carousel carousel-main slide" data-ride="carousel">
+      <div class="carousel-inner" role="listbox">
+        <div class="carousel-item active">
+          <div class="carousel-image-1"></div>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-image-2"></div>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-image-3"></div>
+        </div>
+      </div>
+      <a class="carousel-control-prev" href="#carousel-controls" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carousel-controls" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+  {% endif %}
   <div class="container">
     {% block content %}
     {% endblock %}
