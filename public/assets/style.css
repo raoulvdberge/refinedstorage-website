@@ -52,6 +52,7 @@ header {
 	padding-top: 20px;
 	padding-bottom: 13px;
 	margin-bottom: 20px;
+	background: #f7f7f9;
 }
 
 header .logo {
@@ -122,11 +123,25 @@ header nav ul li a {
 	}
 }
 
-.footer {
+footer {
     height: 60px;
     background-color: #f7f7f9;
 	margin-top: 20px;
 	padding-top: 20px;
+	color: #636c72;
+}
+
+footer nav {
+	float: right;
+}
+
+footer nav ul {
+	list-style-type: none;
+}
+
+footer nav ul li {
+	float: left;
+	margin-left: 27px;
 }
 
 .container ul {
