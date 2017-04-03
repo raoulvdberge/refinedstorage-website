@@ -301,8 +301,7 @@ $app->get('/', function (Request $request, Response $response) {
             '1.11' => getReleases()->where('mc_version', '1.11.2')->first(),
             '1.10' => getReleases()->where('mc_version', '1.10.2')->first(),
             '1.9' => getReleases()->where('mc_version', '1.9.4')->first()
-        ],
-        'home' => findAndParseWiki($this, '_home')
+        ]
     ]);
 });
 

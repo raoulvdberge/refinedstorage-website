@@ -5,13 +5,16 @@
 {% block content %}
 <div class="row row-offcanvas row-offcanvas-right">
   <div class="col-sm-9">
-    <h1>{{ home.name }}</h1>
-    
-    {{ home.revision.body|raw }}
-
-    {% if can('editor') %}
-      <p><a href="/wiki/{{ home.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a></p>
-    {% endif %}
+    <div class="jumbotron">
+      <h1 class="display-5">Refined Storage</h1>
+      <p class="lead">Refined Storage is a mass storage mod for Minecraft that offers the player a network-based storage system, allowing them to store items and fluids on a massively expandable device network.</p>
+      <hr class="my-4">
+      <p>Items and fluids can be stored in one of the many storage capabilities that the mod offers. Any storage devices connected to the same network are accessible to the player through one simple Grid interface, allowing the player to access the inventories of many devices through a single unified GUI.</p>
+      <p>This mod not only adds storage solutions, but also devices that can be used to manipulate items and blocks in the world and from within the system, such as importers, exporters, constructors, destructors, and more! There are also devices in this mod that allow the player to setup auto-crafting, allowing the crafting of complex recipes in a few simple clicks.</p>
+      <p class="lead">
+        <a class="btn btn-primary btn-lg" href="/wiki/getting-started" role="button">Get started</a>
+      </p>
+    </div>
 
     <div id="accordion" role="tablist" aria-multiselectable="true">
       <div class="card">

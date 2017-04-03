@@ -20,8 +20,14 @@ h3 {
 	font-size: 18px;
 }
 
-.btn, .btn-group .btn, .card, .breadcrumb, .nav-link .active, .alert, .nav-tabs .nav-link, .form-control {
+.btn, .btn-group .btn, .card, .breadcrumb, .nav-link .active, .alert, .nav-tabs .nav-link, .form-control, .jumbotron {
 	border-radius: 0px;
+}
+
+.jumbotron {
+	background: #f7f7f9;
+	padding-top: 45px;
+	padding-bottom: 40px;
 }
 
 .breadcrumb {
@@ -147,7 +153,7 @@ header nav ul li a {
 .carousel-main {
 	height: 250px;
 	margin-top: -20px;
-	margin-bottom: 25px;
+	margin-bottom: 20px;
 }
 
 @media screen and (max-width: 850px) {
