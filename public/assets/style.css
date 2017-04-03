@@ -147,6 +147,15 @@ header nav ul li a {
 	font-size: 17px;
 }
 
+header nav ul li.active a {
+	color: #04dfd9;
+}
+
+header nav ul li a:hover {
+	color: #04dfd9;
+	text-decoration: none;
+}
+
 @media screen and (max-width: 1000px) {
 	header nav {
 		float: none;

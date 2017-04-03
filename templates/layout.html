@@ -34,9 +34,9 @@
       </div>
       <nav>
         <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/wiki">Wiki</a></li>
-          <li><a href="/releases">Releases</a></li>
+          <li {% if uri() == '/' %}class="active"{% endif %}><a href="/">Home</a></li>
+          <li {% if 'wiki' in uri() %}class="active"{% endif %}><a href="/wiki">Wiki</a></li>
+          <li {% if 'releases' in uri() %}class="active"{% endif %}><a href="/releases">Releases</a></li>
           <li><a href="https://github.com/raoulvdberge/refinedstorage/issues">Issues</a></li>
           <li><a href="https://minecraft.curseforge.com/projects/refined-storage">CurseForge</a></li>
           <li><a href="https://patreon.com/raoulvdberge">Patreon</a></li>
