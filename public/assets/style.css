@@ -1,5 +1,6 @@
 html, body {
 	overflow-x: hidden; /* Prevent scroll on narrow devices */
+	height: 100%;
 }
 
 body, .form-control {
@@ -20,6 +21,15 @@ h3 {
 	font-size: 18px;
 }
 
+#wrap {
+	min-height: 100%;
+}
+
+#main {
+	overflow: auto;
+	padding-bottom: 80px; /* This needs to be bigger than footer height*/
+}
+
 .btn, .btn-group .btn, .card, .breadcrumb, .nav-link .active, .alert, .nav-tabs .nav-link, .form-control, .jumbotron {
 	border-radius: 0px;
 }
@@ -37,6 +47,7 @@ h3 {
 	background: #f7f7f9;
 	padding-top: 45px;
 	padding-bottom: 40px;
+	margin-bottom: 15px;
 }
 
 .breadcrumb {
@@ -208,10 +219,12 @@ header nav ul li a:hover {
 }
 
 footer {
-    height: 60px;
+	position: relative;
+	margin-top: -60px; /* Negative value of footer height */
+	height: 60px;
+	clear: both;
+	padding-top: 20px;
     background-color: #f7f7f9;
-	margin-top: 20px;
-	padding-top: 18px;
 	color: #636c72;
 }
 
@@ -236,11 +249,7 @@ footer nav ul li {
 	margin-bottom: 15px;
 }
 
-.sidebar ul:last-child {
-	margin-bottom: 0px;
-}
-
-.alert ul {
+.sidebar ul:last-child, p:last-child, .table:last-child, .alert ul {
 	margin-bottom: 0px;
 }
 

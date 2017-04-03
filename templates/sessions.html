@@ -33,7 +33,7 @@
 </table>
 
 <center>
-  <div class="btn-group" role="group">
+  <div class="btn-group" role="group" style="margin-bottom: 0px">
     <a class="btn btn-secondary {% if page == 0 %}disabled{% endif %}" href="?page={{ page }}"><span class="fa fa-angle-left"></span></a>
     {% for i in 1..pagesTotal %}
       <a class="btn btn-secondary {% if page + 1 == i %}active{% endif %}" href="?page={{ i }}">{{ i }}</a>

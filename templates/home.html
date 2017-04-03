@@ -67,7 +67,7 @@
         {% for name, release in releases %}
           <div class="pull-left">
             <b>Minecraft {{ name }}</b>
-            <p {% if loop.last %}style="margin-bottom: 0px"{% endif %}>Refined Storage {{ release.version }}</p>
+            <p {% if not loop.last %}style="margin-bottom: 10px"{% endif %}>Refined Storage {{ release.version }}</p>
           </div>
           <div class="pull-right">
             <a style="margin-top: 14px" href="/releases/{{ release.id }}" class="btn btn-primary btn-sm pull-right"><span class="fa fa-download"></span></a>
