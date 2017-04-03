@@ -24,6 +24,15 @@ h3 {
 	border-radius: 0px;
 }
 
+.badge {
+	border-radius: 0px;
+	font-weight: normal;
+}
+
+.badge-info {
+	background: #04dfd9;
+}
+
 .jumbotron {
 	background: #f7f7f9;
 	padding-top: 45px;
