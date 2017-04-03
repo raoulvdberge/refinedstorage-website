@@ -27,7 +27,7 @@ h3 {
 
 #main {
 	overflow: auto;
-	padding-bottom: 80px; /* This needs to be bigger than footer height*/
+	padding-bottom: 80px; /* This needs to be bigger than footer height */
 }
 
 .btn, .btn-group .btn, .card, .breadcrumb, .nav-link .active, .alert, .nav-tabs .nav-link, .form-control, .jumbotron, .editor-toolbar, .CodeMirror, .tooltip-inner {
