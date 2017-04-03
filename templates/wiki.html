@@ -52,24 +52,20 @@
     <div class="card">
       <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs">
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" data-tab="guides" href="#">Guides</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" data-tab="blocks" href="#">Blocks</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" data-tab="items" href="#">Items</a>
-          </li>
+          {% for tab in sidebarTabs %}
+            <li class="nav-item">
+              <a class="nav-link {% if sidebarTabCurrent == tab.name %}active{% endif %}" data-toggle="tab" data-tab="{{ tab.name }}" href="#">{{ tab.name|capitalize }}</a>
+            </li>
+          {% endfor %}
         </ul>
       </div>
       <div class="card-block">
-      {% for sidebarTab in sidebarTabs %}
-        <div style="display: none" class="sidebar" id="{{ sidebarTab.url }}">
-          {{ sidebarTab.revision.body|raw }}
+      {% for tab in sidebarTabs %}
+        <div {% if tab.name != sidebarTabCurrent %}style="display: none"{% endif %} class="sidebar" id="{{ tab.data.url }}">
+          {{ tab.data.revision.body|raw }}
 
           {% if can('editor') %}
-            <a href="/wiki/{{ sidebarTab.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a>
+            <a href="/wiki/{{ tab.data.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a>
           {% endif %}
         </div>
       {% endfor %}
@@ -77,4 +73,20 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block footerJs %}
+  {{ parent() }}
+  <script>
+  $('[data-toggle="tab"]').click(function() {
+    name = $(this).attr('data-tab');
+
+    $('.sidebar').css('display', 'none');
+    $('#_sidebar_' + name).css('display', 'block');
+
+    initTooltips();
+
+    $.post('/wiki/update-tab', { 'tab': name });
+  });
+  </script>
 {% endblock %}

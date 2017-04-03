@@ -17,10 +17,10 @@
 <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="/assets/style.css?version=170403-4">
+<link rel="stylesheet" href="/assets/style.css?version=170403-5">
 {% endblock %}
 {% block js %}
-<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 {% endblock %}
@@ -97,34 +97,18 @@
     </nav>
   </div>
 </footer>
+{% block footerJs %}
 <script>
   $(function() {
-    initTabs = function() {
+    initTooltips = function() {
       $('[data-toggle="tooltip"]').tooltip({
         animation: false
       });
     };
-    initTabs();
-
-    $('[data-toggle="tab"]').click(function() {
-      tab = $(this).attr('data-tab');
-  
-      $('.sidebar').css('display', 'none');
-      $('#_sidebar_' + tab).css('display', 'block');
-
-      localStorage.setItem('tab', tab);
-      initTabs();
-    });
-
-    tab = localStorage.getItem('tab');
-      
-    if (tab == null) {
-      tab = 'guides';
-    }
-    
-    $('[data-tab="' + tab + '"]').click();
+    initTooltips();
   });
 </script>
+{% endblock %}
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

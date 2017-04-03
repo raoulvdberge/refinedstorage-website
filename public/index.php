@@ -7,6 +7,8 @@ $roles = [
     'user' => 0
 ];
 
+$wikiSidebarTabs = ['guides', 'blocks', 'items'];
+
 date_default_timezone_set('Europe/Brussels');
 
 session_start();
@@ -740,11 +742,25 @@ $app->get('/wiki/{url}/{revision}/revert', function(Request $request, Response $
     return $response->withHeader('Location', '/wiki/' . $wiki->url);
 })->add(new NeedsAuthentication($roles['editor']));
 
+$app->post('/wiki/update-tab', function(Request $request, Response $response, $args) use ($wikiSidebarTabs) {
+    if (isset($request->getParams()['tab'])) {
+        $tab = $request->getParams()['tab'];
+
+        if (in_array($tab, $wikiSidebarTabs)) {
+            $_SESSION['tab'] = $tab;
+        }
+    }
+
+    return $response;
+});
+
 $app->get('/wiki/{url}[/{revision}]', function(Request $request, Response $response, $args) {
     return handleWiki($this, $request, $response, $args);
 });
 
 function handleWiki(\Slim\Container $container, Request $request, Response $response, $args) {
+    global $wikiSidebarTabs;
+
     $wiki = findAndParseWiki($container, $args['url'], isset($args['revision']) ? $args['revision'] : null);
 
     if ($wiki == null) {
@@ -752,11 +768,19 @@ function handleWiki(\Slim\Container $container, Request $request, Response $resp
     }
 
     $sidebarTabs = [];
-    foreach (['guides', 'blocks', 'items'] as $item) {
-        $sidebarTabs[] = findAndParseWiki($container, '_sidebar_' . $item);
+    foreach ($wikiSidebarTabs as $name) {
+        $sidebarTabs[] = [
+            'name' => $name,
+            'data' => findAndParseWiki($container, '_sidebar_' . $name)
+        ];
     }
 
-    return $container->view->render($response, 'wiki.html', ['wiki' => $wiki, 'sidebarTabs' => $sidebarTabs, 'old' => isset($args['revision'])]);
+    return $container->view->render($response, 'wiki.html', [
+        'wiki' => $wiki,
+        'sidebarTabs' => $sidebarTabs,
+        'sidebarTabCurrent' => $_SESSION['tab'] ?? $wikiSidebarTabs[0],
+        'old' => isset($args['revision'])
+    ]);
 }
 
 $app->get('/login', function(Request $request, Response $response) {
