@@ -46,11 +46,5 @@ CREATE TABLE "wiki_revisions" (
   "hash" text NOT NULL
 );
 
-DROP TABLE IF EXISTS "sessions";
-CREATE TABLE "sessions" (
-    "id"   INTEGER  PRIMARY KEY AUTOINCREMENT,
-    "date" DATETIME
-);
-
 
 -- 

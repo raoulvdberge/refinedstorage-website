@@ -85,9 +85,6 @@
     <nav>
       <ul>
         <li><a href="/search">Search</a></li>
-        {% if can('contributor') %}
-          <li><a href="/sessions">Sessions</a></li>
-        {% endif %}
         {% if user == null %}
           <li><a href="/login">Login</a></li>
         {% else %}

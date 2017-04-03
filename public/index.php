@@ -176,15 +176,6 @@ class WikiRevision extends Illuminate\Database\Eloquent\Model
     }
 }
 
-class Session extends Illuminate\Database\Eloquent\Model
-{
-    public $timestamps = false;
-}
-
-function getSessionsFrom($date) {
-    return Session::where('date', '>=', strtotime($date))->where('date', '<',  strtotime('+1 day', strtotime($date)))->get();
-}
-
 $app = new \Slim\App;
 
 $app->add(new Maintenance());
@@ -848,40 +839,7 @@ $app->post('/search', function(Request $request, Response $response) {
     return $this->view->render($response, 'search.html', ['show' => !empty($query), 'results' => $wikis, 'query' => $query]);
 });
 
-$app->get('/sessions', function(Request $request, Response $response) {
-    $date = '2017-03-08';
-    $end = date('Y-m-d');
-
-    $sessions = [];
-
-    while (strtotime($date) <= strtotime($end)) {
-        $sessions[] = ['date' => $date, 'count' => count(getSessionsFrom($date))];
-
-        $date = date('Y-m-d', strtotime('+1 day', strtotime($date)));
-    }
-
-    $sessions = array_reverse($sessions);
-
-    $perPage = 20;
-    $page = 0;
-    $pagesTotal = ceil(count($sessions) / $perPage);
-
-    if (isset($request->getParams()['page']) && ctype_digit($request->getParams()['page'])) {
-        $page = $request->getParams()['page'] - 1;
-        $page = max($page, 0);
-        $page = min($page, $pagesTotal - 1);
-    }
-
-    $sessions = array_slice($sessions, $page * $perPage, $perPage);
-
-    return $this->view->render($response, 'sessions.html', ['sessions' => $sessions, 'pagesTotal' => $pagesTotal, 'page' => $page]);
-})->add(new NeedsAuthentication($roles['contributor']));
-
 $app->get('/update', function(Request $request, Response $response) {
-    $session = new Session();
-    $session->date = time();
-    $session->save();
-
     $updateData = $this->cache->getItem('update');
 
     if (!$updateData->isHit()) {
