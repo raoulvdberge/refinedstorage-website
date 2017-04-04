@@ -1,0 +1,94 @@
+body {
+	background: #1E2124;
+}
+
+.card, .card-header, .nav-tabs .nav-link.active, .editor-toolbar, .CodeMirror, .btn-secondary.disabled, .btn-secondary:disabled {
+	border: none;
+}
+
+.nav-tabs .nav-link:hover {
+	border: none;
+}
+
+.nav-tabs .nav-link.active:hover {
+	border: none;
+}
+
+header, footer, .card-header, .btn-secondary, .thead-default th {
+	background: #2E3136;
+}
+
+.btn-secondary:hover, .btn-secondary.active {
+	background: #27292D;
+	color: #fff;
+	border: 1px solid #282B2F;
+}
+
+.btn-secondary.disabled, .btn-secondary:disabled {
+	color: #5D5F61;
+	background-color: #3B3E44;
+}
+
+.table-danger, .table-danger>td, .table-danger>th, .alert-danger {
+	background: #F04747;
+}
+
+.alert-danger {
+	color: #fff;
+	border: none;
+}
+
+.alert-warning {
+	background: #8a6d3b;
+	color: #fff;
+	border: none;
+}
+
+header .subtitle {
+	color: #FFF;
+}
+
+.jumbotron, .card-block, .breadcrumb, .nav-tabs .nav-link.active {
+	background: #36393E;
+}
+
+.form-control, .editor-toolbar, .CodeMirror {
+	background: #424549;
+	color: #C9CACC;
+	border: none;
+}
+
+.form-control {
+	border: 1px solid transparent;
+}
+
+.form-control:focus {
+	background: #424549;
+	color: #C9CACC;
+}
+
+.editor-toolbar a {
+	color: #FFF !important;
+} 
+
+.breadcrumb-item.active {
+	color: #5D5F61;
+}
+
+header nav ul li a, .btn-secondary, body, .nav-tabs .nav-link.active {
+	color: #FFF;
+}
+
+.table thead th {
+	border: 0px;
+	color: #FFF;
+}
+
+.table tbody+tbody, tr {
+	border-top: 2px solid #1E2124;
+}
+
+.nav-tabs .nav-link {
+	position: relative;
+	top: 1px;
+}

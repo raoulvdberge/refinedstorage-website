@@ -8,6 +8,7 @@ $roles = [
 ];
 
 $wikiSidebarTabs = ['guides', 'blocks', 'items'];
+$themes = ['normal', 'dark'];
 
 date_default_timezone_set('Europe/Brussels');
 
@@ -60,6 +61,24 @@ class Maintenance
     {
         if (getenv('RS_MAINTENANCE') == 'true' && $_SERVER['REQUEST_URI'] != '/maintenance') {
             return $response->withStatus(503)->withHeader('Location', '/maintenance');
+        }
+
+        return $next($request, $response);
+    }
+}
+
+class ThemeSwitcher
+{
+    public function __invoke($request, $response, $next)
+    {
+        global $themes;
+
+        if (isset($request->getParams()['theme'])) {
+            $theme = $request->getParams()['theme'];
+
+            if (in_array($theme, $themes)) {
+                $_SESSION['theme'] = $theme;
+            }
         }
 
         return $next($request, $response);
@@ -179,12 +198,13 @@ class WikiRevision extends Illuminate\Database\Eloquent\Model
 $app = new \Slim\App;
 
 $app->add(new Maintenance());
+$app->add(new ThemeSwitcher());
 
 $container = $app->getContainer();
 $container['cache'] = function($container) {
     return new FilesystemAdapter();
 };
-$container['view'] = function ($container) use ($roles) {
+$container['view'] = function ($container) use ($roles, $themes) {
     $view = new \Slim\Views\Twig('../templates');
     
     $basePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
@@ -199,6 +219,10 @@ $container['view'] = function ($container) use ($roles) {
 
     $view->getEnvironment()->addFunction(new Twig_SimpleFunction('uri', function () {
         return $_SERVER['REQUEST_URI'];
+    }));
+
+    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('theme', function () use ($themes) {
+        return $_SESSION['theme'] ?? $themes[0];
     }));
 
     $view->getEnvironment()->addFunction(new Twig_SimpleFunction('getUser', function () {

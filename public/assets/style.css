@@ -30,7 +30,7 @@ h3 {
 	padding-bottom: 80px; /* This needs to be bigger than footer height */
 }
 
-.btn, .btn-group .btn, .card, .breadcrumb, .nav-link .active, .alert, .nav-tabs .nav-link, .form-control, .jumbotron, .editor-toolbar, .CodeMirror, .tooltip-inner {
+.btn, .btn-group .btn, .card, .card-header:first-child, .breadcrumb, .nav-link .active, .alert, .nav-tabs .nav-link, .form-control, .jumbotron, .editor-toolbar, .CodeMirror, .tooltip-inner {
 	border-radius: 0px;
 }
 
