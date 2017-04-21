@@ -53,9 +53,10 @@
         <p class="card-text">For Minecraft {{ latest.mc_version }}.</p>
         <a href="/releases/{{ latest.id }}" class="btn btn-primary">Download</a>
 
-        <div class="clearfix" style="margin-bottom: 15px"></div>
-
-        <small class="card-text">Requires <a href="https://minecraft.curseforge.com/projects/mcmultipart">MCMultiPart</a>.</small>
+        {% if latest.mc_version == '1.10.2' %}
+          <div class="clearfix" style="margin-bottom: 15px"></div>
+          <small class="card-text">Requires <a href="https://minecraft.curseforge.com/projects/mcmultipart">MCMultiPart</a>.</small>
+        {% endif %}
       </div>
     </div>
 
