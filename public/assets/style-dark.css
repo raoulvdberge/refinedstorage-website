@@ -44,8 +44,13 @@ header, footer, .card-header, .btn-secondary, .thead-default th {
 	border: none;
 }
 
-header .subtitle {
+header .subtitle, pre {
 	color: #FFF;
+}
+
+code {
+	background: #2E3136;
+	color: #fff;
 }
 
 .jumbotron, .card-block, .breadcrumb, .nav-tabs .nav-link.active {
