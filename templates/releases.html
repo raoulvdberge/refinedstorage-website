@@ -43,7 +43,7 @@
     {% for release in releases %}
     <tr {% if release.status == 1 %}class="table-danger"{% endif %}>
       <td><a href="/releases/{{ release.id }}">Refined Storage {{ release.version }}</a> {{ getReleaseBadge(release.type)|raw }}</td>
-      <td>{{ release.date|date("m/d/Y") }}</td>
+      <td>{{ release.date|date("Y-m-d") }}</td>
       <td>{{ release.mc_version }}</td>
       <td><a href="/profile/{{ release.user.username }}">{{ release.user.username }}</a></td>
       <td><center><a href="{{ release.url }}/download" class="btn btn-secondary btn-sm"><span class="fa fa-download"></span></a></center></td>

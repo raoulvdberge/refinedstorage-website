@@ -27,7 +27,7 @@
     {% for revision in revisions %}
     <tr>
       <td>{{ id }}</td>
-      <td><a href="/wiki/{{ wiki.url }}/{{ revision.hash }}">{{ revision.date|date("m/d/Y H:i:s") }}</a></td>
+      <td><a href="/wiki/{{ wiki.url }}/{{ revision.hash }}">{{ revision.date|date("Y-m-d H:i:s") }}</a></td>
       <td><a href="/profile/{{ revision.user.username }}">{{ revision.user.username }}</a></td>
       <td>
         {% if revision.reverted_from != 0 %}

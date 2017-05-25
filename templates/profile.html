@@ -6,12 +6,8 @@
 <h1>{{ profile.username }}</h1>
 <table class="table table-reflow">
   <tr>
-    <th scope="row" width="20%">Version</th>
-    <td><span>{{ profile.date_created|date("m/d/Y H:i:s") }}</span></td>
-  </tr>
-  <tr>
     <th scope="row">Registration date</th>
-    <td><span>{{ profile.date_created|date("m/d/Y H:i:s") }}</span></td>
+    <td><span>{{ profile.date_created|date("Y-m-d H:i:s") }}</span></td>
   </tr>
   <tr>
     <th scope="row">Role</th>
@@ -35,7 +31,7 @@
       {% for release in releaseActivity %}
       <tr {% if release.status == 1 %}class="table-danger"{% endif %}>
         <td><a href="/releases/{{ release.id }}">Refined Storage {{ release.version }}</a> {{ getReleaseBadge(release.type)|raw }}</td>
-        <td>{{ release.date|date("m/d/Y") }}</td>
+        <td>{{ release.date|date("Y-m-d") }}</td>
         <td>{{ release.mc_version }}</td>
       </tr>
     </tbody>
@@ -58,7 +54,7 @@
       {% for revision in wikiActivity %}
       <tr>
         <td><a href="/wiki/{{ revision.wiki.url }}/{{ revision.hash }}">{{ revision.wiki.name }}</a></td>
-        <td>{{ revision.date|date("m/d/Y H:i:s") }}</td>
+        <td>{{ revision.date|date("Y-m-d H:i:s") }}</td>
       </tr>
       {% endfor %}
     </tbody>
