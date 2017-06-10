@@ -127,7 +127,16 @@ function getLatestStableRelease() {
     if (getUser() == null) {
         $releases = $releases->where('status', '=', 0);
     }
-    return $releases->first();
+    // If we release stable 1.2 after stable 1.4, 1.2 would be considered the "newer" stable. Avoid that.
+    $stable = null;
+    foreach ($releases->get() as $release) {
+        if ($stable == null) {
+           $stable = $release;
+        } else if (version_compare($release->version, $stable->version) == 1) {
+           $stable = $release;
+        }
+    }
+    return $stable;
 }
 
 function getRelease($id) {
