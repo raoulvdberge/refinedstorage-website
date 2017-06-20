@@ -296,9 +296,11 @@ img.wiki-icon-tooltip {
 .creeperhost-logo {
 	background: url('/assets/creeperhost-logo.png');
 	background-size: 100% 100%;
-	width: 128px;
+	background-position-x: 4px;
+	width: 124px;
 	height: 32px;
 	float: right;
+	margin-top: -5px;
 }
 
 .creeperhost-logo a {
