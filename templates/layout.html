@@ -84,22 +84,28 @@
   <div class="container">
     <div class="pull-left">
       <p>&copy; Refined Storage contributors</p>
+      <nav>
+        <ul>
+          <li><a href="/search">Search</a></li>
+          {% if theme() == 'normal' %}
+            <li><a href="?theme=dark">Dark</a></li>
+          {% else %}
+            <li><a href="?theme=normal">Light</a></li>
+          {% endif %}
+          {% if user == null %}
+            <li><a href="/login">Login</a></li>
+          {% else %}
+            <li><a href="/logout">Log out</a></li>
+          {% endif %}
+        </ul>
+      </nav>
     </div>
-    <nav>
-      <ul>
-        <li><a href="/search">Search</a></li>
-        {% if theme() == 'normal' %}
-          <li><a href="?theme=dark">Dark</a></li>
-        {% else %}
-          <li><a href="?theme=normal">Light</a></li>
-        {% endif %}
-        {% if user == null %}
-          <li><a href="/login">Login</a></li>
-        {% else %}
-          <li><a href="/logout">Log out</a></li>
-        {% endif %}
-      </ul>
-    </nav>
+    <div class="pull-right">
+      <p>
+        Sponsored by CreeperHost
+        <div class="creeperhost-logo"><a href="https://www.creeperhost.net/partner/refinedstorage945"></a></div>
+      </p>
+    </div>
   </div>
 </footer>
 {% block footerJs %}
