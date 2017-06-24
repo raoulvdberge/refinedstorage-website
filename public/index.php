@@ -211,7 +211,7 @@ $app->add(new ThemeSwitcher());
 
 $container = $app->getContainer();
 $container['cache'] = function($container) {
-    return new FilesystemAdapter();
+    return new FilesystemAdapter('', 0, __DIR__ . '/../cache/');
 };
 $container['view'] = function ($container) use ($roles, $themes) {
     $view = new \Slim\Views\Twig('../templates');
@@ -500,16 +500,6 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
         $parser = new Parsedown();
 
         $revision['body'] = $parser->text($revision['body']);
-        $revision['body'] = preg_replace_callback('/\\[\\[\\#(.+?)\\]\\]/', function ($matches) use ($wiki, $parent) {
-            $var = $matches[1];
-
-            switch ($var) {
-                case 'name':
-                    return $parent != null ? $parent['name'] : $wiki['name'];
-                default:
-                    return 'Unknown variable';
-            }
-        }, $revision['body']);
         $revision['body'] = preg_replace_callback('/\\[\\[\\@(.+?)\\]\\]/', function ($matches) use ($wiki, $container) {
             $otherWiki = getWikiByName($matches[1]);
 
@@ -522,6 +512,16 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
                 return 'Unknown wiki reference';
             }
             return '';
+        }, $revision['body']);
+        $revision['body'] = preg_replace_callback('/\\[\\[\\#(.+?)\\]\\]/', function ($matches) use ($wiki, $parent) {
+            $var = $matches[1];
+
+            switch ($var) {
+                case 'name':
+                    return $parent != null ? $parent['name'] : $wiki['name'];
+                default:
+                    return 'Unknown variable';
+            }
         }, $revision['body']);
         $revision['body'] = preg_replace_callback("/\\[\\[(.+?)(\\=(.+?))?\\]\\]/", function ($matches) {
             $tags = function($reference) {
@@ -551,14 +551,17 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
         }, $revision['body']);
         $revision['body'] = str_replace('<table>', '<table class="table">', $revision['body']);
 
-        // omit <p> tags
+        // omit first <p> tag for include
         if ($parent != null) {
-            $revision['body'] = substr($revision['body'], 3, -4);
+            $revision['body'] = substr($revision['body'], 3);
         }
 
         $body->set($revision['body']);
 
-        $container->cache->save($body);
+        // don't pollute the cache due to include
+        if ($parent == null) {
+            $container->cache->save($body);
+        }
     } else {
         $revision['body'] = $body->get();
     }
