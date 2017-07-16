@@ -441,14 +441,32 @@ $app->post('/releases/{id}/edit', function (Request $request, Response $response
     }
 })->add(new NeedsAuthentication($roles['contributor']));
 
-$app->get('/releases/{id}', function (Request $request, Response $response, $args) {
-	$release = getRelease($args['id']);
-	
-    if ($release == null) {
-		return $response->withStatus(404);
-	}
+$app->get('/releases/{id:[0-9|\+]+}', function (Request $request, Response $response, $args) {
+    $releases = [];
 
-	return $this->view->render($response, 'releases_view.html', ['release' => $release]);
+    if (stristr($args['id'], ' ')) {
+        $ids = explode(' ', $args['id']);
+
+        foreach ($ids as $id) {
+            $release = getRelease($id);
+        
+            if ($release == null) {
+                return $response->withStatus(404);
+            }
+
+            $releases[] = $release;
+        }
+    } else {
+        $release = getRelease($args['id']);
+        
+        if ($release == null) {
+            return $response->withStatus(404);
+        }
+
+        $releases[] = $release;
+    }
+
+	return $this->view->render($response, 'releases_view.html', ['releases' => $releases]);
 });
 
 $app->get('/releases/{id}/delete', function(Request $request, Response $response, $args) {
