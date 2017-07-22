@@ -93,6 +93,24 @@ a:hover {
 	border-bottom: #f7f7f9;
 }
 
+@media screen and (max-width: 1000px) {
+	th.can-hide, td.can-hide {
+		display: none;
+	}
+}
+
+@media screen and (max-width: 700px) {
+	span.can-hide {
+		display: none;
+	}
+}
+
+@media screen and (max-width: 800px) {
+	a.can-hide {
+		display: none;
+	}
+}
+
 h1, h2, h3, h4, .card-header, header nav ul li {
 	font-family: 'Open Sans', sans-serif;
 }
@@ -151,6 +169,10 @@ header nav ul {
 header nav ul li {
 	float: left;
 	margin-right: 27px;
+}
+
+header nav ul li:last-child {
+	margin-right: 0px;
 }
 
 header nav ul li a {
@@ -314,6 +336,10 @@ img.wiki-icon-tooltip {
 }
 
 @media screen and (max-width: 470px) {
+	footer {
+		height: 180px;
+	}
+
 	.creeperhost {
 		float: left;
 		margin-top: 15px;
@@ -328,6 +354,17 @@ img.wiki-icon-tooltip {
 
 /* HACK for Bootstrap responsive positioning */
 @media screen and (max-width: 578px) {
+	#sidebar {
+		margin-top: 15px;
+	}
+}
+
+@media screen and (max-width: 1200px) {
+	#sidebar, #sidebar-left {
+		min-width: 100%;
+		flex: 1;
+	}
+	
 	#sidebar {
 		margin-top: 15px;
 	}

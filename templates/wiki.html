@@ -37,7 +37,7 @@
 </ol>
 
 {% if old %}
-<div class="alert alert-warning" role="alert">Watching revision <strong>{{ wiki.revision.hash }}</strong>.</div>
+<div class="alert alert-warning" role="alert">Revision <strong>{{ wiki.revision.hash }}</strong> by <a href="/profile/{{ wiki.revision.user.username }}">{{ wiki.revision.user.username }}</a>.</div>
 {% endif %}
 
 {% if wiki.status == 1 %}
