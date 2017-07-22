@@ -150,7 +150,7 @@ header nav ul {
 
 header nav ul li {
 	float: left;
-	margin-left: 27px;
+	margin-right: 27px;
 }
 
 header nav ul li a {
@@ -311,4 +311,24 @@ img.wiki-icon-tooltip {
 
 .creeperhost-logo a:hover {
 	text-decoration: none;
+}
+
+@media screen and (max-width: 470px) {
+	.creeperhost {
+		float: left;
+		margin-top: 15px;
+		clear: both;
+	}
+
+	.creeperhost-logo {
+		float: left;
+		margin-bottom: 15px;
+	}
+}
+
+/* HACK for Bootstrap responsive positioning */
+@media screen and (max-width: 578px) {
+	#sidebar {
+		margin-top: 15px;
+	}
 }
