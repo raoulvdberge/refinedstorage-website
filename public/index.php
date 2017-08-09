@@ -324,7 +324,7 @@ $app->get('/', function (Request $request, Response $response) {
     return $this->view->render($response, 'home.html', [
         'latest' => getLatestStableRelease(),
         'releases' => [
-            '1.12' => getReleases()->where('mc_version', '1.12')->first(),
+            '1.12' => getReleases()->where('mc_version', '1.12.1')->first(),
             '1.11' => getReleases()->where('mc_version', '1.11.2')->first(),
             '1.10' => getReleases()->where('mc_version', '1.10.2')->first(),
             '1.9' => getReleases()->where('mc_version', '1.9.4')->first()
@@ -903,7 +903,7 @@ $app->get('/update', function(Request $request, Response $response) {
         $data['website'] = 'https://refinedstorage.raoulvdberge.com/';
         $data['promos'] = [];
 
-        foreach (['1.12', '1.11.2', '1.11', '1.10.2', '1.9.4', '1.9'] as $mcVersion) {
+        foreach (['1.12.1', '1.12', '1.11.2', '1.11', '1.10.2', '1.9.4', '1.9'] as $mcVersion) {
             $data[$mcVersion] = [];
 
             $versions = getReleases()->where('mc_version', '=', $mcVersion)->where('status', '=', '0')->get();

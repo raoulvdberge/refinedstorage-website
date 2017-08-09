@@ -6,7 +6,7 @@
 <h1>{{ profile.username }}</h1>
 <table class="table table-reflow">
   <tr>
-    <th scope="row">Registration date</th>
+    <th scope="row">Registration<span class="can-hide"> date</span></th>
     <td><span>{{ profile.date_created|date("Y-m-d H:i:s") }}</span></td>
   </tr>
   <tr>
@@ -22,8 +22,8 @@
   <table class="table">
     <thead class="thead-default">
       <tr>
-        <th width="40%">Version</th>
-        <th width="30%">Date<span class="can-hide"> released</span></th>
+        <th width="30%">Version</th>
+        <th width="40%">Date<span class="can-hide"> released</span></th>
         <th width="30%">Minecraft<span class="can-hide"> version</span></th>
       </tr>
     </thead>
