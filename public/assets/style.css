@@ -34,6 +34,11 @@ h3 {
 	border-radius: 0px;
 }
 
+/* Popper.js is broken? */
+.tooltip {
+	margin-left: 10px;
+}
+
 .badge {
 	border-radius: 0px;
 	font-weight: normal;
@@ -382,3 +387,14 @@ img.wiki-icon-tooltip {
 		margin-top: 15px;
 	}
 }
+
+.card-header-tabs li {
+	font-size: 15px;
+}
+
+/* Get Bootstrap v4 alpha 6 white buttons back */
+.btn-secondary{color:#292b2c;background-color:#fff;border-color: 1px solid rgba(0, 0, 0, .125);}
+.btn-secondary:hover{color:#292b2c;background-color:#e6e6e6;border-color:#adadad}
+.btn-secondary.focus,.btn-secondary:focus{-webkit-box-shadow:0 0 0 2px rgba(204,204,204,.5);box-shadow:0 0 0 2px rgba(204,204,204,.5)}
+.btn-secondary.disabled,.btn-secondary:disabled{background-color:#fff;border-color:#ccc}
+.btn-secondary.active,.btn-secondary:active,.show>.btn-secondary.dropdown-toggle{color:#292b2c;background-color:#e6e6e6;background-image:none;border-color:#adadad}

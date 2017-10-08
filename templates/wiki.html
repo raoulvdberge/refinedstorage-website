@@ -59,7 +59,7 @@
           {% endfor %}
         </ul>
       </div>
-      <div class="card-block">
+      <div class="card-body">
       {% for tab in sidebarTabs %}
         <div {% if tab.name != sidebarTabCurrent %}style="display: none"{% endif %} class="sidebar" id="{{ tab.data.url }}">
           {{ tab.data.revision.body|raw }}

@@ -23,7 +23,7 @@
 {% for release in releases %}
   {% if releases|length > 1 %}
     <div class="card" style="{% if not loop.last %}margin-bottom: 15px; {% endif %}padding: 3px">
-      <div class="card-block">
+      <div class="card-body">
         <h4 class="card-title float-lg-left" style="padding-top: 5px">{{ release.version }}</h4>
 
         {% include 'releases_view_buttons.html' with {'release': release} %}

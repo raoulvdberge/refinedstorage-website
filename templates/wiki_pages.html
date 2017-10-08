@@ -13,9 +13,9 @@
 <table class="table">
   <thead class="thead-default">
     <tr>
-      <th width="40%">Name</th>
-      <th width="30%">URL</th>
-      <th width="30%">Last modified by</th>
+      <th width="30%">Name</th>
+      <th width="40%">URL</th>
+      <th width="30%" class="can-hide">Last modified by</th>
     </tr>
   </thead>
   <tbody>
@@ -23,7 +23,7 @@
     <tr {% if wiki.status == 1 %}class="table-danger"{% endif %}>
       <td><a href="/wiki/{{ wiki.url }}">{{ wiki.name }}</td>
       <td>{{ wiki.url }}</td>
-      <td><a href="/profile/{{ wiki.last_revision.user.username }}">{{ wiki.last_revision.user.username }}</a> at {{ wiki.last_revision.date|date("m/d/Y") }}</td>
+      <td class="can-hide"><a href="/profile/{{ wiki.last_revision.user.username }}">{{ wiki.last_revision.user.username }}</a> at {{ wiki.last_revision.date|date("m/d/Y") }}</td>
     </tr>
   </tbody>
   {% endfor %}

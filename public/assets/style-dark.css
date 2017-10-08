@@ -7,11 +7,11 @@ body {
 }
 
 .nav-tabs .nav-link:hover {
-	border: none;
+	border: 1px solid transparent;
 }
 
 .nav-tabs .nav-link.active:hover {
-	border: none;
+	border: 0px;
 }
 
 header, footer, .card-header, .btn-secondary, .thead-default th {
@@ -53,7 +53,7 @@ code {
 	color: #fff;
 }
 
-.jumbotron, .card-block, .breadcrumb, .nav-tabs .nav-link.active {
+.jumbotron, .card-body, .breadcrumb, .nav-tabs .nav-link.active {
 	background: #36393E;
 }
 
