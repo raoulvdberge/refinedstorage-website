@@ -99,7 +99,7 @@ a:hover {
 	}
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 770px) {
 	span.can-hide {
 		display: none;
 	}
@@ -340,15 +340,28 @@ img.wiki-icon-tooltip {
 		height: 180px;
 	}
 
+	.footer-data {
+		width: 100%;
+		text-align: center;
+	}
+
+	.footer-data ul {
+		display: flex;
+		justify-content: center;
+	}
+
 	.creeperhost {
-		float: left;
+		float: none;
 		margin-top: 15px;
 		clear: both;
+		width: 100%;
+		text-align: center;
 	}
 
 	.creeperhost-logo {
-		float: left;
-		margin-bottom: 15px;
+		float: none;
+		margin: 0px auto;
+		clear: both;
 	}
 }
 
