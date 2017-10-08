@@ -62,7 +62,7 @@
           </div>
           <div class="card-block text-center">
             <p>Make sure to join our Discord community!</p>
-            <iframe src="https://discordapp.com/widget?id=342942776494653441&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0"></iframe>
+            <iframe src="https://discordapp.com/widget?id=342942776494653441&theme={% if theme() == 'normal' %}light{% else %}dark{% endif %}" width="100%" height="400" allowtransparency="true" frameborder="0"></iframe>
           </div>
         </div>
       </div>
@@ -107,8 +107,8 @@
       <div class="card-header">
         Twitter
       </div>
-      <div class="card-block">
-        <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/vdbergeraoul" data-widget-id="710922031391494148">Tweets door @vdbergeraoul</a>
+      <div class="card-block" style="padding: 0">
+        <a class="twitter-timeline" {% if theme() == 'dark' %}data-theme="dark" {% endif %}data-chrome="noheader nofooter noborders" data-dnt="true" href="https://twitter.com/vdbergeraoul" data-widget-id="710922031391494148">Tweets door @vdbergeraoul</a>
         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
       </div>
     </div>
