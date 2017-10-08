@@ -367,7 +367,7 @@ img.wiki-icon-tooltip {
 
 /* HACK for Bootstrap responsive positioning */
 @media screen and (max-width: 578px) {
-	#sidebar {
+	#sidebar, .discord {
 		margin-top: 15px;
 	}
 }
