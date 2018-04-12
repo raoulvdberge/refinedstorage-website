@@ -1,0 +1,44 @@
+{% extends "layout.twig" %}
+
+{% block title %}Revisions{% endblock %}
+
+{% block content %}
+    <h1 class="float-lg-left">Revisions</h1>
+
+    <div class="clearfix"></div>
+
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/wiki">Wiki</a></li>
+        <li class="breadcrumb-item"><a href="/wiki/{{ wiki.url }}">{{ wiki.name }}</a></li>
+        <li class="breadcrumb-item">Revisions</li>
+    </ol>
+
+    <table class="table">
+        <thead class="thead-default">
+        <tr>
+            <th width="10%">#</th>
+            <th width="40%">Date</th>
+            <th width="30%" class="can-hide">User</th>
+            <th width="20%" class="can-hide">Revert</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% set id = revisions|length %}
+        {% for revision in revisions %}
+            <tr>
+                <td>{{ id }}</td>
+                <td><a href="/wiki/{{ wiki.url }}/{{ revision.hash }}">{{ revision.date|date("Y-m-d H:i:s") }}</a></td>
+                <td class="can-hide"><a href="/profile/{{ revision.user.username }}">{{ revision.user.username }}</a></td>
+                <td class="can-hide">
+                    {% if revision.reverted_from != 0 %}
+                        Yes, by <a href="/profile/{{ revision.revertedBy.username }}">{{ revision.revertedBy.username }}</a> from <a href="/wiki/{{ wiki.url }}/{{ revision.revertedFrom.hash }}">{{ revision.revertedFrom.hash }}</a>
+                    {% else %}
+                        No
+                    {% endif %}
+                </td>
+            </tr>
+            {% set id = id - 1 %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

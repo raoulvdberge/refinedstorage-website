@@ -1,0 +1,92 @@
+{% extends "layout.twig" %}
+
+{% block title %}{{ wiki.name }}{% endblock %}
+
+{% block content %}
+    <h1 class="float-lg-left">
+        {% if wiki.icon != null %}
+            <img src="{{ wiki.icon }}" class="wiki-icon">
+        {% endif %}
+
+        {{ wiki.name }}
+    </h1>
+
+    <div class="btn-group float-lg-right" role="group">
+        <a href="/wiki/{{ wiki.url }}/revisions" class="btn btn-secondary"><span class="fa fa-file-o"></span> Revisions</a>
+        {% if can('editor') %}
+            <a href="/wiki/pages" class="btn btn-secondary"><span class="fa fa-list"></span> Pages</a>
+            <a href="/wiki/create" class="btn btn-secondary"><span class="fa fa-plus"></span> Create</a>
+            <a href="/wiki/create?copy={{ wiki.url }}" class="btn btn-secondary"><span class="fa fa-files-o"></span> Copy</a>
+            {% if wiki.status == 0 %}
+                <a href="/wiki/{{ wiki.url }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Delete</a>
+            {% elseif wiki.status == 1 %}
+                <a href="/wiki/{{ wiki.url }}/restore" class="btn btn-secondary"><span class="fa fa-history"></span> Restore</a>
+            {% endif %}
+            <a href="/wiki/{{ wiki.url }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a>
+            {% if old %}
+                <a href="/wiki/{{ wiki.url }}/{{ wiki.revision.hash }}/revert" class="btn btn-secondary"><span class="fa fa-pencil"></span> Revert to this version</a>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="clearfix"></div>
+
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/wiki">Wiki</a></li>
+        <li class="breadcrumb-item active">{{ wiki.name }}</li>
+    </ol>
+
+    {% if old %}
+        <div class="alert alert-warning" role="alert">Revision <strong>{{ wiki.revision.hash }}</strong> by <a href="/profile/{{ wiki.revision.user.username }}">{{ wiki.revision.user.username }}</a>.</div>
+    {% endif %}
+
+    {% if wiki.status == 1 %}
+        <div class="alert alert-danger" role="alert">This wiki page is deleted.</div>
+    {% endif %}
+
+    <div class="row row-offcanvas row-offcanvas-right">
+        <div class="col-sm-9">
+            {{ wiki.revision.body|raw }}
+        </div>
+        <div class="col-sm-3 sidebar-offcanvas" id="sidebar">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        {% for tab in sidebarTabs %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if sidebarTabCurrent == tab.name %}active{% endif %}" data-toggle="tab" data-tab="{{ tab.name }}" href="#">{{ tab.name|capitalize }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="card-body">
+                    {% for tab in sidebarTabs %}
+                        <div {% if tab.name != sidebarTabCurrent %}style="display: none"{% endif %} class="sidebar" id="{{ tab.data.url }}">
+                            {{ tab.data.revision.body|raw }}
+
+                            {% if can('editor') %}
+                                <a href="/wiki/{{ tab.data.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footerJs %}
+    {{ parent() }}
+    <script>
+        $('[data-toggle="tab"]').click(function () {
+            name = $(this).attr('data-tab');
+
+            $('.sidebar').css('display', 'none');
+            $('#_sidebar_' + name).css('display', 'block');
+
+            initTooltips();
+
+            $.post('/wiki/update-tab', {'tab': name});
+        });
+    </script>
+{% endblock %}

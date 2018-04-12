@@ -1,0 +1,71 @@
+{% extends "layout.twig" %}
+
+{% block css %}
+    <link rel="stylesheet" href="/assets/simplemde.min.css">
+    {{ parent() }}
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script src="/assets/simplemde.min.js"></script>
+{% endblock %}
+
+{% block title %}Edit{% endblock %}
+
+{% block content %}
+    <script>
+        $(document).ready(function () {
+            new SimpleMDE({
+                element: document.getElementById("body"),
+                spellChecker: false
+            });
+        });
+    </script>
+
+    <h1>Edit</h1>
+
+    <div class="clearfix"></div>
+
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/wiki">Wiki</a></li>
+        <li class="breadcrumb-item"><a href="/wiki/{{ wiki.url }}">{{ wiki.name }}</a></li>
+        <li class="breadcrumb-item">Edit</li>
+    </ol>
+
+    {% if errors|length > 0 %}
+        <div class="alert alert-danger" role="alert">
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="post">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" class="form-control" value="{{ wiki.name }}">
+            <small class="form-text text-muted">Changing the name of this wiki page won't change the references from other wiki pages to this wiki page!</small>
+        </div>
+        <div class="form-group">
+            <label for="url">URL</label>
+            <input type="text" name="url" id="url" value="{{ wiki.url }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="icon">Icon</label>
+            <input type="text" name="icon" id="icon" value="{{ wiki.icon }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="body">Body</label>
+            <textarea class="form-control" rows="20" name="body" id="body">{{ wiki.revision.body }}</textarea>
+            <small class="form-text text-muted">To reference other wiki pages, use [[page name here]].</small>
+            <small class="form-text text-muted">To reference other wiki pages with another label for the link, use [[label=page name here]].</small>
+            <small class="form-text text-muted">To include other wiki pages, use [[@page name here]].</small>
+            <small class="form-text text-muted">To include the current wiki's name, use [[#name]].</small>
+        </div>
+        <input type="submit" class="btn btn-primary" name="submit" value="Edit">
+        <input type="submit" class="btn btn-secondary" name="submit_back" value="Edit and view">
+        <a href="/wiki/{{ wiki.url }}" class="btn btn-danger">Cancel</a>
+    </form>
+{% endblock %}

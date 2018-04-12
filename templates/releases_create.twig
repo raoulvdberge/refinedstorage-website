@@ -1,0 +1,64 @@
+{% extends "layout.twig" %}
+
+{% block title %}Create release{% endblock %}
+
+{% block content %}
+    <h1>Create release</h1>
+
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/releases">Releases</a></li>
+        <li class="breadcrumb-item">Create</li>
+    </ol>
+
+    {% if errors|length > 0 %}
+        <div class="alert alert-danger" role="alert">
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="post">
+        <div class="form-group row">
+            <label for="version" class="col-sm-2 col-form-label">Version</label>
+            <div class="col-sm-10">
+                <input type="text" name="version" class="form-control" id="version">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="type" class="col-sm-2 col-form-label">Type</label>
+            <div class="col-sm-10">
+                <select name="type" class="form-control" id="type">
+                    <option value="release">Release</option>
+                    <option value="beta">Beta</option>
+                    <option value="alpha">Alpha</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="mc_version" class="col-sm-2 col-form-label">MC version</label>
+            <div class="col-sm-10">
+                <input type="text" name="mc_version" class="form-control" id="mc_version">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="url" class="col-sm-2 col-form-label">CurseForge File URL</label>
+            <div class="col-sm-10">
+                <input type="text" name="url" class="form-control" id="url">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="changelog" class="col-sm-2 col-form-label">Changelog</label>
+            <div class="col-sm-10">
+                <textarea class="form-control" id="changelog" name="changelog" rows="8"></textarea>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="offset-sm-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

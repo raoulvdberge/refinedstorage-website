@@ -1,0 +1,28 @@
+{% extends "layout.twig" %}
+
+{% block title %}Search{% endblock %}
+
+{% block content %}
+    <h1>Search</h1>
+
+    <form method="post">
+        <div class="form-group">
+            <input type="text" name="query" class="form-control" placeholder="Enter your search query..." value="{{ query }}" id="query">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    {% if show %}
+        <h5 style="margin-top: 17px;">Results for '{{ query }}' ({{ results|length }})</h5>
+
+        {% if results|length == 0 %}
+            <p>No results were found.</p>
+        {% endif %}
+
+        <ul style="margin-bottom: 0px">
+            {% for result in results %}
+                <li><a href="/wiki/{{ result.url }}">{{ result.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

@@ -16,9 +16,10 @@ session_start();
 
 require '../vendor/autoload.php';
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
-use \Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\NotFoundException;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 $capsule = new Capsule;
@@ -34,33 +35,23 @@ $capsule->bootEloquent();
 
 class NeedsAuthentication
 {
+    private $view;
     private $accessLevel;
 
-    public function __construct($accessLevel)
+    public function __construct(\Slim\Views\Twig $view, $accessLevel)
     {
+        $this->view = $view;
         $this->accessLevel = $accessLevel;
     }
 
     public function __invoke($request, $response, $next)
     {
         if (getUser() == null) {
-            return $response->withStatus(503)->withHeader('Location', '/login');
+            return $response->withRedirect('/login?next=' . $request->getUri()->getPath());
         }
 
         if (getUser()->role < $this->accessLevel) {
-            return $response->withStatus(503)->withHeader('Location', '/503');
-        }
-
-        return $next($request, $response);
-    }
-}
-
-class Maintenance
-{
-    public function __invoke($request, $response, $next)
-    {
-        if (getenv('RS_MAINTENANCE') == 'true' && $_SERVER['REQUEST_URI'] != '/maintenance') {
-            return $response->withStatus(503)->withHeader('Location', '/maintenance');
+            return $this->view->render($response->withStatus(403), '403.twig');
         }
 
         return $next($request, $response);
@@ -206,7 +197,6 @@ class WikiRevision extends Illuminate\Database\Eloquent\Model
 
 $app = new \Slim\App;
 
-$app->add(new Maintenance());
 $app->add(new ThemeSwitcher());
 
 $container = $app->getContainer();
@@ -219,10 +209,6 @@ $container['view'] = function ($container) use ($roles, $themes) {
     $basePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
 
     $view->addExtension(new Slim\Views\TwigExtension($container['router'], $basePath));
-
-    $function = new Twig_SimpleFunction('uri', function () {
-    	return $_SERVER['REQUEST_URI'];
-    });
 
     $view->getEnvironment()->addExtension(new Twig_Extensions_Extension_Date());
 
@@ -271,7 +257,7 @@ $container['view'] = function ($container) use ($roles, $themes) {
                 $data .= 'Unknown wiki page "' . $wikiPage . '"';
             } else if ($wiki->icon != null) {
                 $data .= '<div class="pull-left" style="margin: 5px; margin-top: 0px; margin-left: 1px">';
-                $data .= '<a href="/wiki/' . $wiki->url . '"><img src="' . getIcon($wiki->icon) . '" class="wiki-icon-list" data-toggle="tooltip" data-placement="top" title="' . $wiki->name . '"></a>';
+                $data .= '<a href="/wiki/' . $wiki->url . '"><img src="' . $wiki->icon . '" class="wiki-icon-list" data-toggle="tooltip" data-placement="top" title="' . $wiki->name . '"></a>';
                 $data .= '</div>';
             }
         }
@@ -279,49 +265,17 @@ $container['view'] = function ($container) use ($roles, $themes) {
         return $data;
     }));
 
-    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('icon', function($name) {
-        return getIcon($name);
-    }));
-
-    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('wikiLink', function($name) {
-        return wikiLink([$name, $name], true);
-    }));
-
     return $view;
 };
 
-function getIcon($name) {
-    /*$name = str_replace('..', '', $name); // evil
-    $contents = @file_get_contents(__DIR__ . $name);
-    if ($contents == null) {
-        return '';
-    }
-    return 'data:image/png;base64,' . base64_encode($contents);*/
-    return $name;
-}
-
-$container['notFoundHandler'] = function ($c) {
-    return function (Request $request, Response $response) use ($c) {
-        return $c->view->render($response->withStatus(404), '404.html');
+$container['notFoundHandler'] = function ($container) {
+    return function (Request $request, Response $response) use ($container) {
+        return $container->view->render($response->withStatus(404), '404.twig');
     };
 };
 
-$app->add(function ($request, $response, $next) use ($container) {
-    $response = $next($request, $response);
-
-    // ugly hack - prevents displaying the 404 page twice - once for the notFoundHandler and once for the middleware.
-    // the notFoundHandler is only called on bad routes, not when we call ->withStatus(404) manually.
-    if ($response->getStatusCode() == 404 && !stristr($response->getBody(), '404')) {
-        $handler = $container['notFoundHandler'];
-
-        return $handler($request, $response);
-    }
-
-    return $response;
-});
-
 $app->get('/', function (Request $request, Response $response) {
-    return $this->view->render($response, 'home.html', [
+    return $this->view->render($response, 'home.twig', [
         'latest' => getLatestStableRelease(),
         'releases' => [
             '1.12' => getReleases()->where('mc_version', '1.12.2')->first(),
@@ -347,12 +301,12 @@ $app->get('/releases', function (Request $request, Response $response) {
 
     $releases = $releases->skip($perPage * $page)->take($perPage);
 
-    return $this->view->render($response, 'releases.html', ['releases' => $releases->get(), 'page' => $page, 'pagesTotal' => $pagesTotal, 'latest' => getLatestStableRelease()]);
+    return $this->view->render($response, 'releases.twig', ['releases' => $releases->get(), 'page' => $page, 'pagesTotal' => $pagesTotal, 'latest' => getLatestStableRelease()]);
 });
 
 $app->get('/releases/create', function(Request $request, Response $response) {
-    return $this->view->render($response, 'releases_create.html', ['errors' => []]);
-})->add(new NeedsAuthentication($roles['contributor']));
+    return $this->view->render($response, 'releases_create.twig', ['errors' => []]);
+})->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
 function validateRelease($version, $type, $mc_version, $url) {
     $errors = [];
@@ -394,27 +348,27 @@ $app->post('/releases/create', function(Request $request, Response $response) {
 
         $this->cache->deleteItem('update');
 
-        return $response->withHeader('Location', '/releases/' . $release->id);
+        return $response->withRedirect('/releases/' . $release->id);
     } else {
-        return $this->view->render($response, 'releases_create.html', ['errors' => $errors]);
+        return $this->view->render($response, 'releases_create.twig', ['errors' => $errors]);
     }
-})->add(new NeedsAuthentication($roles['contributor']));
+})->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
 $app->get('/releases/{id}/edit', function (Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
     
     if ($release == null) {
-        return $response->withStatus(404);
+        throw new NotFoundException($request, $response);
     }
 
-    return $this->view->render($response, 'releases_edit.html', ['release' => $release, 'errors' => []]);
-})->add(new NeedsAuthentication($roles['contributor']));
+    return $this->view->render($response, 'releases_edit.twig', ['release' => $release, 'errors' => []]);
+})->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
 $app->post('/releases/{id}/edit', function (Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
     
     if ($release == null) {
-        return $response->withStatus(404);
+        throw new NotFoundException($request, $response);
     }
 
     $version = $request->getParams()['version'];
@@ -435,11 +389,11 @@ $app->post('/releases/{id}/edit', function (Request $request, Response $response
 
         $this->cache->deleteItem('update');
 
-        return $response->withHeader('Location', '/releases/' . $release->id);
+        return $response->withRedirect('/releases/' . $release->id);
     } else {
-        return $this->view->render($response, 'releases_edit.html', ['release' => $release, 'errors' => $errors]);
+        return $this->view->render($response, 'releases_edit.twig', ['release' => $release, 'errors' => $errors]);
     }
-})->add(new NeedsAuthentication($roles['contributor']));
+})->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
 $app->get('/releases/{id:[0-9|\+]+}', function (Request $request, Response $response, $args) {
     $releases = [];
@@ -451,7 +405,7 @@ $app->get('/releases/{id:[0-9|\+]+}', function (Request $request, Response $resp
             $release = getRelease($id);
         
             if ($release == null) {
-                return $response->withStatus(404);
+                throw new NotFoundException($request, $response);
             }
 
             $releases[] = $release;
@@ -460,20 +414,20 @@ $app->get('/releases/{id:[0-9|\+]+}', function (Request $request, Response $resp
         $release = getRelease($args['id']);
         
         if ($release == null) {
-            return $response->withStatus(404);
+            throw new NotFoundException($request, $response);
         }
 
         $releases[] = $release;
     }
 
-	return $this->view->render($response, 'releases_view.html', ['releases' => $releases]);
+    return $this->view->render($response, 'releases_view.twig', ['releases' => $releases]);
 });
 
 $app->get('/releases/{id}/delete', function(Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
     
     if ($release == null) {
-        return $response->withStatus(404);
+        throw new NotFoundException($request, $response);
     }
 
     $release->status = 1;
@@ -481,14 +435,14 @@ $app->get('/releases/{id}/delete', function(Request $request, Response $response
 
     $this->cache->deleteItem('update');
 
-    return $response->withHeader('Location', '/releases/' . $release->id);
-})->add(new NeedsAuthentication($roles['contributor']));
+    return $response->withRedirect('/releases/' . $release->id);
+})->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
 $app->get('/releases/{id}/restore', function(Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
     
     if ($release == null) {
-        return $response->withStatus(404);
+        throw new NotFoundException($request, $response);
     }
 
     $release->status = 0;
@@ -496,8 +450,8 @@ $app->get('/releases/{id}/restore', function(Request $request, Response $respons
 
     $this->cache->deleteItem('update');
 
-    return $response->withHeader('Location', '/releases/' . $release->id);
-})->add(new NeedsAuthentication($roles['contributor']));
+    return $response->withRedirect('/releases/' . $release->id);
+})->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
 function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null, $parent = null) {
     $wiki = getWikiByUrl($url);
@@ -551,7 +505,7 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
                     $additionalTags[] = 'data-toggle="tooltip"';
                     $additionalTags[] = 'data-placement="right"';
                     $additionalTags[] = 'data-html="true"';
-                    $additionalTags[] = 'title="<img src=\'' . getIcon($reference->icon) . '\' class=\'wiki-icon-tooltip\'>"';
+                    $additionalTags[] = 'title="<img src=\'' . $reference->icon . '\' class=\'wiki-icon-tooltip\'>"';
                 }
 
                 return implode(' ', $additionalTags);
@@ -602,16 +556,16 @@ $app->get('/wiki/create', function(Request $request, Response $response, $args) 
         $copyRevision = getWikiRevision($copy, null);
     }
 
-    return $this->view->render($response, 'wiki_create.html', ['errors' => [], 'copy' => $copy, 'copyRevision' => $copyRevision]);
-})->add(new NeedsAuthentication($roles['editor']));
+    return $this->view->render($response, 'wiki_create.twig', ['errors' => [], 'copy' => $copy, 'copyRevision' => $copyRevision]);
+})->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
 $app->get('/wiki/pages', function(Request $request, Response $response, $args) {
     $wikis = Wiki::orderBy('url', 'ASC')->get();
     foreach ($wikis as $wiki) {
         $wiki['last_revision'] = getWikiRevision($wiki, null);
     }
-    return $this->view->render($response, 'wiki_pages.html', ['wikis' => $wikis]);
-})->add(new NeedsAuthentication($roles['editor']));
+    return $this->view->render($response, 'wiki_pages.twig', ['wikis' => $wikis]);
+})->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
 $app->post('/wiki/create', function(Request $request, Response $response, $args) {
     $url = $request->getParams()['url'];
@@ -641,14 +595,14 @@ $app->post('/wiki/create', function(Request $request, Response $response, $args)
         $rev->save();
 
         if (isset($request->getParams()['submit_back'])) {
-            return $response->withHeader('Location', '/wiki/' . $wiki->url);
+            return $response->withRedirect('/wiki/' . $wiki->url);
         } else {
-            return $response->withHeader('Location', '/wiki/' . $wiki->url . '/edit');
+            return $response->withRedirect('/wiki/' . $wiki->url . '/edit');
         }
     } else {
-        return $this->view->render($response, 'wiki_create.html', ['errors' => $errors]);
+        return $this->view->render($response, 'wiki_create.twig', ['errors' => $errors]);
     }
-})->add(new NeedsAuthentication($roles['editor']));
+})->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
 function validateWiki($currentUrl, $url, $currentName, $name) {
     $errors = [];
@@ -676,45 +630,45 @@ $app->get('/wiki/{url}/delete', function(Request $request, Response $response, $
     $wiki = getWikiByUrl($args['url']);
     
     if ($wiki == null) {
-        return $response->withStatus(404);
+        throw new NotFoundException($request, $response);
     }
 
     $wiki->status = 1;
     $wiki->save();
 
-    return $response->withHeader('Location', '/wiki/' . $wiki->url);
-})->add(new NeedsAuthentication($roles['editor']));
+    return $response->withRedirect('/wiki/' . $wiki->url);
+})->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
 $app->get('/wiki/{url}/restore', function(Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
     
     if ($wiki == null) {
-        return $response->withStatus(404);
+        throw new NotFoundException($request, $response);
     }
 
     $wiki->status = 0;
     $wiki->save();
 
-    return $response->withHeader('Location', '/wiki/' . $wiki->url);
-})->add(new NeedsAuthentication($roles['editor']));
+    return $response->withRedirect('/wiki/' . $wiki->url);
+})->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
 $app->get('/wiki/{url}/edit', function(Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
     
     if ($wiki == null) {
-        return $response->withStatus(404);
+        throw new NotFoundException($request, $response);
     }
 
     $wiki['revision'] = $wiki->revisions()->orderBy('date', 'desc')->first();
 
-    return $this->view->render($response, 'wiki_edit.html', ['wiki' => $wiki, 'errors' => [], 'body' => $wiki->body]);
-})->add(new NeedsAuthentication($roles['editor']));
+    return $this->view->render($response, 'wiki_edit.twig', ['wiki' => $wiki, 'errors' => [], 'body' => $wiki->body]);
+})->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
 $app->post('/wiki/{url}/edit', function(Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
     
     if ($wiki == null) {
-        return $response->withStatus(404);
+        throw new NotFoundException($request, $response);
     }
 
     $url = $request->getParams()['url'];
@@ -742,36 +696,36 @@ $app->post('/wiki/{url}/edit', function(Request $request, Response $response, $a
         $rev->save();
 
         if (isset($request->getParams()['submit_back'])) {
-            return $response->withHeader('Location', '/wiki/' . $wiki->url);
+            return $response->withRedirect('/wiki/' . $wiki->url);
         } else {
-            return $response->withHeader('Location', '/wiki/' . $wiki->url . '/edit');
+            return $response->withRedirect('/wiki/' . $wiki->url . '/edit');
         }
     } else {
-        return $this->view->render($response, 'wiki_edit.html', ['wiki' => $wiki, 'errors' => $errors, 'body' => $body]);
+        return $this->view->render($response, 'wiki_edit.twig', ['wiki' => $wiki, 'errors' => $errors, 'body' => $body]);
     }
-})->add(new NeedsAuthentication($roles['editor']));
+})->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
 $app->get('/wiki/{url}/revisions', function(Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
 
     if ($wiki == null) {
-        return $response->withStatus(404);
+        throw new NotFoundException($request, $response);
     }
 
-    return $this->view->render($response, 'wiki_revisions.html', ['wiki' => $wiki, 'revisions' => $wiki->revisions()->orderBy('date', 'desc')->get()]);
+    return $this->view->render($response, 'wiki_revisions.twig', ['wiki' => $wiki, 'revisions' => $wiki->revisions()->orderBy('date', 'desc')->get()]);
 });
 
 $app->get('/wiki/{url}/{revision}/revert', function(Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
 
     if ($wiki == null) {
-        return $response->withStatus(404);
+        throw new NotFoundException($request, $response);
     }
 
     $revOld = getWikiRevision($wiki, $args['revision']);
 
     if ($revOld == null) {
-        return $response->withStatus(404);
+        throw new NotFoundException($request, $response);
     }
 
     $rev = new WikiRevision();
@@ -785,8 +739,8 @@ $app->get('/wiki/{url}/{revision}/revert', function(Request $request, Response $
 
     $rev->save();
 
-    return $response->withHeader('Location', '/wiki/' . $wiki->url);
-})->add(new NeedsAuthentication($roles['editor']));
+    return $response->withRedirect('/wiki/' . $wiki->url);
+})->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
 $app->post('/wiki/update-tab', function(Request $request, Response $response, $args) use ($wikiSidebarTabs) {
     if (isset($request->getParams()['tab'])) {
@@ -810,7 +764,7 @@ function handleWiki(\Slim\Container $container, Request $request, Response $resp
     $wiki = findAndParseWiki($container, $args['url'], isset($args['revision']) ? $args['revision'] : null);
 
     if ($wiki == null) {
-        return $response->withStatus(404);
+        throw new NotFoundException($request, $response);
     }
 
     $sidebarTabs = [];
@@ -821,7 +775,7 @@ function handleWiki(\Slim\Container $container, Request $request, Response $resp
         ];
     }
 
-    return $container->view->render($response, 'wiki.html', [
+    return $container->view->render($response, 'wiki.twig', [
         'wiki' => $wiki,
         'sidebarTabs' => $sidebarTabs,
         'sidebarTabCurrent' => $_SESSION['tab'] ?? $wikiSidebarTabs[0],
@@ -830,7 +784,12 @@ function handleWiki(\Slim\Container $container, Request $request, Response $resp
 }
 
 $app->get('/login', function(Request $request, Response $response) {
-    return $this->view->render($response, 'login.html', ['failed' => false]);
+    $next = $request->getParams()['next'] ?? null;
+
+    return $this->view->render($next != null ? $response->withStatus(401) : $response, 'login.twig', [
+        'failed' => false,
+        'next' => $next
+    ]);
 });
 
 $app->post('/login', function(Request $request, Response $response) {
@@ -841,34 +800,36 @@ $app->post('/login', function(Request $request, Response $response) {
 
     if ($user != null && password_verify($password, $user->password)) {
         $_SESSION['user'] = $user['id'];
-        
-        return $response->withStatus(302)->withHeader('Location', '/');
+
+        return $response->withRedirect($request->getParams()['next'] ?? '/');
     } else {
-        return $this->view->render($response, 'login.html', ['failed' => true]);
+        return $this->view->render($response, 'login.twig', [
+            'failed' => true
+        ]);
     }
 });
 
 $app->get('/logout', function(Request $request, Response $response) {
     unset($_SESSION['user']);
 
-    return $response->withHeader('Location', '/');
-})->add(new NeedsAuthentication($roles['user']));
+    return $response->withRedirect('/');
+})->add(new NeedsAuthentication($container['view'], $roles['user']));
 
 $app->get('/profile/{username}', function(Request $request, Response $response, $args) {
     $user = User::where('username', '=', $args['username'])->first();
 
     if ($user == null) {
-        return $response->withStatus(404);
+        throw new NotFoundException($request, $response);
     }
 
     $wikiActivity = $user->wikiRevisions()->orderBy('date', 'desc')->limit(10)->get();
     $releaseActivity = $user->releases()->orderBy('date', 'desc')->limit(10)->get();
 
-    return $this->view->render($response, 'profile.html', ['profile' => $user, 'wikiActivity' => $wikiActivity, 'releaseActivity' => $releaseActivity]);
+    return $this->view->render($response, 'profile.twig', ['profile' => $user, 'wikiActivity' => $wikiActivity, 'releaseActivity' => $releaseActivity]);
 });
 
 $app->get('/search', function(Request $request, Response $response) {
-    return $this->view->render($response, 'search.html', ['show' => false, 'query' => '']);
+    return $this->view->render($response, 'search.twig', ['show' => false, 'query' => '']);
 });
 
 $app->post('/search', function(Request $request, Response $response) {
@@ -891,7 +852,7 @@ $app->post('/search', function(Request $request, Response $response) {
         }
     }
 
-    return $this->view->render($response, 'search.html', ['show' => !empty($query), 'results' => $wikis, 'query' => $query]);
+    return $this->view->render($response, 'search.twig', ['show' => !empty($query), 'results' => $wikis, 'query' => $query]);
 });
 
 $app->get('/update', function(Request $request, Response $response) {
@@ -922,14 +883,6 @@ $app->get('/update', function(Request $request, Response $response) {
     }
 
     return $response->withJson($updateData->get(), 200, JSON_PRETTY_PRINT);
-});
-
-$app->get('/503', function(Request $request, Response $response) {
-    return $this->view->render($response->withStatus(503), '503.html');
-});
-
-$app->get('/maintenance', function(Request $request, Response $response) {
-    return $this->view->render($response->withStatus(503), 'maintenance.html');
 });
 
 $app->run();

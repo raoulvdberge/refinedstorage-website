@@ -1,0 +1,137 @@
+{% extends "layout.twig" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <div class="row row-offcanvas row-offcanvas-right flex-wrap">
+        <div class="col-sm-9" id="sidebar-left">
+            <div class="jumbotron">
+                <h1 class="display-5">Refined Storage</h1>
+                <p class="lead">Refined Storage is a mass storage mod for Minecraft that offers the player a network-based storage system, allowing them to store items and fluids on a massively expandable device network.</p>
+                <hr class="my-4">
+                <p>Items and fluids can be stored in one of the many storage capabilities that the mod offers. Any storage devices connected to the same network are accessible to the player through one simple Grid interface, allowing the player to access the inventories of many devices through a single unified GUI.</p>
+                <p>This mod not only adds storage solutions, but also devices that can be used to manipulate items and blocks in the world and from within the system, such as importers, exporters, constructors, destructors, and more! There are also devices in this mod that allow the player to setup auto-crafting, allowing the crafting of complex recipes in a few simple clicks.</p>
+                <p class="lead">
+                    <a class="btn btn-primary btn-lg" href="/wiki/getting-started" role="button">Get started</a>
+                </p>
+            </div>
+
+            <div id="accordion" role="tablist" aria-multiselectable="true" style="margin-bottom: 15px">
+                <div class="card">
+                    <div class="card-header" role="tab" id="blocksHeading">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#blocks" aria-expanded="true" aria-controls="blocks">Blocks</a>
+                    </div>
+
+                    <div id="blocks" class="collapse show" role="tabpanel" aria-labelledby="blocksHeading">
+                        <div class="card-body">
+                            {{ icons('Controller,Grid,Crafting Grid,Pattern Grid,Fluid Grid,Crafting Monitor,Portable Grid,Storage Monitor,Crafter,Processing Pattern Encoder,Disk Drive,1k Storage Block,4k Storage Block,16k Storage Block,64k Storage Block,Creative Storage Block,64k Fluid Storage Block,128k Fluid Storage Block,256k Fluid Storage Block,512k Fluid Storage Block,Creative Fluid Storage Block,Solderer,Cable,Importer,Exporter,Reader,Writer,External Storage,Constructor,Destructor,Detector,Relay,Interface,Fluid Interface,Wireless Transmitter,Machine Casing,Block of Quartz Enriched Iron,Network Transmitter,Network Receiver,Security Manager,Disk Manipulator')|raw }}
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" role="tab" id="itemsHeading">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#items" aria-expanded="true" aria-controls="items">Items</a>
+                    </div>
+
+                    <div id="items" class="collapse hide" role="tabpanel" aria-labelledby="itemsHeading">
+                        <div class="card-body">
+                            {{ icons('Quartz Enriched Iron,1k Storage Disk,4k Storage Disk,16k Storage Disk,64k Storage Disk,Creative Storage Disk,64k Fluid Storage Disk,128k Fluid Storage Disk,256k Fluid Storage Disk,512k Fluid Storage Disk,Creative Fluid Storage Disk,Storage Housing,Pattern,1k Storage Part,4k Storage Part,16k Storage Part,64k Storage Part,64k Fluid Storage Part,128k Fluid Storage Part,256k Fluid Storage Part,512k Fluid Storage Part,Wireless Grid,Wireless Fluid Grid,Wireless Crafting Monitor,Portable Grid,Printed Basic Processor,Printed Improved Processor,Printed Advanced Processor,Basic Processor,Improved Processor,Advanced Processor,Printed Silicon,Construction Core,Destruction Core,Silicon,Upgrade,Range Upgrade,Speed Upgrade,Crafting Upgrade,Stack Upgrade,Interdimensional Upgrade,Silk Touch Upgrade,Fortune Upgrade,Filter,Network Card,Security Card,Wrench')|raw }}
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-header">
+                            Support Refined Storage development
+                        </div>
+                        <div class="card-body text-center">
+                            <p>Do you enjoy the mod and wouldn't mind supporting me financially?</p>
+                            <p><a href="https://www.patreon.com/raoulvdberge"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png"></a></p>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 15px">
+                        <div class="card-header">
+                            Refined Storage Addons
+                        </div>
+                        <div class="card-body text-center">
+                            <p>This is an addon mod for Refined Storage, from the original Refined Storage author.</p>
+                            <p>This mod will have all features that I think belong in an addon mod and not in the core Refined Storage mod.</p>
+
+                            <p><a class="btn btn-primary" href="https://minecraft.curseforge.com/projects/refined-storage-addons" role="button">Check it out</a></p>
+                            <p><a href="/wiki/addons">Get more addons</a></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 discord">
+                    <div class="card">
+                        <div class="card-header">
+                            Join our Discord server
+                        </div>
+                        <div class="card-body text-center">
+                            <p>Make sure to <a href="https://discord.gg/ta8Uzm8">join our Discord community</a>!</p>
+                            <iframe src="https://discordapp.com/widget?id=342942776494653441&theme={% if theme() == 'normal' %}light{% else %}dark{% endif %}" width="100%" height="400" allowtransparency="true" frameborder="0"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3 sidebar-offcanvas" id="sidebar">
+            <div class="card" style="margin-bottom: 15px">
+                <div class="card-header">
+                    Latest stable release
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title">Refined Storage {{ latest.version }}</h5>
+                    <p class="card-text">For Minecraft {{ latest.mc_version }}.</p>
+                    <a href="/releases/{{ latest.id }}" class="btn btn-primary">Download</a>
+
+                    {% if latest.mc_version == '1.10.2' %}
+                        <div class="clearfix" style="margin-bottom: 15px"></div>
+                        <small class="card-text">Requires <a href="https://minecraft.curseforge.com/projects/mcmultipart">MCMultiPart</a>.</small>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: 15px">
+                <div class="card-header">
+                    Recent releases
+                </div>
+                <div class="card-body">
+                    {% for name, release in releases %}
+                        <div class="pull-left">
+                            <b>Minecraft {{ name }}</b>
+                            <p {% if not loop.last %}style="margin-bottom: 10px"{% endif %}>Refined Storage {{ release.version }}</p>
+                        </div>
+                        <div class="pull-right">
+                            <a style="margin-top: 14px" href="/releases/{{ release.id }}" class="btn btn-primary btn-sm pull-right"><span class="fa fa-download"></span></a>
+                        </div>
+                        <div class="clearfix"></div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    Twitter
+                </div>
+                <div class="card-body" style="padding: 0">
+                    <a class="twitter-timeline" {% if theme() == 'dark' %}data-theme="dark" {% endif %}data-chrome="noheader nofooter noborders" data-dnt="true" href="https://twitter.com/vdbergeraoul" data-widget-id="710922031391494148">Tweets door @vdbergeraoul</a>
+                    <script>!function (d, s, id) {
+                            var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+                            if (!d.getElementById(id)) {
+                                js = d.createElement(s);
+                                js.id = id;
+                                js.src = p + "://platform.twitter.com/widgets.js";
+                                fjs.parentNode.insertBefore(js, fjs);
+                            }
+                        }(document, "script", "twitter-wjs");</script>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
