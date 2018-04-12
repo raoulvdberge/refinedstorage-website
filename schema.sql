@@ -1,50 +1,61 @@
--- Adminer 4.2.5 SQLite 3 dump
-
-DROP TABLE IF EXISTS "releases";
-CREATE TABLE "releases" (
-  "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-  "version" text NOT NULL,
-  "changelog" text NOT NULL,
-  "url" text NOT NULL,
-  "date" integer NOT NULL,
-  "mc_version" text NOT NULL,
-  "user_id" integer NOT NULL,
-  "status" integer NOT NULL,
-  "type" text NOT NULL
+CREATE TABLE releases
+(
+  id         INTEGER NOT NULL
+    PRIMARY KEY
+  autoincrement,
+  version    TEXT    NOT NULL,
+  changelog  TEXT    NOT NULL,
+  url        TEXT    NOT NULL,
+  date       INTEGER NOT NULL,
+  mc_version TEXT    NOT NULL,
+  user_id    INTEGER NOT NULL,
+  status     INTEGER NOT NULL,
+  type       TEXT    NOT NULL
 );
 
-
-DROP TABLE IF EXISTS "users";
-CREATE TABLE "users" (
-  "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-  "username" text NOT NULL,
-  "password" text NOT NULL,
-  "email" text NOT NULL,
-  "date_created" integer NOT NULL,
-  "role" integer NOT NULL
+CREATE TABLE users
+(
+  id           INTEGER NOT NULL
+    PRIMARY KEY
+  autoincrement,
+  username     TEXT    NOT NULL,
+  password     TEXT    NOT NULL,
+  email        TEXT    NOT NULL,
+  date_created INTEGER NOT NULL,
+  role         INTEGER NOT NULL
 );
 
+ALTER TABLE releases
+  ADD CONSTRAINT releases_fk_users
+FOREIGN KEY (user_id) REFERENCES users;
 
-DROP TABLE IF EXISTS "wiki";
-CREATE TABLE "wiki" (
-  "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-  "url" text NOT NULL,
-  "name" text NOT NULL,
-  "status" integer NOT NULL
-, "icon" text NULL);
-
-
-DROP TABLE IF EXISTS "wiki_revisions";
-CREATE TABLE "wiki_revisions" (
-  "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-  "wiki_id" integer NOT NULL,
-  "body" text NOT NULL,
-  "user_id" integer NOT NULL,
-  "date" integer NOT NULL,
-  "reverted_by" integer NOT NULL,
-  "reverted_from" integer NOT NULL,
-  "hash" text NOT NULL
+CREATE TABLE wiki
+(
+  id     INTEGER NOT NULL
+    PRIMARY KEY
+  autoincrement,
+  url    TEXT    NOT NULL,
+  name   TEXT    NOT NULL,
+  status INTEGER NOT NULL,
+  icon   TEXT
 );
 
-
--- 
+CREATE TABLE wiki_revisions
+(
+  id            INTEGER NOT NULL
+    PRIMARY KEY
+  autoincrement,
+  wiki_id       INTEGER NOT NULL
+  CONSTRAINT wiki_revisions_fk_wiki
+  REFERENCES wiki,
+  body          TEXT    NOT NULL,
+  user_id       INTEGER NOT NULL
+  CONSTRAINT wiki_revisions_fk_user
+  REFERENCES users,
+  date          INTEGER NOT NULL,
+  reverted_by   INTEGER NOT NULL
+  CONSTRAINT wiki_revisions_fk_user_reverted_by
+  REFERENCES users,
+  reverted_from INTEGER NOT NULL,
+  hash          TEXT    NOT NULL
+);
