@@ -19,15 +19,15 @@
         <li class="breadcrumb-item active">Releases</li>
     </ol>
 
-    <center>
-        <div class="btn-group" role="group">
-            <a class="btn btn-secondary {% if page == 0 %}disabled{% endif %}" href="?page={{ page }}"><span class="fa fa-angle-left"></span></a>
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if page == 0 %}disabled{% endif %}"><a class="page-link" href="?page={{ page }}"><span class="fa fa-angle-left"></span></a></li>
             {% for i in 1..pagesTotal %}
-                <a class="btn btn-secondary {% if page + 1 == i %}active{% endif %}" href="?page={{ i }}">{{ i }}</a>
+                <li class="page-item {% if page + 1 == i %}active{% endif %}"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
             {% endfor %}
-            <a class="btn btn-secondary {% if page == pagesTotal - 1 %}disabled{% endif %}" href="?page={{ page + 2 }}"><span class="fa fa-angle-right"></span></a>
-        </div>
-    </center>
+            <li class="page-item {% if page == pagesTotal - 1 %}disabled{% endif %}"><a class="page-link" href="?page={{ page + 2 }}"><span class="fa fa-angle-right"></span></a></li>
+        </ul>
+    </nav>
 
     <table class="table">
         <thead class="thead-default">
@@ -56,13 +56,13 @@
         {% endfor %}
     </table>
 
-    <center>
-        <div class="btn-group" role="group" style="margin-bottom: 0px">
-            <a class="btn btn-secondary {% if page == 0 %}disabled{% endif %}" href="?page={{ page }}"><span class="fa fa-angle-left"></span></a>
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if page == 0 %}disabled{% endif %}"><a class="page-link" href="?page={{ page }}"><span class="fa fa-angle-left"></span></a></li>
             {% for i in 1..pagesTotal %}
-                <a class="btn btn-secondary {% if page + 1 == i %}active{% endif %}" href="?page={{ i }}">{{ i }}</a>
+                <li class="page-item {% if page + 1 == i %}active{% endif %}"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
             {% endfor %}
-            <a class="btn btn-secondary {% if page == pagesTotal - 1 %}disabled{% endif %}" href="?page={{ page + 2 }}"><span class="fa fa-angle-right"></span></a>
-        </div>
-    </center>
+            <li class="page-item {% if page == pagesTotal - 1 %}disabled{% endif %}"><a class="page-link" href="?page={{ page + 2 }}"><span class="fa fa-angle-right"></span></a></li>
+        </ul>
+    </nav>
 {% endblock %}

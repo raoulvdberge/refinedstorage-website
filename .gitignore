@@ -6,3 +6,4 @@ refinedstorage.sqlite
 vendor/
 cache/
 .idea/
+env.json

@@ -1,0 +1,25 @@
+header {
+    background: linear-gradient(45deg, #33C5F2, #0CCFBF);
+}
+
+header .branding {
+    background-image: url(/assets/logo-white.png);
+}
+
+header .subtitle {
+    color: #fff;
+}
+
+header nav ul li a, header nav ul li a:hover {
+    color: #fff;
+}
+
+header nav ul li.active a {
+    color: #fff;
+    padding-bottom: 1px;
+    border-bottom: 1px solid white;
+}
+
+.carousel {
+    display: none;
+}

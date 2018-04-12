@@ -1,0 +1,49 @@
+{% extends "layout.twig" %}
+
+{% block title %}Community{% endblock %}
+
+{% block content %}
+    <h1>Community</h1>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    Report a bug or request a feature
+                </div>
+                <div class="card-body">
+                    <p>Head over to the <a href="https://github.com/raoulvdberge/refinedstorage/issues" target="_blank">GitHub issue tracker</a>.</p>
+                    <p>If you haven't, create a GitHub account. Then, fill out the issue template accordingly.</p>
+                    <p>We won't accept bug reports for Minecraft 1.10.2.</p>
+                </div>
+            </div>
+            <div class="card" style="margin-top: 15px">
+                <div class="card-header">
+                    CurseForge
+                </div>
+                <div class="card-body">
+                    <p>Find downloads on our <a href="https://minecraft.curseforge.com/projects/refined-storage" target="_blank">official CurseForge project page</a>.</p>
+                </div>
+            </div>
+            <div class="card" style="margin-top: 15px">
+                <div class="card-header">
+                    Support Refined Storage development
+                </div>
+                <div class="card-body">
+                    <p>Do you enjoy the mod and wouldn't mind supporting me financially?</p>
+                    <p><a href="https://www.patreon.com/raoulvdberge" target="_blank"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png"></a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 discord">
+            <div class="card">
+                <div class="card-header">
+                    Join our Discord server
+                </div>
+                <div class="card-body">
+                    <iframe src="https://discordapp.com/widget?id=342942776494653441&theme=light" width="100%" height="400" allowtransparency="true" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

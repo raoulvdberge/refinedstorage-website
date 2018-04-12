@@ -8,7 +8,6 @@ $roles = [
 ];
 
 $wikiSidebarTabs = ['guides', 'blocks', 'items'];
-$themes = ['normal', 'dark'];
 
 date_default_timezone_set('Europe/Brussels');
 
@@ -52,24 +51,6 @@ class NeedsAuthentication
 
         if (getUser()->role < $this->accessLevel) {
             return $this->view->render($response->withStatus(403), '403.twig');
-        }
-
-        return $next($request, $response);
-    }
-}
-
-class ThemeSwitcher
-{
-    public function __invoke($request, $response, $next)
-    {
-        global $themes;
-
-        if (isset($request->getParams()['theme'])) {
-            $theme = $request->getParams()['theme'];
-
-            if (in_array($theme, $themes)) {
-                $_SESSION['theme'] = $theme;
-            }
         }
 
         return $next($request, $response);
@@ -197,13 +178,11 @@ class WikiRevision extends Illuminate\Database\Eloquent\Model
 
 $app = new \Slim\App;
 
-$app->add(new ThemeSwitcher());
-
 $container = $app->getContainer();
 $container['cache'] = function($container) {
     return new FilesystemAdapter('', 0, __DIR__ . '/../cache/');
 };
-$container['view'] = function ($container) use ($roles, $themes) {
+$container['view'] = function ($container) use ($roles) {
     $view = new \Slim\Views\Twig('../templates');
     
     $basePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
@@ -214,10 +193,6 @@ $container['view'] = function ($container) use ($roles, $themes) {
 
     $view->getEnvironment()->addFunction(new Twig_SimpleFunction('uri', function () {
         return $_SERVER['REQUEST_URI'];
-    }));
-
-    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('theme', function () use ($themes) {
-        return $_SESSION['theme'] ?? $themes[0];
     }));
 
     $view->getEnvironment()->addFunction(new Twig_SimpleFunction('getUser', function () {
@@ -273,6 +248,24 @@ $container['notFoundHandler'] = function ($container) {
         return $container->view->render($response->withStatus(404), '404.twig');
     };
 };
+
+$container['env'] = function () {
+    return json_decode(file_get_contents('../env.json'), true);
+};
+
+if ($container['env']['type'] == 'live') {
+    $container['errorHandler'] = function ($container) {
+        return function (\Slim\Http\Request $request, \Slim\Http\Response $response, $exception) use ($container) {
+            return $container['view']->render($container['response']->withStatus(500), '500.twig');
+        };
+    };
+
+    $container['phpErrorHandler'] = function ($container) {
+        return function (\Slim\Http\Request $request, \Slim\Http\Response $response, $exception) use ($container) {
+            return $container['view']->render($container['response']->withStatus(500), '500.twig');
+        };
+    };
+}
 
 $app->get('/', function (Request $request, Response $response) {
     return $this->view->render($response, 'home.twig', [
@@ -883,6 +876,10 @@ $app->get('/update', function(Request $request, Response $response) {
     }
 
     return $response->withJson($updateData->get(), 200, JSON_PRETTY_PRINT);
+});
+
+$app->get('/community', function (Request $request, Response $response) {
+    return $this->view->render($response, 'community.twig');
 });
 
 $app->run();
