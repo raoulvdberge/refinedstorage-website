@@ -231,8 +231,8 @@ $container['view'] = function ($container) use ($roles) {
             if ($wiki == null) {
                 $data .= 'Unknown wiki page "' . $wikiPage . '"';
             } else if ($wiki->icon != null) {
-                $data .= '<div class="pull-left" style="margin: 5px; margin-top: 0px; margin-left: 1px">';
-                $data .= '<a href="/wiki/' . $wiki->url . '"><img src="' . $wiki->icon . '" class="wiki-icon-list" data-toggle="tooltip" data-placement="top" title="' . $wiki->name . '"></a>';
+                $data .= '<div class="pull-left" style="margin: 5px; margin-top: 0; margin-left: 1px">';
+                $data .= '<a href="/wiki/' . $wiki->url . '"><img src="' . $wiki->icon . '" class="wiki-icon-list" data-tooltip="top" title="' . $wiki->name . '"></a>';
                 $data .= '</div>';
             }
         }
@@ -495,9 +495,7 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
                 if ($reference == null) {
                     $additionalTags[] = 'style="color: #c00"';
                 } else if ($reference->icon != null) {
-                    $additionalTags[] = 'data-toggle="tooltip"';
-                    $additionalTags[] = 'data-placement="right"';
-                    $additionalTags[] = 'data-html="true"';
+                    $additionalTags[] = 'data-tooltip="right"';
                     $additionalTags[] = 'title="<img src=\'' . $reference->icon . '\' class=\'wiki-icon-tooltip\'>"';
                 }
 

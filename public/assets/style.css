@@ -182,11 +182,6 @@ h3 {
     font-size: 15px;
 }
 
-/* Popper.js is broken? */
-.tooltip {
-    margin-left: 15px;
-}
-
 .badge {
     border-radius: 0;
     font-weight: normal;
