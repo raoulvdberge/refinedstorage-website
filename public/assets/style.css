@@ -224,9 +224,9 @@ a:hover {
     border: none;
 }
 
-.btn-primary:hover {
-    background: linear-gradient(45deg, #49d4ff, #25f0df);
-    border: none;
+.btn-primary:hover, .btn-primary:focus {
+    background: linear-gradient(45deg, #49d4ff, #25f0df) !important;
+    border: none !important;
 }
 
 .btn-secondary {
