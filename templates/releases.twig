@@ -36,9 +36,7 @@
             <th width="25%">Date<span class="can-hide"> released</span></th>
             <th width="20%">Minecraft<span class="can-hide"> version</span></th>
             <th width="20%" class="can-hide">Released by</th>
-            <th width="10%" class="can-hide">
-                <center>Download</center>
-            </th>
+            <th width="10%" class="can-hide text-center">Download</th>
         </tr>
         </thead>
         <tbody>
@@ -48,9 +46,7 @@
             <td>{{ release.date|date("Y-m-d") }}</td>
             <td>{{ release.mc_version }}</td>
             <td class="can-hide"><a href="/profile/{{ release.user.username }}">{{ release.user.username }}</a></td>
-            <td class="can-hide">
-                <center><a href="{{ release.url }}/download" class="btn btn-secondary btn-sm"><span class="fa fa-download"></span></a></center>
-            </td>
+            <td class="can-hide text-center"><a href="{{ release.url }}/download" class="btn btn-secondary btn-sm"><span class="fa fa-download"></span></a></td>
         </tr>
         </tbody>
         {% endfor %}
