@@ -215,6 +215,11 @@ a:hover {
     color: #04cde3;
 }
 
+::selection {
+    background: #04dfd9;
+    color: #fff;
+}
+
 .form-control:focus {
     border: 1px solid #04dfd9;
 }
