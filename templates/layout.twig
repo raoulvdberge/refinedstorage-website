@@ -21,7 +21,7 @@
         <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.6/dist/css/tooltipster.bundle.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.6/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-borderless.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.6/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-shadow.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="/assets/style.css">
     {% endblock %}
@@ -113,7 +113,7 @@
         $(function () {
             initTooltips = function () {
                 $('[data-tooltip="top"]').tooltipster({
-                    theme: 'tooltipster-borderless',
+                    theme: 'tooltipster-shadow',
                     animation: null,
                     delay: 0,
                     animationDuration: 0,
@@ -122,7 +122,7 @@
                 });
 
                 $('[data-tooltip="right"]').tooltipster({
-                    theme: 'tooltipster-borderless',
+                    theme: 'tooltipster-shadow',
                     animation: null,
                     delay: 0,
                     animationDuration: 0,
