@@ -24,7 +24,7 @@ header .logo {
 }
 
 header .branding {
-    background: url(/assets/logo.png);
+    background: url(/assets/logo-small.png);
     background-repeat: no-repeat;
     background-size: 230px 60px;
     width: 230px;
