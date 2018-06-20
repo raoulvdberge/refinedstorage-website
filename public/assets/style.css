@@ -64,6 +64,10 @@ h3 {
     border-radius: 0 !important;
 }
 
+.navbar-toggler {
+    border: 0;
+}
+
 .badge {
     border-radius: 0;
     font-weight: normal;
@@ -129,7 +133,7 @@ a:hover {
 }
 
 .thead-default th {
-    background: #f8f9fa;
+    background: #f8f9fa !important;
 }
 
 @media screen and (max-width: 1000px) {
