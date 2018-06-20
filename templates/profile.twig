@@ -4,7 +4,7 @@
 
 {% block content %}
     <h1>{{ profile.username }}</h1>
-    <table class="table table-reflow">
+    <table class="table table-reflow table-bordered">
         <tr>
             <th width="30%" scope="row">Registration<span class="can-hide"> date</span></th>
             <td><span>{{ profile.date_created|date("Y-m-d H:i:s") }}</span></td>
@@ -19,7 +19,7 @@
     {% if releaseActivity|length == 0 %}
         <p>This user has no release activity yet.</p>
     {% else %}
-        <table class="table">
+        <table class="table table-bordered">
             <thead class="thead-default">
             <tr>
                 <th width="30%">Version</th>
@@ -43,7 +43,7 @@
     {% if wikiActivity|length == 0 %}
         <p>This user has no wiki activity yet.</p>
     {% else %}
-        <table class="table">
+        <table class="table table-bordered">
             <thead class="thead-default">
             <tr>
                 <th width="30%">Wiki</th>

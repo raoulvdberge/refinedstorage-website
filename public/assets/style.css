@@ -4,7 +4,16 @@ html, body {
 }
 
 body, .form-control, .btn, .dropdown-menu {
-    font-size: 15px !important;
+    font-size: 16px !important;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+h1, h2, h3, h4, .card-header, header nav ul li {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.nav-tabs {
+    font-size: 15px; /* Prevent overflow in wiki tabs */
 }
 
 td, th {
@@ -119,16 +128,8 @@ a:hover {
     border: 1px solid rgba(0, 0, 0, .125) !important;
 }
 
-.table tbody + tbody {
-    border-top: 1px solid #f7f7f9;
-}
-
 .thead-default th {
-    background: #f7f7f9;
-}
-
-.table thead th {
-    border-bottom: #f7f7f9;
+    background: #f8f9fa;
 }
 
 @media screen and (max-width: 1000px) {
@@ -221,6 +222,14 @@ img.wiki-icon-tooltip {
 
 .wiki-button {
     margin-right: 10px;
+}
+
+.wiki-link {
+    color: #000;
+    font-size: 15px;
+    position: relative;
+    top: -1px;
+    visibility: hidden;
 }
 
 footer .creeperhost .creeperhost-logo {

@@ -1,64 +1,39 @@
 {% extends "layout.twig" %}
 
-{% block title %}{% if releases|length == 1 %}{{ releases[0].version }}{% else %}Release set {% endif %}{% endblock %}
+{% block title %}{{ release.version }}{% endblock %}
 
 {% block content %}
-    {% if releases|length == 1 %}
-        <h1 class="float-lg-left">{{ releases[0].version }}</h1>
+    <h1 class="float-lg-left">{{ release.version }}</h1>
 
-        {% include 'releases_view_buttons.twig' with {'release': releases[0]} %}
+    {% include 'releases_view_buttons.twig' with {'release': release} %}
 
-        <div class="clearfix"></div>
+    <div class="clearfix"></div>
 
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/releases">Releases</a></li>
-            <li class="breadcrumb-item active">{{ releases[0].version }}</li>
-        </ol>
-    {% else %}
-        <h1 class="float-lg-left">Release set</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/releases">Releases</a></li>
+        <li class="breadcrumb-item active">{{ release.version }}</li>
+    </ol>
 
-        <div class="clearfix"></div>
-    {% endif %}
-
-    {% for release in releases %}
-        {% if releases|length > 1 %}
-            <div class="card" style="{% if not loop.last %}margin-bottom: 15px; {% endif %}padding: 3px">
-            <div class="card-body">
-            <h4 class="card-title float-lg-left" style="padding-top: 5px">{{ release.version }}</h4>
-
-            {% include 'releases_view_buttons.twig' with {'release': release} %}
-
-            <div class="clearfix"></div>
-        {% endif %}
-
-        <table class="table table-reflow">
-            {% if releases|length == 1 %}
-                <tr>
-                    <th scope="row" width="20%">Version</th>
-                    <td>{{ release.version }} {{ getReleaseBadge(release.type)|raw }}</span></td>
-                </tr>
-            {% endif %}
-            <tr>
-                <th scope="row" {% if releases|length > 1 %}width="20%" {% endif %}class="thead-default">Released<span class="can-hide"> by</span></th>
-                <td><a href="/profile/{{ release.user.username }}">{{ release.user.username }}</a></td>
-            </tr>
-            <tr>
-                <th scope="row" class="thead-default">Date<span class="can-hide"> released</span></th>
-                <td>{{ release.date|date("Y-m-d") }}</td>
-            </tr>
-            <tr>
-                <th scope="row" class="thead-default">Minecraft<span class="can-hide"> version</span></th>
-                <td>{{ release.mc_version }}</td>
-            </tr>
-            <tr>
-                <th scope="row" class="thead-default">Changelog</th>
-                <td>{{ release.changelog|nl2br }}</td>
-            </tr>
-        </table>
-
-        {% if releases|length > 1 %}
-            </div>
-            </div>
-        {% endif %}
-    {% endfor %}
+    <table class="table table-reflow table-bordered">
+        <tr>
+            <th scope="row" width="20%">Version</th>
+            <td>{{ release.version }} {{ getReleaseBadge(release.type)|raw }}</span></td>
+        </tr>
+        <tr>
+            <th scope="row" class="thead-default">Released<span class="can-hide"> by</span></th>
+            <td><a href="/profile/{{ release.user.username }}">{{ release.user.username }}</a></td>
+        </tr>
+        <tr>
+            <th scope="row" class="thead-default">Date<span class="can-hide"> released</span></th>
+            <td>{{ release.date|date("Y-m-d") }}</td>
+        </tr>
+        <tr>
+            <th scope="row" class="thead-default">Minecraft<span class="can-hide"> version</span></th>
+            <td>{{ release.mc_version }}</td>
+        </tr>
+        <tr>
+            <th scope="row" class="thead-default">Changelog</th>
+            <td>{{ release.changelog|nl2br }}</td>
+        </tr>
+    </table>
 {% endblock %}

@@ -48,10 +48,10 @@
     {% endif %}
 
     <div class="row row-offcanvas row-offcanvas-right">
-        <div class="col-sm-9">
+        <article class="col-sm-9">
             {{ wiki.revision.body|raw }}
-        </div>
-        <div class="col-sm-3 sidebar-offcanvas" id="sidebar">
+        </article>
+        <aside class="col-sm-3 sidebar-offcanvas" id="sidebar">
             <div class="card">
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs">
@@ -77,7 +77,7 @@
                     {% endfor %}
                 </div>
             </div>
-        </div>
+        </aside>
     </div>
 {% endblock %}
 
@@ -93,6 +93,26 @@
             initTooltips();
 
             $.post('/wiki/update-tab', {'tab': name});
+        });
+
+        $(document).ready(function () {
+            $("article h1, article h2, article h3, article h4, article h5, article h5").each(function (i) {
+                let heading = $(this);
+                let text = heading.text().toLowerCase().trim().replace(/[\.,-\/#!?$%\^&\*;:{}=\-_`~()]/g, "");
+                text = text.replace(' ', '-');
+                heading.attr("id", text);
+
+                let link = '<a href="#' + text + '" class="wiki-link"><i class="fa fa-link"></i></a>';
+
+                heading.html(heading.html() + ' ' + link);
+
+                heading.mouseenter(function () {
+                    heading.find('.wiki-link').css('visibility', 'visible');
+                });
+                heading.mouseleave(function () {
+                    heading.find('.wiki-link').css('visibility', 'hidden');
+                });
+            });
         });
     </script>
 {% endblock %}

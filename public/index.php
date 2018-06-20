@@ -432,32 +432,14 @@ $app->post('/releases/{id}/edit', function (Request $request, Response $response
     }
 })->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
-$app->get('/releases/{id:[0-9|\+]+}', function (Request $request, Response $response, $args) {
-    $releases = [];
+$app->get('/releases/{id:[0-9]+}', function (Request $request, Response $response, $args) {
+    $release = getRelease($args['id']);
 
-    if (stristr($args['id'], ' ')) {
-        $ids = explode(' ', $args['id']);
-
-        foreach ($ids as $id) {
-            $release = getRelease($id);
-
-            if ($release == null) {
-                throw new NotFoundException($request, $response);
-            }
-
-            $releases[] = $release;
-        }
-    } else {
-        $release = getRelease($args['id']);
-
-        if ($release == null) {
-            throw new NotFoundException($request, $response);
-        }
-
-        $releases[] = $release;
+    if ($release == null) {
+        throw new NotFoundException($request, $response);
     }
 
-    return $this->view->render($response, 'releases_view.twig', ['releases' => $releases]);
+    return $this->view->render($response, 'releases_view.twig', ['release' => $release]);
 });
 
 $app->get('/releases/{id}/delete', function (Request $request, Response $response, $args) {
