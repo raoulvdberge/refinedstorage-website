@@ -486,74 +486,63 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
         return null;
     }
 
-    $body = $container->cache->getItem('wiki.revision.' . $revision->hash);
+    $parser = new Parsedown();
 
-    if (!$body->isHit()) {
-        $parser = new Parsedown();
+    $revision['body'] = $parser->text($revision['body']);
+    $revision['body'] = preg_replace_callback('/\\[\\[\\@(.+?)\\]\\]/', function ($matches) use ($wiki, $container) {
+        $otherWiki = getWikiByName($matches[1]);
 
-        $revision['body'] = $parser->text($revision['body']);
-        $revision['body'] = preg_replace_callback('/\\[\\[\\@(.+?)\\]\\]/', function ($matches) use ($wiki, $container) {
-            $otherWiki = getWikiByName($matches[1]);
-
-            if ($otherWiki != null) {
-                if ($otherWiki->url == $wiki->url) {
-                    return 'Circular wiki include';
-                }
-                return findAndParseWiki($container, $otherWiki->url, null, $wiki)['revision']['body'];
-            } else {
-                return 'Unknown wiki reference';
+        if ($otherWiki != null) {
+            if ($otherWiki->url == $wiki->url) {
+                return 'Circular wiki include';
             }
-            return '';
-        }, $revision['body']);
-        $revision['body'] = preg_replace_callback('/\\[\\[\\#(.+?)\\]\\]/', function ($matches) use ($wiki, $parent) {
-            $var = $matches[1];
-
-            switch ($var) {
-                case 'name':
-                    return $parent != null ? $parent['name'] : $wiki['name'];
-                default:
-                    return 'Unknown variable';
-            }
-        }, $revision['body']);
-        $revision['body'] = preg_replace_callback("/\\[\\[(.+?)(\\=(.+?))?\\]\\]/", function ($matches) {
-            $tags = function ($reference) {
-                $additionalTags = [];
-
-                if ($reference == null) {
-                    $additionalTags[] = 'style="color: #c00"';
-                } else if ($reference->icon != null) {
-                    $additionalTags[] = 'data-tooltip="right"';
-                    $additionalTags[] = 'title="<img src=\'' . $reference->icon . '\' class=\'wiki-icon-tooltip\'>"';
-                }
-
-                return implode(' ', $additionalTags);
-            };
-
-            if (count($matches) == 4) {
-                $reference = getWikiByName($matches[3]);
-
-                return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '>' . $matches[1] . '</a>';
-            } else if (count($matches) == 2) {
-                $reference = getWikiByName($matches[1]);
-
-                return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '>' . $matches[1] . '</a>';
-            }
-        }, $revision['body']);
-        $revision['body'] = str_replace('<table>', '<table class="table">', $revision['body']);
-
-        // omit first <p> tag for include
-        if ($parent != null) {
-            $revision['body'] = substr($revision['body'], 3);
+            return findAndParseWiki($container, $otherWiki->url, null, $wiki)['revision']['body'];
+        } else {
+            return 'Unknown wiki reference';
         }
+    }, $revision['body']);
 
-        $body->set($revision['body']);
+    $revision['body'] = preg_replace_callback('/\\[\\[\\#(.+?)\\]\\]/', function ($matches) use ($wiki, $parent) {
+        $var = $matches[1];
 
-        // don't pollute the cache due to include
-        if ($parent == null) {
-            $container->cache->save($body);
+        switch ($var) {
+            case 'name':
+                return $parent != null ? $parent['name'] : $wiki['name'];
+            default:
+                return 'Unknown variable';
         }
-    } else {
-        $revision['body'] = $body->get();
+    }, $revision['body']);
+
+    $revision['body'] = preg_replace_callback("/\\[\\[(.+?)(\\|(.+?))?\\]\\]/", function ($matches) {
+        $tags = function ($reference) {
+            $additionalTags = [];
+
+            if ($reference == null) {
+                $additionalTags[] = 'style="color: #c00"';
+            } else if ($reference->icon != null) {
+                $additionalTags[] = 'data-tooltip="right"';
+                $additionalTags[] = 'title="<img src=\'' . $reference->icon . '\' class=\'wiki-icon-tooltip\'>"';
+            }
+
+            return implode(' ', $additionalTags);
+        };
+
+        if (count($matches) == 4) {
+            $reference = getWikiByName($matches[3]);
+
+            return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '>' . $matches[1] . '</a>';
+        } else if (count($matches) == 2) {
+            $reference = getWikiByName($matches[1]);
+
+            return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '>' . $matches[1] . '</a>';
+        }
+    }, $revision['body']);
+
+    $revision['body'] = str_replace('<table>', '<table class="table">', $revision['body']);
+
+    // omit first <p> tag for include
+    if ($parent != null) {
+        $revision['body'] = substr($revision['body'], 3);
     }
 
     $wiki['revision'] = $revision;

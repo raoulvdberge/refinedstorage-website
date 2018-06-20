@@ -99,7 +99,7 @@
             $("article h1, article h2, article h3, article h4, article h5, article h5").each(function (i) {
                 let heading = $(this);
                 let text = heading.text().toLowerCase().trim().replace(/[\.,-\/#!?$%\^&\*;:{}=\-_`~()]/g, "");
-                text = text.replace(' ', '-');
+                text = text.replace(/ /g, '-');
                 heading.attr("id", text);
 
                 let link = '<a href="#' + text + '" class="wiki-link"><i class="fa fa-link"></i></a>';
