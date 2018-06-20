@@ -51,8 +51,8 @@ h3 {
     padding-bottom: 125px; /* This needs to be bigger than footer height */
 }
 
-.pagination, .pagination .page-item .page-link, .btn, .btn-group .btn, .card, .card-header:first-child, .breadcrumb, .nav-link .active, .alert, .nav-tabs .nav-link, .form-control, .jumbotron, .editor-toolbar, .CodeMirror, .tooltip-inner, .dropdown-menu, .navbar-toggler {
-    border-radius: 0;
+.tooltipster-sidetip .tooltipster-box, .pagination, .pagination .page-item .page-link, .btn, .btn-group .btn, .card, .card-header:first-child, .breadcrumb, .nav-link .active, .alert, .nav-tabs .nav-link, .form-control, .jumbotron, .editor-toolbar, .CodeMirror, .tooltip-inner, .dropdown-menu, .navbar-toggler {
+    border-radius: 0 !important;
 }
 
 .badge {

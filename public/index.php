@@ -550,11 +550,11 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
             if (count($matches) == 4) {
                 $reference = getWikiByName($matches[3]);
 
-                return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '">' . $matches[1] . '</a>';
+                return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '>' . $matches[1] . '</a>';
             } else if (count($matches) == 2) {
                 $reference = getWikiByName($matches[1]);
 
-                return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '">' . $matches[1] . '</a>';
+                return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '>' . $matches[1] . '</a>';
             }
         }, $revision['body']);
         $revision['body'] = str_replace('<table>', '<table class="table">', $revision['body']);
