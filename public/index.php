@@ -489,6 +489,7 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
     $parser = new Parsedown();
 
     $revision['body'] = $parser->text($revision['body']);
+
     $revision['body'] = preg_replace_callback('/\\[\\[\\@(.+?)\\]\\]/', function ($matches) use ($wiki, $container) {
         $otherWiki = getWikiByName($matches[1]);
 
@@ -496,6 +497,7 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
             if ($otherWiki->url == $wiki->url) {
                 return 'Circular wiki include';
             }
+
             return findAndParseWiki($container, $otherWiki->url, null, $wiki)['revision']['body'];
         } else {
             return 'Unknown wiki reference';
@@ -528,22 +530,19 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
         };
 
         if (count($matches) == 4) {
-            $reference = getWikiByName($matches[3]);
+            $reference = getWikiByName($matches[1]);
 
-            return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '>' . $matches[1] . '</a>';
+            return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '>' . $matches[3] . '</a>';
         } else if (count($matches) == 2) {
             $reference = getWikiByName($matches[1]);
 
             return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '>' . $matches[1] . '</a>';
+        } else {
+            return '?';
         }
     }, $revision['body']);
 
     $revision['body'] = str_replace('<table>', '<table class="table">', $revision['body']);
-
-    // omit first <p> tag for include
-    if ($parent != null) {
-        $revision['body'] = substr($revision['body'], 3);
-    }
 
     $wiki['revision'] = $revision;
 
