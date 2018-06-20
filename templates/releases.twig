@@ -8,6 +8,7 @@
     <div class="btn-group float-lg-right" role="group">
         <a href="{{ latest.url }}/download" class="btn btn-secondary can-hide"><span class="fa fa-download"></span> Download latest stable</a>
         <a href="{{ latest.url }}" class="btn btn-secondary"><span class="fa fa-external-link"></span> View latest stable on CurseForge</a>
+        <a href="https://jenkins.raoulvdberge.com" class="btn btn-secondary can-hide"><span class="fa fa-flask"></span> Development builds</a>
         {% if can('contributor') %}
             <a href="/releases/create" class="btn btn-secondary"><span class="fa fa-plus"></span> Create</a>
         {% endif %}
@@ -18,10 +19,6 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item active">Releases</li>
     </ol>
-
-    <div class="alert alert-warning" role="alert">
-        Find development builds on our <a href="https://jenkins.raoulvdberge.com/" target="_blank">Jenkins</a>.
-    </div>
 
     <nav>
         <ul class="pagination justify-content-center">
@@ -36,11 +33,10 @@
     <table class="table">
         <thead class="thead-default">
         <tr>
-            <th width="25%">Version</th>
-            <th width="25%">Date<span class="can-hide"> released</span></th>
+            <th width="30%">Version</th>
+            <th width="20%">Date<span class="can-hide"> released</span></th>
             <th width="20%">Minecraft<span class="can-hide"> version</span></th>
-            <th width="20%" class="can-hide">Released by</th>
-            <th width="10%" class="can-hide text-center">Download</th>
+            <th width="30%" class="can-hide">Released by</th>
         </tr>
         </thead>
         <tbody>
@@ -50,7 +46,6 @@
             <td>{{ release.date|date("Y-m-d") }}</td>
             <td>{{ release.mc_version }}</td>
             <td class="can-hide"><a href="/profile/{{ release.user.username }}">{{ release.user.username }}</a></td>
-            <td class="can-hide text-center"><a href="{{ release.url }}/download" class="btn btn-secondary btn-sm"><span class="fa fa-download"></span></a></td>
         </tr>
         </tbody>
         {% endfor %}

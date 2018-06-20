@@ -19,7 +19,7 @@
 
     {% block css %}
         <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.6/dist/css/tooltipster.bundle.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.6/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-shadow.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -27,57 +27,59 @@
     {% endblock %}
 
     {% block js %}
-        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/tooltipster@4.2.6/dist/js/tooltipster.bundle.min.js"></script>
     {% endblock %}
 </head>
 <body>
 <div id="wrap">
     <div id="main">
-        <header>
-            <div class="container">
-                <div class="logo">
-                    <a href="/">
-                        <div class="branding"></div>
-                    </a>
-                    <div class="subtitle">An elegant solution to your hoarding problem</div>
-                </div>
-                <nav>
-                    <ul>
-                        <li {% if uri() == '/' %}class="active"{% endif %}><a href="/">Home</a></li>
-                        <li {% if 'wiki' in uri() %}class="active"{% endif %}><a href="/wiki">Wiki</a></li>
-                        <li {% if 'releases' in uri() %}class="active"{% endif %}><a href="/releases">Releases</a></li>
-                        <li {% if 'community' in uri() %}class="active"{% endif %}><a href="/community">Community</a></li>
-                    </ul>
-                </nav>
-                <div class="clearfix"></div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="logo"><a href="/"></a></div>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbar-content">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item {% if uri() == '/' %}active{% endif %}">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item {% if 'wiki' in uri() %}active{% endif %}">
+                        <a class="nav-link" href="/wiki">Wiki</a>
+                    </li>
+                    <li class="nav-item {% if 'releases' in uri() %}active{% endif %}">
+                        <a class="nav-link" href="/releases">Releases</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Community
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="https://github.com/raoulvdberge/refinedstorage/issues">Issues</a>
+                            <a class="dropdown-item" href="https://minecraft.curseforge.com/projects/refined-storage">CurseForge</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="https://discordapp.com/invite/eXDCZS">Discord</a>
+                            <a class="dropdown-item" href="https://www.patreon.com/raoulvdberge">Patreon</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="http://partners.creeper.host/r/refinedstorage945">CreeperHost</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="https://jenkins.raoulvdberge.com">Jenkins</a>
+                            <a class="dropdown-item" href="https://repo.raoulvdberge.com">Maven</a>
+                        </div>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0" method="post" action="/search">
+                    <input class="form-control mr-sm-2" type="text" name="query" placeholder="Search" aria-label="Search">
+                    <button class="btn my-2 my-sm-0" type="submit">Search</button>
+                </form>
             </div>
-            <div class="clearfix"></div>
-        </header>
-        {% if uri() == '/' %}
-            <div id="carousel-controls" class="carousel carousel-main slide" data-ride="carousel">
-                <div class="carousel-inner" role="listbox">
-                    <div class="carousel-item active">
-                        <div class="carousel-image-1"></div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="carousel-image-2"></div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="carousel-image-3"></div>
-                    </div>
-                </div>
-                <a class="carousel-control-prev" href="#carousel-controls" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#carousel-controls" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
-            </div>
-        {% endif %}
+
+        </nav>
+
+
         <div class="container">
             <main>
                 {% block content %}
@@ -92,7 +94,6 @@
             <p>&copy; Refined Storage contributors</p>
             <nav>
                 <ul>
-                    <li><a href="/search">Search</a></li>
                     {% if user == null %}
                         <li><a href="/login">Login</a></li>
                     {% else %}

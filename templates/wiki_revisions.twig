@@ -17,9 +17,9 @@
         <thead class="thead-default">
         <tr>
             <th width="10%">#</th>
-            <th width="40%">Date</th>
+            <th width="30%">Date</th>
             <th width="30%" class="can-hide">User</th>
-            <th width="20%" class="can-hide">Revert</th>
+            <th width="30%" class="can-hide">Reverted</th>
         </tr>
         </thead>
         <tbody>
@@ -31,9 +31,9 @@
                 <td class="can-hide"><a href="/profile/{{ revision.user.username }}">{{ revision.user.username }}</a></td>
                 <td class="can-hide">
                     {% if revision.reverted_from != 0 %}
-                        Yes, by <a href="/profile/{{ revision.revertedBy.username }}">{{ revision.revertedBy.username }}</a> from <a href="/wiki/{{ wiki.url }}/{{ revision.revertedFrom.hash }}">{{ revision.revertedFrom.hash }}</a>
+                        <a href="/wiki/{{ wiki.url }}/{{ revision.revertedFrom.hash }}">{{ revision.revertedFrom.hash }}</a>
                     {% else %}
-                        No
+                        -
                     {% endif %}
                 </td>
             </tr>

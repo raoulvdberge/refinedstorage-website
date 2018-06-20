@@ -1,61 +1,77 @@
-CREATE TABLE releases
+create table releases
 (
-  id         INTEGER NOT NULL
-    PRIMARY KEY
-  AUTOINCREMENT,
-  version    TEXT    NOT NULL,
-  changelog  TEXT    NOT NULL,
-  url        TEXT    NOT NULL,
-  date       INTEGER NOT NULL,
-  mc_version TEXT    NOT NULL,
-  user_id    INTEGER NOT NULL,
-  status     INTEGER NOT NULL,
-  type       TEXT    NOT NULL
+  id         integer not null
+    primary key
+  autoincrement,
+  version    text    not null,
+  changelog  text    not null,
+  url        text    not null,
+  date       integer not null,
+  mc_version text    not null,
+  user_id    integer not null,
+  status     integer not null,
+  type       text    not null
 );
 
-CREATE TABLE users
+create table tags
 (
-  id           INTEGER NOT NULL
-    PRIMARY KEY
-  AUTOINCREMENT,
-  username     TEXT    NOT NULL,
-  password     TEXT    NOT NULL,
-  email        TEXT    NOT NULL,
-  date_created INTEGER NOT NULL,
-  role         INTEGER NOT NULL
+  id    INTEGER
+    primary key
+  autoincrement,
+  name  TEXT,
+  badge TEXT
 );
 
-ALTER TABLE releases
-  ADD constraint releases_fk_users
-  FOREIGN KEY (user_id) REFERENCES users;
-
-CREATE TABLE wiki
+create table users
 (
-  id     INTEGER NOT NULL
-    PRIMARY KEY
-  AUTOINCREMENT,
-  url    TEXT    NOT NULL,
-  name   TEXT    NOT NULL,
-  status INTEGER NOT NULL,
-  icon   TEXT
+  id           integer not null
+    primary key
+  autoincrement,
+  username     text    not null,
+  password     text    not null,
+  email        text    not null,
+  date_created integer not null,
+  role         integer not null
 );
 
-CREATE TABLE wiki_revisions
+create table wiki
 (
-  id            INTEGER NOT NULL
-    PRIMARY KEY
-  AUTOINCREMENT,
-  wiki_id       INTEGER NOT NULL
-    CONSTRAINT wiki_revisions_fk_wiki
-    REFERENCES wiki,
-  body          TEXT    NOT NULL,
-  user_id       INTEGER NOT NULL
-    CONSTRAINT wiki_revisions_fk_user
-    REFERENCES users,
-  date          INTEGER NOT NULL,
-  reverted_by   INTEGER NOT NULL
-    CONSTRAINT wiki_revisions_fk_user_reverted_by
-    REFERENCES users,
-  reverted_from INTEGER NOT NULL,
-  hash          TEXT    NOT NULL
+  id     integer not null
+    primary key
+  autoincrement,
+  url    text    not null,
+  name   text    not null,
+  status integer not null,
+  icon   text
 );
+
+create table wiki_revisions
+(
+  id            integer not null
+    primary key
+  autoincrement,
+  wiki_id       integer not null,
+  body          text    not null,
+  user_id       integer not null,
+  date          integer not null,
+  reverted_by   integer not null,
+  reverted_from integer not null,
+  hash          text    not null
+);
+
+create table wiki_tags
+(
+  id         INTEGER
+    primary key
+  autoincrement,
+  tag_id     int not null
+    constraint wiki_tags_fk_tag_id
+    references tags,
+  wiki_id    int not null
+    constraint wiki_tags_fk_wiki_id
+    references wiki,
+  release_id INTEGER
+    constraint wiki_tags_fk_release_id
+    references releases
+);
+

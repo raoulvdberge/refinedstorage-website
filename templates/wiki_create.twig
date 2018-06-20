@@ -57,13 +57,8 @@
         <div class="form-group">
             <label for="body">Body</label>
             <textarea class="form-control" rows="20" name="body" id="body">{{ copyRevision.body }}</textarea>
-            <small class="form-text text-muted">To reference other wiki pages, use [[page name here]].</small>
-            <small class="form-text text-muted">To reference other wiki pages with another label for the link, use [[label=page name here]].</small>
-            <small class="form-text text-muted">To include other wiki pages, use [[@page name here]].</small>
-            <small class="form-text text-muted">To include the current wiki's name, use [[#name]].</small>
         </div>
         <input type="submit" class="btn btn-primary" name="submit" value="Create">
         <input type="submit" class="btn btn-secondary" name="submit_back" value="Create and view">
-        <a href="/wiki" class="btn btn-danger">Cancel</a>
     </form>
 {% endblock %}

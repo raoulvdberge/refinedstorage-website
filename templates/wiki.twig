@@ -9,12 +9,15 @@
         {% endif %}
 
         {{ wiki.name }}
+
+        {% for tag in wiki.tags %}
+            <a style="font-size: 15px" href="/releases/{{ tag.release.id }}" class="badge {{ tag.tag.badge }}">{{ tag.tag.name }}: {{ tag.release.version }}</a>
+        {% endfor %}
     </h1>
 
     <div class="btn-group float-lg-right" role="group">
-        <a href="/wiki/{{ wiki.url }}/revisions" class="btn btn-secondary"><span class="fa fa-file-o"></span> Revisions</a>
+        <a href="/wiki/{{ wiki.url }}/revisions" class="btn btn-secondary"><span class="fa fa-history"></span> Revisions</a>
         {% if can('editor') %}
-            <a href="/wiki/pages" class="btn btn-secondary"><span class="fa fa-list"></span> Pages</a>
             <a href="/wiki/create" class="btn btn-secondary"><span class="fa fa-plus"></span> Create</a>
             <a href="/wiki/create?copy={{ wiki.url }}" class="btn btn-secondary"><span class="fa fa-files-o"></span> Copy</a>
             {% if wiki.status == 0 %}
@@ -24,7 +27,7 @@
             {% endif %}
             <a href="/wiki/{{ wiki.url }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a>
             {% if old %}
-                <a href="/wiki/{{ wiki.url }}/{{ wiki.revision.hash }}/revert" class="btn btn-secondary"><span class="fa fa-pencil"></span> Revert to this version</a>
+                <a href="/wiki/{{ wiki.url }}/{{ wiki.revision.hash }}/revert" class="btn btn-secondary"><span class="fa fa-undo"></span> Revert to this version</a>
             {% endif %}
         {% endif %}
     </div>
@@ -65,7 +68,10 @@
                             {{ tab.data.revision.body|raw }}
 
                             {% if can('editor') %}
-                                <a href="/wiki/{{ tab.data.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a>
+                                <div class="btn-group" style="margin-bottom: 0px">
+                                    <a href="/wiki/{{ tab.data.url }}/edit" class="btn btn-secondary btn-sm"><span class="fa fa-pencil"></span> Edit</a>
+                                    <a href="/wiki/pages" class="btn btn-secondary btn-sm"><span class="fa fa-file-o"></span> All pages</a>
+                                </div>
                             {% endif %}
                         </div>
                     {% endfor %}
@@ -79,7 +85,7 @@
     {{ parent() }}
     <script>
         $('[data-toggle="tab"]').click(function () {
-            name = $(this).attr('data-tab');
+            let name = $(this).attr('data-tab');
 
             $('.sidebar').css('display', 'none');
             $('#_sidebar_' + name).css('display', 'block');

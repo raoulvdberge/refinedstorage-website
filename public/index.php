@@ -24,8 +24,8 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 $capsule = new Capsule;
 
 $capsule->addConnection([
-    'driver'    => 'sqlite',
-    'database'  => __DIR__ . '/../refinedstorage.sqlite',
+    'driver' => 'sqlite',
+    'database' => __DIR__ . '/../refinedstorage.sqlite',
     'prefix' => ''
 ]);
 
@@ -70,7 +70,8 @@ class User extends Illuminate\Database\Eloquent\Model
     }
 }
 
-function getUser() {
+function getUser()
+{
     if (isset($_SESSION['user'])) {
         return User::find($_SESSION['user']);
     }
@@ -81,12 +82,14 @@ class Release extends Illuminate\Database\Eloquent\Model
 {
     public $timestamps = false;
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo('User');
     }
 }
 
-function getReleases() {
+function getReleases()
+{
     $releases = Release::orderBy('date', 'desc');
     if (getUser() == null) {
         $releases = $releases->where('status', '=', 0);
@@ -94,7 +97,8 @@ function getReleases() {
     return $releases;
 }
 
-function getLatestStableRelease() {
+function getLatestStableRelease()
+{
     $releases = Release::orderBy('date', 'desc')->where('type', 'release');
     if (getUser() == null) {
         $releases = $releases->where('status', '=', 0);
@@ -103,15 +107,16 @@ function getLatestStableRelease() {
     $stable = null;
     foreach ($releases->get() as $release) {
         if ($stable == null) {
-           $stable = $release;
+            $stable = $release;
         } else if (version_compare($release->version, $stable->version) == 1) {
-           $stable = $release;
+            $stable = $release;
         }
     }
     return $stable;
 }
 
-function getRelease($id) {
+function getRelease($id)
+{
     $releases = Release::where('id', '=', $id);;
     if (getUser() == null) {
         $releases = $releases->where('status', '=', 0);
@@ -124,12 +129,19 @@ class Wiki extends Illuminate\Database\Eloquent\Model
     protected $table = 'wiki';
     public $timestamps = false;
 
-    public function revisions() {
+    public function revisions()
+    {
         return $this->hasMany('WikiRevision');
+    }
+
+    public function tags()
+    {
+        return $this->hasMany('WikiTag', 'wiki_id');
     }
 }
 
-function getWikiByUrl($url) {
+function getWikiByUrl($url)
+{
     $wiki = Wiki::where(['url' => $url]);
     if (getUser() == null) {
         $wiki = $wiki->where('status', '=', 0);
@@ -137,7 +149,8 @@ function getWikiByUrl($url) {
     return $wiki->first();
 }
 
-function getWikiByName($name) {
+function getWikiByName($name)
+{
     $wiki = Wiki::where(['name' => $name]);
     if (getUser() == null) {
         $wiki = $wiki->where('status', '=', 0);
@@ -145,7 +158,8 @@ function getWikiByName($name) {
     return $wiki->first();
 }
 
-function getWikiRevision($wiki, $revisionHash) {
+function getWikiRevision($wiki, $revisionHash)
+{
     $revision = $wiki->revisions()->orderBy('date', 'desc');
     if ($revisionHash == null) {
         $revision = $revision->first();
@@ -159,32 +173,61 @@ class WikiRevision extends Illuminate\Database\Eloquent\Model
 {
     public $timestamps = false;
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo('User');
     }
 
-    public function wiki() {
+    public function wiki()
+    {
         return $this->belongsTo('Wiki');
     }
 
-    public function revertedBy() {
+    public function revertedBy()
+    {
         return $this->belongsTo('User', 'reverted_by', 'id');
     }
 
-    public function revertedFrom() {
+    public function revertedFrom()
+    {
         return $this->belongsTo('WikiRevision', 'reverted_from', 'id');
+    }
+}
+
+class Tag extends \Illuminate\Database\Eloquent\Model
+{
+    public $timestamps = false;
+}
+
+class WikiTag extends \Illuminate\Database\Eloquent\Model
+{
+    public $timestamps = false;
+
+    public function wiki()
+    {
+        return $this->belongsTo('Wiki');
+    }
+
+    public function tag()
+    {
+        return $this->belongsTo('Tag');
+    }
+
+    public function release()
+    {
+        return $this->belongsTo('Release');
     }
 }
 
 $app = new \Slim\App;
 
 $container = $app->getContainer();
-$container['cache'] = function($container) {
+$container['cache'] = function ($container) {
     return new FilesystemAdapter('', 0, __DIR__ . '/../cache/');
 };
 $container['view'] = function ($container) use ($roles) {
     $view = new \Slim\Views\Twig('../templates');
-    
+
     $basePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
 
     $view->addExtension(new Slim\Views\TwigExtension($container['router'], $basePath));
@@ -221,7 +264,7 @@ $container['view'] = function ($container) use ($roles) {
         return '';
     }));
 
-    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('icons', function($icons) {
+    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('icons', function ($icons) {
         $wikiPages = explode(',', $icons);
         $data = '';
 
@@ -282,7 +325,7 @@ $app->get('/', function (Request $request, Response $response) {
 $app->get('/releases', function (Request $request, Response $response) {
     $releases = getReleases();
 
-    $perPage = 25;
+    $perPage = 15;
     $page = 0;
     $pagesTotal = ceil(count($releases->get()) / $perPage);
 
@@ -297,11 +340,12 @@ $app->get('/releases', function (Request $request, Response $response) {
     return $this->view->render($response, 'releases.twig', ['releases' => $releases->get(), 'page' => $page, 'pagesTotal' => $pagesTotal, 'latest' => getLatestStableRelease()]);
 });
 
-$app->get('/releases/create', function(Request $request, Response $response) {
+$app->get('/releases/create', function (Request $request, Response $response) {
     return $this->view->render($response, 'releases_create.twig', ['errors' => []]);
 })->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
-function validateRelease($version, $type, $mc_version, $url) {
+function validateRelease($version, $type, $mc_version, $url)
+{
     $errors = [];
     if (empty($version)) {
         $errors[] = 'Missing version';
@@ -318,7 +362,7 @@ function validateRelease($version, $type, $mc_version, $url) {
     return $errors;
 }
 
-$app->post('/releases/create', function(Request $request, Response $response) {
+$app->post('/releases/create', function (Request $request, Response $response) {
     $version = $request->getParams()['version'];
     $type = $request->getParams()['type'];
     $mc_version = $request->getParams()['mc_version'];
@@ -349,7 +393,7 @@ $app->post('/releases/create', function(Request $request, Response $response) {
 
 $app->get('/releases/{id}/edit', function (Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
-    
+
     if ($release == null) {
         throw new NotFoundException($request, $response);
     }
@@ -359,7 +403,7 @@ $app->get('/releases/{id}/edit', function (Request $request, Response $response,
 
 $app->post('/releases/{id}/edit', function (Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
-    
+
     if ($release == null) {
         throw new NotFoundException($request, $response);
     }
@@ -396,7 +440,7 @@ $app->get('/releases/{id:[0-9|\+]+}', function (Request $request, Response $resp
 
         foreach ($ids as $id) {
             $release = getRelease($id);
-        
+
             if ($release == null) {
                 throw new NotFoundException($request, $response);
             }
@@ -405,7 +449,7 @@ $app->get('/releases/{id:[0-9|\+]+}', function (Request $request, Response $resp
         }
     } else {
         $release = getRelease($args['id']);
-        
+
         if ($release == null) {
             throw new NotFoundException($request, $response);
         }
@@ -416,9 +460,9 @@ $app->get('/releases/{id:[0-9|\+]+}', function (Request $request, Response $resp
     return $this->view->render($response, 'releases_view.twig', ['releases' => $releases]);
 });
 
-$app->get('/releases/{id}/delete', function(Request $request, Response $response, $args) {
+$app->get('/releases/{id}/delete', function (Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
-    
+
     if ($release == null) {
         throw new NotFoundException($request, $response);
     }
@@ -431,9 +475,9 @@ $app->get('/releases/{id}/delete', function(Request $request, Response $response
     return $response->withRedirect('/releases/' . $release->id);
 })->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
-$app->get('/releases/{id}/restore', function(Request $request, Response $response, $args) {
+$app->get('/releases/{id}/restore', function (Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
-    
+
     if ($release == null) {
         throw new NotFoundException($request, $response);
     }
@@ -446,7 +490,8 @@ $app->get('/releases/{id}/restore', function(Request $request, Response $respons
     return $response->withRedirect('/releases/' . $release->id);
 })->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
-function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null, $parent = null) {
+function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null, $parent = null)
+{
     $wiki = getWikiByUrl($url);
 
     if ($wiki == null) {
@@ -489,7 +534,7 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
             }
         }, $revision['body']);
         $revision['body'] = preg_replace_callback("/\\[\\[(.+?)(\\=(.+?))?\\]\\]/", function ($matches) {
-            $tags = function($reference) {
+            $tags = function ($reference) {
                 $additionalTags = [];
 
                 if ($reference == null) {
@@ -534,11 +579,11 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
     return $wiki;
 }
 
-$app->get('/wiki', function(Request $request, Response $response) {
+$app->get('/wiki', function (Request $request, Response $response) {
     return handleWiki($this, $request, $response, ['url' => '_home']);
 });
 
-$app->get('/wiki/create', function(Request $request, Response $response, $args) {
+$app->get('/wiki/create', function (Request $request, Response $response, $args) {
     $copy = isset($request->getParams()['copy']) ? $request->getParams()['copy'] : null;
     $copyRevision = null;
 
@@ -550,7 +595,7 @@ $app->get('/wiki/create', function(Request $request, Response $response, $args) 
     return $this->view->render($response, 'wiki_create.twig', ['errors' => [], 'copy' => $copy, 'copyRevision' => $copyRevision]);
 })->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
-$app->get('/wiki/pages', function(Request $request, Response $response, $args) {
+$app->get('/wiki/pages', function (Request $request, Response $response, $args) {
     $wikis = Wiki::orderBy('url', 'ASC')->get();
     foreach ($wikis as $wiki) {
         $wiki['last_revision'] = getWikiRevision($wiki, null);
@@ -558,7 +603,7 @@ $app->get('/wiki/pages', function(Request $request, Response $response, $args) {
     return $this->view->render($response, 'wiki_pages.twig', ['wikis' => $wikis]);
 })->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
-$app->post('/wiki/create', function(Request $request, Response $response, $args) {
+$app->post('/wiki/create', function (Request $request, Response $response, $args) {
     $url = $request->getParams()['url'];
     $name = $request->getParams()['name'];
     $body = $request->getParams()['body'];
@@ -595,7 +640,8 @@ $app->post('/wiki/create', function(Request $request, Response $response, $args)
     }
 })->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
-function validateWiki($currentUrl, $url, $currentName, $name) {
+function validateWiki($currentUrl, $url, $currentName, $name)
+{
     $errors = [];
     if (empty($url)) {
         $errors[] = 'Missing URL';
@@ -604,7 +650,7 @@ function validateWiki($currentUrl, $url, $currentName, $name) {
             $errors[] = 'URL conflict';
         }
     }
-    if (!empty($url) && !ctype_alnum(str_replace(['-', '_'], '', $url))) { 
+    if (!empty($url) && !ctype_alnum(str_replace(['-', '_'], '', $url))) {
         $errors[] = 'Invalid URL, allowed: alphabetical letters, numbers, - and _.';
     }
     if (empty($name)) {
@@ -617,9 +663,9 @@ function validateWiki($currentUrl, $url, $currentName, $name) {
     return $errors;
 }
 
-$app->get('/wiki/{url}/delete', function(Request $request, Response $response, $args) {
+$app->get('/wiki/{url}/delete', function (Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
-    
+
     if ($wiki == null) {
         throw new NotFoundException($request, $response);
     }
@@ -630,9 +676,9 @@ $app->get('/wiki/{url}/delete', function(Request $request, Response $response, $
     return $response->withRedirect('/wiki/' . $wiki->url);
 })->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
-$app->get('/wiki/{url}/restore', function(Request $request, Response $response, $args) {
+$app->get('/wiki/{url}/restore', function (Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
-    
+
     if ($wiki == null) {
         throw new NotFoundException($request, $response);
     }
@@ -643,21 +689,31 @@ $app->get('/wiki/{url}/restore', function(Request $request, Response $response, 
     return $response->withRedirect('/wiki/' . $wiki->url);
 })->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
-$app->get('/wiki/{url}/edit', function(Request $request, Response $response, $args) {
+function getTagsForWiki($wiki)
+{
+    $tags = $wiki->tags;
+    $newTags = [];
+    foreach ($tags as $tag) {
+        $newTags[$tag->tag_id] = $tag->release_id;
+    }
+    return $newTags;
+}
+
+$app->get('/wiki/{url}/edit', function (Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
-    
+
     if ($wiki == null) {
         throw new NotFoundException($request, $response);
     }
 
     $wiki['revision'] = $wiki->revisions()->orderBy('date', 'desc')->first();
 
-    return $this->view->render($response, 'wiki_edit.twig', ['wiki' => $wiki, 'errors' => [], 'body' => $wiki->body]);
+    return $this->view->render($response, 'wiki_edit.twig', ['wiki' => $wiki, 'errors' => [], 'body' => $wiki->body, 'wikiTags' => getTagsForWiki($wiki), 'tags' => Tag::all(), 'releases' => getReleases()->get()]);
 })->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
-$app->post('/wiki/{url}/edit', function(Request $request, Response $response, $args) {
+$app->post('/wiki/{url}/edit', function (Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
-    
+
     if ($wiki == null) {
         throw new NotFoundException($request, $response);
     }
@@ -686,17 +742,35 @@ $app->post('/wiki/{url}/edit', function(Request $request, Response $response, $a
 
         $rev->save();
 
+        foreach ($wiki->tags as $tag) {
+            $tag->delete();
+        }
+
+        foreach (Tag::all() as $tag) {
+            if (isset($request->getParams()['tag-' . $tag->id], $request->getParams()['tag-release-' . $tag->id])) {
+                $release = getRelease($request->getParams()['tag-release-' . $tag->id]);
+
+                if ($release != null) {
+                    $wikiTag = new WikiTag();
+                    $wikiTag->wiki_id = $wiki->id;
+                    $wikiTag->tag_id = $tag->id;
+                    $wikiTag->release_id = $release->id;
+                    $wikiTag->save();
+                }
+            }
+        }
+
         if (isset($request->getParams()['submit_back'])) {
             return $response->withRedirect('/wiki/' . $wiki->url);
         } else {
             return $response->withRedirect('/wiki/' . $wiki->url . '/edit');
         }
     } else {
-        return $this->view->render($response, 'wiki_edit.twig', ['wiki' => $wiki, 'errors' => $errors, 'body' => $body]);
+        return $this->view->render($response, 'wiki_edit.twig', ['wiki' => $wiki, 'errors' => $errors, 'body' => $body, 'wikiTags' => getTagsForWiki($wiki), 'tags' => Tag::all(), 'releases' => getReleases()->get()]);
     }
 })->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
-$app->get('/wiki/{url}/revisions', function(Request $request, Response $response, $args) {
+$app->get('/wiki/{url}/revisions', function (Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
 
     if ($wiki == null) {
@@ -706,7 +780,7 @@ $app->get('/wiki/{url}/revisions', function(Request $request, Response $response
     return $this->view->render($response, 'wiki_revisions.twig', ['wiki' => $wiki, 'revisions' => $wiki->revisions()->orderBy('date', 'desc')->get()]);
 });
 
-$app->get('/wiki/{url}/{revision}/revert', function(Request $request, Response $response, $args) {
+$app->get('/wiki/{url}/{revision}/revert', function (Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
 
     if ($wiki == null) {
@@ -733,7 +807,7 @@ $app->get('/wiki/{url}/{revision}/revert', function(Request $request, Response $
     return $response->withRedirect('/wiki/' . $wiki->url);
 })->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
-$app->post('/wiki/update-tab', function(Request $request, Response $response, $args) use ($wikiSidebarTabs) {
+$app->post('/wiki/update-tab', function (Request $request, Response $response, $args) use ($wikiSidebarTabs) {
     if (isset($request->getParams()['tab'])) {
         $tab = $request->getParams()['tab'];
 
@@ -745,11 +819,12 @@ $app->post('/wiki/update-tab', function(Request $request, Response $response, $a
     return $response;
 });
 
-$app->get('/wiki/{url}[/{revision}]', function(Request $request, Response $response, $args) {
+$app->get('/wiki/{url}[/{revision}]', function (Request $request, Response $response, $args) {
     return handleWiki($this, $request, $response, $args);
 });
 
-function handleWiki(\Slim\Container $container, Request $request, Response $response, $args) {
+function handleWiki(\Slim\Container $container, Request $request, Response $response, $args)
+{
     global $wikiSidebarTabs;
 
     $wiki = findAndParseWiki($container, $args['url'], isset($args['revision']) ? $args['revision'] : null);
@@ -774,7 +849,7 @@ function handleWiki(\Slim\Container $container, Request $request, Response $resp
     ]);
 }
 
-$app->get('/login', function(Request $request, Response $response) {
+$app->get('/login', function (Request $request, Response $response) {
     $next = $request->getParams()['next'] ?? null;
 
     return $this->view->render($next != null ? $response->withStatus(401) : $response, 'login.twig', [
@@ -783,7 +858,7 @@ $app->get('/login', function(Request $request, Response $response) {
     ]);
 });
 
-$app->post('/login', function(Request $request, Response $response) {
+$app->post('/login', function (Request $request, Response $response) {
     $email = $request->getParams()['email'];
     $password = $request->getParams()['password'];
 
@@ -800,13 +875,13 @@ $app->post('/login', function(Request $request, Response $response) {
     }
 });
 
-$app->get('/logout', function(Request $request, Response $response) {
+$app->get('/logout', function (Request $request, Response $response) {
     unset($_SESSION['user']);
 
     return $response->withRedirect('/');
 })->add(new NeedsAuthentication($container['view'], $roles['user']));
 
-$app->get('/profile/{username}', function(Request $request, Response $response, $args) {
+$app->get('/profile/{username}', function (Request $request, Response $response, $args) {
     $user = User::where('username', '=', $args['username'])->first();
 
     if ($user == null) {
@@ -819,11 +894,11 @@ $app->get('/profile/{username}', function(Request $request, Response $response, 
     return $this->view->render($response, 'profile.twig', ['profile' => $user, 'wikiActivity' => $wikiActivity, 'releaseActivity' => $releaseActivity]);
 });
 
-$app->get('/search', function(Request $request, Response $response) {
+$app->get('/search', function (Request $request, Response $response) {
     return $this->view->render($response, 'search.twig', ['show' => false, 'query' => '']);
 });
 
-$app->post('/search', function(Request $request, Response $response) {
+$app->post('/search', function (Request $request, Response $response) {
     $query = $request->getParams()['query'];
     $wikis = [];
 
@@ -846,7 +921,7 @@ $app->post('/search', function(Request $request, Response $response) {
     return $this->view->render($response, 'search.twig', ['show' => !empty($query), 'results' => $wikis, 'query' => $query]);
 });
 
-$app->get('/update', function(Request $request, Response $response) {
+$app->get('/update', function (Request $request, Response $response) {
     $updateData = $this->cache->getItem('update');
 
     if (!$updateData->isHit()) {
@@ -874,10 +949,6 @@ $app->get('/update', function(Request $request, Response $response) {
     }
 
     return $response->withJson($updateData->get(), 200, JSON_PRETTY_PRINT);
-});
-
-$app->get('/community', function (Request $request, Response $response) {
-    return $this->view->render($response, 'community.twig');
 });
 
 $app->run();

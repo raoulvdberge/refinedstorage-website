@@ -46,7 +46,6 @@
         <div class="form-group">
             <label for="name">Name</label>
             <input type="text" name="name" id="name" class="form-control" value="{{ wiki.name }}">
-            <small class="form-text text-muted">Changing the name of this wiki page won't change the references from other wiki pages to this wiki page!</small>
         </div>
         <div class="form-group">
             <label for="url">URL</label>
@@ -59,13 +58,35 @@
         <div class="form-group">
             <label for="body">Body</label>
             <textarea class="form-control" rows="20" name="body" id="body">{{ wiki.revision.body }}</textarea>
-            <small class="form-text text-muted">To reference other wiki pages, use [[page name here]].</small>
-            <small class="form-text text-muted">To reference other wiki pages with another label for the link, use [[label=page name here]].</small>
-            <small class="form-text text-muted">To include other wiki pages, use [[@page name here]].</small>
-            <small class="form-text text-muted">To include the current wiki's name, use [[#name]].</small>
+        </div>
+        <div class="form-group">
+            <label for="body">Tags</label>
+            <table class="table">
+                <thead class="thead-default">
+                <tr>
+                    <th width="5%"></th>
+                    <th width="50%">Name</th>
+                    <th width="45%">Release</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for tag in tags %}
+                    <tr>
+                        <td><input type="checkbox" name="tag-{{ tag.id }}" id="tag-{{ tag.id }}" value="1" {% if tag.id in wikiTags|keys %}checked{% endif %}></td>
+                        <td><label class="form-check-label" for="tag-{{ tag.id }}">{{ tag.name }}</label></td>
+                        <td>
+                            <select class="form-control form-control-sm" name="tag-release-{{ tag.id }}">
+                                {% for release in releases %}
+                                    <option value="{{ release.id }}" {% if wikiTags[tag.id] == release.id %}selected{% endif %}>{{ release.version }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
         <input type="submit" class="btn btn-primary" name="submit" value="Edit">
         <input type="submit" class="btn btn-secondary" name="submit_back" value="Edit and view">
-        <a href="/wiki/{{ wiki.url }}" class="btn btn-danger">Cancel</a>
     </form>
 {% endblock %}
