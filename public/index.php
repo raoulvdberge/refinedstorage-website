@@ -325,7 +325,7 @@ $app->get('/', function (Request $request, Response $response) {
 $app->get('/releases', function (Request $request, Response $response) {
     $releases = getReleases();
 
-    $perPage = 15;
+    $perPage = 25;
     $page = 0;
     $pagesTotal = ceil(count($releases->get()) / $perPage);
 
