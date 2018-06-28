@@ -7,7 +7,8 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Refined Storage is a mass storage mod for Minecraft that offers the player a network-based storage system, allowing them to store items and fluids on a massively expandable device network">
-    <meta name="robots" content="index, follow">
+    {% block robots %}
+        <meta name="robots" content="index, follow">{% endblock %}
 
     <meta property="og:title" content="{{ block('title') }}">
     <meta property="og:image" content="https://refinedstorage.raoulvdberge.com/assets/logo.png">

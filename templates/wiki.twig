@@ -2,6 +2,14 @@
 
 {% block title %}{{ wiki.name }}{% endblock %}
 
+{% block robots %}
+    {% if old %}
+        <meta name="robots" content="noindex">
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
 {% block content %}
     <h1 class="float-lg-left">
         {% if wiki.icon != null %}
