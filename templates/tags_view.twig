@@ -1,0 +1,39 @@
+{% extends "layout.twig" %}
+
+{% block title %}Tags{% endblock %}
+
+{% block content %}
+
+    <h1>Tags</h1>
+
+    {% include 'tags_view_buttons.twig' %}
+
+    {% if created %}
+        <div style="width: 80%" class="alert alert-success" role="alert">Tag created.</div>
+    {% endif %}
+
+    {% if removed %}
+        <div style="width: 80%" class="alert alert-success" role="alert">Tag removed.</div>
+    {% endif %}
+
+    <table class="table">
+        <thead class="thead-default">
+        <tr>
+            <th width="25%">ID</th>
+            <th width="25%">Name</th>
+            <th width="30%" class="can-hide">Badge</th>
+            <th width="20%"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for tag in tags %}
+        <tr>
+            <td>{{ tag.id }}</td>
+            <td>{{ tag.name }}</td>
+            <td>{{ tag.badge }} </td>
+            <td><a href="/tags/{{ tag.id }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a>{% id can('contributor') %}<a href="/tags/{{ tag.id }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Remove</a>{% endif %}</td>
+        </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+{% endblock %}

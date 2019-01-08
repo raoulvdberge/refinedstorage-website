@@ -6,4 +6,5 @@
     <h1>Internal error</h1>
 
     <p>An internal error occurred. If this error persists, contact the system administrator.</p>
+    {% if error is not null %}<p>{{ error }}</p>{% endif %}
 {% endblock %}

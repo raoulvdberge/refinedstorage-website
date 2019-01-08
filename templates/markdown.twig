@@ -1,0 +1,216 @@
+{% extends "layout.twig" %}
+{% block title %}Markdown{% endblock %}
+
+{% block content %}
+
+<h1>Markdown</h1>
+    <div class="clearfix"></div>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/markdown">Markdown</a></li>
+    </ol>
+    <div class="row row-offcanvas row-offcanvas-right">
+        <article class="col-sm-9">
+            <p>Text Format</p>
+            <table class="table">
+                <thead class="thead-default">
+                <tr>
+                    <th width="50%">Markdown</th>
+                    <th width="50%">result</th>
+                </tr>
+                </thead>
+                <tr>
+                    <td>
+                        <pre>**text**</pre>
+                    </td>
+                    <td>
+                        <strong>text</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>*text*</pre>
+                    </td>
+                    <td>
+                        <em>text</em>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>~~text~~</pre>
+                    </td>
+                    <td>
+                        <del>text</del>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre># Text<br>## Text<br>### Text</pre>
+                    </td>
+                    <td>
+                        <h1>Text</h1>
+                        <h2>Text</h2>
+                        <h3>Text</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>>Text<br>>Text</pre>
+                    </td>
+                    <td>
+                        <blockquote><p>Text</p></blockquote>
+                        <blockquote><p>Text</p></blockquote>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>* Text<br>* Text<br>* Text</pre>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Text</li>
+                            <li>Text</li>
+                            <li>Text</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>1. Text<br>2. Text<br>3. Text</pre>
+                    </td>
+                    <td>
+                        <ol>
+                            <li>Text</li>
+                            <li>Text</li>
+                            <li>Text</li>
+                        </ol>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <br>
+            <p>Url, images, etc...</p>
+            <table class="table">
+                <thead class="thead-default">
+                <tr>
+                    <th width="50%">Markdown</th>
+                    <th width="50%">result</th>
+                </tr>
+                </thead>
+                <tr>
+                    <td>
+                        <pre>[Google](http://google.be)</pre>
+                    </td>
+                    <td>
+                        <p><a href="http://google.be">Google</a></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>![](/assets/renders/crystalized_ingot.png)</pre>
+                    </td>
+                    <td>
+                        <p><img src="/assets/renders/crystalized_ingot.png"/></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>[[Crystalized Ingot]]</pre>
+                    </td>
+                    <td>
+                        <p><a href="/wiki/crystalized_ingot" data-tooltip="right" title="<img src='/assets/renders/crystalized_ingot.png' class='wiki-icon-tooltip'>">Crystalized Ingot</a></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>[[@Getting Started]]</pre>
+                    </td>
+                    <td>
+                        <h1>Main concept</h1>
+                        <p>This mod is a addon to Reborn Storage and Refined Storage. The main concept is to add bigger drives.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>[[#Getting Started]]</pre>
+                    </td>
+                    <td>
+                        <p>Unknown.</p>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <br>
+            <p>Tables, code</p>
+            <table class="table">
+                <thead class="thead-default">
+                <tr>
+                    <th width="50%">Markdown</th>
+                    <th width="50%">result</th>
+                </tr>
+                </thead>
+                <tr>
+                    <td>
+<pre>
+```
+var example = "hello!";
+alert(example);
+```
+</pre>
+                    </td>
+                    <td>
+                        <code>
+                            var example = "hello!";<br>
+                            alert(example);
+                        </code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+<pre>
+| Column 1 | Column 2 | Column 3 |
+| -------- | -------- | -------- |
+| John     | Doe      | Male     |
+| Mary     | Smith    | Female   |
+
+<em>Or without aligning the columns...</em>
+
+| Column 1 | Column 2 | Column 3 |
+| -------- | -------- | -------- |
+| John | Doe | Male |
+| Mary | Smith | Female |
+</pre>
+                    </td>
+                    <td>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Column 1</th>
+                                <th>Column 2</th>
+                                <th>Column 3</th>
+                            </tr>
+                            </thead>
+                            <tr>
+                                <td>John</td>
+                                <td>Doe</td>
+                                <td>Male</td>
+                            </tr>
+                            <tr>
+                                <td>Mary</td>
+                                <td>Smith</td>
+                                <td>Female</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>`var example = "hello!";`</pre>
+                    </td>
+                    <td>
+                        <p><code>var example = "hello!";</code></p>
+                    </td>
+                </tr>
+            </table>
+        </article>
+    </div>
+{% endblock %}

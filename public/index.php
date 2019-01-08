@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Refined Storage
+ * @Authors: raoulvdberge, JayJay1989
+ */
 $roles = [
     'admin' => 300,
     'contributor' => 200,
@@ -8,6 +11,8 @@ $roles = [
 ];
 
 $wikiSidebarTabs = ['guides', 'blocks', 'items'];
+
+$can_register = true;
 
 date_default_timezone_set('Europe/Brussels');
 
@@ -68,6 +73,7 @@ class User extends Illuminate\Database\Eloquent\Model
     {
         return $this->hasMany('Release');
     }
+    public $timestamps = false;
 }
 
 function getUser()
@@ -118,10 +124,16 @@ function getLatestStableRelease()
 function getRelease($id)
 {
     $releases = Release::where('id', '=', $id);;
-    if (getUser() == null) {
-        $releases = $releases->where('status', '=', 0);
-    }
     return $releases->first();
+}
+
+function getTags($id)
+{
+    $tags = Tag::where('id', '=', $id);;
+    if (getUser() == null) {
+        $tags = $tags->where('status', '=', 0);
+    }
+    return $tags->first();
 }
 
 class Wiki extends Illuminate\Database\Eloquent\Model
@@ -219,15 +231,23 @@ class WikiTag extends \Illuminate\Database\Eloquent\Model
     }
 }
 
+/**
+ * Slim Framework
+ */
 $app = new \Slim\App;
 
 $container = $app->getContainer();
+
 $container['cache'] = function ($container) {
-    return new FilesystemAdapter('', 0, __DIR__ . '/../cache/');
+   return new FilesystemAdapter('', 0, __DIR__ . '/../cache/');
 };
+
+$container['flash'] = function () {
+    return new \Slim\Flash\Messages();
+};
+
 $container['view'] = function ($container) use ($roles) {
     $view = new \Slim\Views\Twig('../templates');
-
     $basePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
 
     $view->addExtension(new Slim\Views\TwigExtension($container['router'], $basePath));
@@ -299,21 +319,26 @@ $container['env'] = function () {
 if ($container['env']['type'] == 'live') {
     $container['errorHandler'] = function ($container) {
         return function (\Slim\Http\Request $request, \Slim\Http\Response $response, $exception) use ($container) {
-            return $container['view']->render($container['response']->withStatus(500), '500.twig');
+            return $container['view']->render($container['response']->withStatus(500), '500.twig', ['error' => $exception]);
         };
     };
 
     $container['phpErrorHandler'] = function ($container) {
         return function (\Slim\Http\Request $request, \Slim\Http\Response $response, $exception) use ($container) {
-            return $container['view']->render($container['response']->withStatus(500), '500.twig');
+            return $container['view']->render($container['response']->withStatus(500), '500.twig', [ 'error' => $exception]);
         };
     };
 }
-
+/**
+ * Home
+ * @url: /
+ * @method: get
+ */
 $app->get('/', function (Request $request, Response $response) {
     return $this->view->render($response, 'home.twig', [
         'latest' => getLatestStableRelease(),
         'releases' => [
+            '1.13' => getRelease()->where('mc_version', '1.13.2')->first(),
             '1.12' => getReleases()->where('mc_version', '1.12.2')->first(),
             '1.11' => getReleases()->where('mc_version', '1.11.2')->first(),
             '1.10' => getReleases()->where('mc_version', '1.10.2')->first(),
@@ -322,6 +347,11 @@ $app->get('/', function (Request $request, Response $response) {
     ]);
 });
 
+/**
+ * Releases
+ * @url: /releases
+ * @method: get
+ */
 $app->get('/releases', function (Request $request, Response $response) {
     $releases = getReleases();
 
@@ -340,6 +370,12 @@ $app->get('/releases', function (Request $request, Response $response) {
     return $this->view->render($response, 'releases.twig', ['releases' => $releases->get(), 'page' => $page, 'pagesTotal' => $pagesTotal, 'latest' => getLatestStableRelease()]);
 });
 
+/**
+ * Releases create
+ * @url: /releases/create
+ * @method: get, post
+ * @role: contributor
+ */
 $app->get('/releases/create', function (Request $request, Response $response) {
     return $this->view->render($response, 'releases_create.twig', ['errors' => []]);
 })->add(new NeedsAuthentication($container['view'], $roles['contributor']));
@@ -391,6 +427,12 @@ $app->post('/releases/create', function (Request $request, Response $response) {
     }
 })->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
+/**
+ * Releases edit
+ * @url: /releases/{id}/edit
+ * @method: get, post
+ * @role: contributor
+ */
 $app->get('/releases/{id}/edit', function (Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
 
@@ -432,6 +474,11 @@ $app->post('/releases/{id}/edit', function (Request $request, Response $response
     }
 })->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
+/**
+ * Releases
+ * @url: /releases/{id}
+ * @method: get
+ */
 $app->get('/releases/{id:[0-9]+}', function (Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
 
@@ -442,6 +489,12 @@ $app->get('/releases/{id:[0-9]+}', function (Request $request, Response $respons
     return $this->view->render($response, 'releases_view.twig', ['release' => $release]);
 });
 
+/**
+ * Releases Delete
+ * @url: /releases/{id}/delete
+ * @method: get
+ * @role: contributor
+ */
 $app->get('/releases/{id}/delete', function (Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
 
@@ -457,6 +510,12 @@ $app->get('/releases/{id}/delete', function (Request $request, Response $respons
     return $response->withRedirect('/releases/' . $release->id);
 })->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
+/**
+ * Releases Restore
+ * @url: /releases/{id}/restore
+ * @method: get
+ * @role: contributor
+ */
 $app->get('/releases/{id}/restore', function (Request $request, Response $response, $args) {
     $release = getRelease($args['id']);
 
@@ -472,6 +531,9 @@ $app->get('/releases/{id}/restore', function (Request $request, Response $respon
     return $response->withRedirect('/releases/' . $release->id);
 })->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
+/**
+ * find and parse wiki (custom markdown tags)
+ */
 function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null, $parent = null)
 {
     $wiki = getWikiByUrl($url);
@@ -506,7 +568,7 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
 
     $revision['body'] = preg_replace_callback('/\\[\\[\\#(.+?)\\]\\]/', function ($matches) use ($wiki, $parent) {
         $var = $matches[1];
-
+        print_r($parent);
         switch ($var) {
             case 'name':
                 return $parent != null ? $parent['name'] : $wiki['name'];
@@ -531,11 +593,9 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
 
         if (count($matches) == 4) {
             $reference = getWikiByName($matches[1]);
-
             return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '>' . $matches[3] . '</a>';
         } else if (count($matches) == 2) {
             $reference = getWikiByName($matches[1]);
-
             return '<a href="' . ($reference == null ? '#' : '/wiki/' . $reference['url']) . '" ' . $tags($reference) . '>' . $matches[1] . '</a>';
         } else {
             return '?';
@@ -549,10 +609,30 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
     return $wiki;
 }
 
+/**
+ * Markdown
+ * @method: get
+ * @role: editor
+ */
+$app->get('/markdown', function (Request $request, Response $response) {
+    return $this->view->render($response, 'markdown.twig');
+})->add(new NeedsAuthentication($container['view'], $roles['editor']));
+
+/**
+ * Wiki
+ * @url: /wiki
+ * @method: get
+ */
 $app->get('/wiki', function (Request $request, Response $response) {
     return handleWiki($this, $request, $response, ['url' => '_home']);
 });
 
+/**
+ * Wiki Create
+ * @url: /wiki/create
+ * @method: get
+ * role: editor
+ */
 $app->get('/wiki/create', function (Request $request, Response $response, $args) {
     $copy = isset($request->getParams()['copy']) ? $request->getParams()['copy'] : null;
     $copyRevision = null;
@@ -565,14 +645,26 @@ $app->get('/wiki/create', function (Request $request, Response $response, $args)
     return $this->view->render($response, 'wiki_create.twig', ['errors' => [], 'copy' => $copy, 'copyRevision' => $copyRevision]);
 })->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
+/**
+ * Wiki pages
+ * @url: /wiki/pages
+ * @method: get
+ * @role: editor
+ */
 $app->get('/wiki/pages', function (Request $request, Response $response, $args) {
     $wikis = Wiki::orderBy('url', 'ASC')->get();
     foreach ($wikis as $wiki) {
         $wiki['last_revision'] = getWikiRevision($wiki, null);
     }
     return $this->view->render($response, 'wiki_pages.twig', ['wikis' => $wikis]);
-})->add(new NeedsAuthentication($container['view'], $roles['editor']));
+})->add(new NeedsAuthentication($container['view'], $roles['editor']))->setName('wiki.pages');
 
+/**
+ * Wiki Create
+ * @url: /wiki
+ * @method: post
+ * @role: editor
+ */
 $app->post('/wiki/create', function (Request $request, Response $response, $args) {
     $url = $request->getParams()['url'];
     $name = $request->getParams()['name'];
@@ -633,6 +725,32 @@ function validateWiki($currentUrl, $url, $currentName, $name)
     return $errors;
 }
 
+function getPath($url){
+    $path = parse_url($url);
+    return $path['path'];
+}
+
+/***
+ * Wiki Force delete
+ * @url: /wiki/revision/{hash}/delete
+ * @method: get
+ * @role: admin
+ */
+$app->get('/wiki/revision/{hash}/delete', function (Request $request, Response $response, $args){
+    $url = $args['hash'];
+    $revision = WikiRevision::where('hash','=',$url);
+    $referer = $request->getHeader('HTTP_REFERER');
+    $revision->delete();
+    $this->flash->addMessage('removed', true);
+    return $response->withRedirect(getPath($referer[0]));
+})->add(new NeedsAuthentication($container['view'], $roles['admin']));
+
+/***
+ * Wiki Delete
+ * @url: /wiki/{url}/delete
+ * @method: get
+ * @role: admin
+ */
 $app->get('/wiki/{url}/delete', function (Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
 
@@ -646,6 +764,12 @@ $app->get('/wiki/{url}/delete', function (Request $request, Response $response, 
     return $response->withRedirect('/wiki/' . $wiki->url);
 })->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
+/**
+ * Wiki Restore
+ * @url: /wiki/{url}/restore
+ * @method: get
+ * @role: editor
+ */
 $app->get('/wiki/{url}/restore', function (Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
 
@@ -669,6 +793,12 @@ function getTagsForWiki($wiki)
     return $newTags;
 }
 
+/**
+ * Wiki edit
+ * @url: /wiki/{url}/edit
+ * @method: get, post
+ * @role: editor
+ */
 $app->get('/wiki/{url}/edit', function (Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
 
@@ -740,6 +870,11 @@ $app->post('/wiki/{url}/edit', function (Request $request, Response $response, $
     }
 })->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
+/**
+ * Wiki revision viewer
+ * @url: /wiki/{url}/revisions
+ * @method: get
+ */
 $app->get('/wiki/{url}/revisions', function (Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
 
@@ -750,6 +885,12 @@ $app->get('/wiki/{url}/revisions', function (Request $request, Response $respons
     return $this->view->render($response, 'wiki_revisions.twig', ['wiki' => $wiki, 'revisions' => $wiki->revisions()->orderBy('date', 'desc')->get()]);
 });
 
+/**
+ * Wiki revert to revision
+ * @url: /wiki/{url}/{revision}/revert
+ * @method: get
+ * @role: editor
+ */
 $app->get('/wiki/{url}/{revision}/revert', function (Request $request, Response $response, $args) {
     $wiki = getWikiByUrl($args['url']);
 
@@ -789,6 +930,11 @@ $app->post('/wiki/update-tab', function (Request $request, Response $response, $
     return $response;
 });
 
+/**
+ * Wiki Revision viewer
+ * @url: /wiki/{url}[/{revision}]
+ * @method: get
+ */
 $app->get('/wiki/{url}[/{revision}]', function (Request $request, Response $response, $args) {
     return handleWiki($this, $request, $response, $args);
 });
@@ -819,6 +965,129 @@ function handleWiki(\Slim\Container $container, Request $request, Response $resp
     ]);
 }
 
+/**
+ * Register
+ * @url: /register
+ * @method: get, post
+ * @role: admin
+ */
+if ($can_register){
+
+    $app->get('/register', function ($request, $response) {
+        $next = $request->getParams()['next'] ?? null;
+        return $this->view->render($next != null ? $response->withStatus(401) : $response, 'register.twig', [
+            'failed' => false,
+            'next' => $next
+        ]);
+    })->add(new NeedsAuthentication($container['view'], $roles['admin']));
+
+    $app->post('/register', function ($request, $response) {
+        $email = $request->getParams()['email'];
+        $password = $request->getParams()['password'];
+        $username = $request->getParams()['username'];
+        $role = $request->getParams()['role'];
+        if ( !empty($role) && !empty($email) && !empty($password) && !empty($username)){
+            $user = new User();
+            $user->username = $username;
+            $user->password = password_hash($password, PASSWORD_DEFAULT);
+            $user->email = $email;
+            $user->date_created = time();
+            $user->role = $role;
+            $user->save();
+            return $this->view->render($response, 'register.twig', [
+                'failed' => false,
+                'created' => true
+            ]);
+        }else{
+            return $this->view->render($response, 'register.twig', [
+                'failed' => true,
+                'created' => false
+            ]);
+        }
+
+    })->add(new NeedsAuthentication($container['view'], $roles['admin']));
+}
+
+/**
+ * Tags
+ * @url: /tags
+ * @method: get
+ * @role: editor
+ */
+$app->get('/tags', function (Request $request, Response $response){
+    $tags = Tag::orderBy('id', 'ASC')->get();
+    $removed = $this->flash->getFirstMessage('removed') != null ? $this->flash->getFirstMessage('removed') : false;
+    $created = $this->flash->getFirstMessage('created') != null ? $this->flash->getFirstMessage('created') : false;
+    return $this->view->render($response, 'tags_view.twig', ['tags'=> $tags, 'removed' => $removed, 'created' => $created]);
+})->add(new NeedsAuthentication($container['view'], $roles['editor']))->setName('tags');
+
+/**
+ * Create Tags
+ * @url: /tags/create
+ * @method: get, post
+ * @role: editor
+ */
+$app->get('/tags/create', function (Request $request, Response $response){
+    return $this->view->render($response, 'tags_create.twig');
+})->add(new NeedsAuthentication($container['view'], $roles['editor']));
+
+$app->post('/tags/create', function (Request $request, Response $response){
+    $name = $request->getParams()['name'];
+    $badge = $request->getParams()['badge'];
+
+    if (!empty($name) && !empty($badge)){
+        $tags = new Tag();
+        $tags->name = $name;
+        $tags->badge = $badge;
+        $tags->save();
+        $this->flash->addMessage('created', true);
+        return $response->withRedirect($this->router->pathFor('tags'));
+    }else{
+        return $this->view->render($response, 'tags_create.twig', [
+            'failed' => true
+        ]);
+    }
+})->add(new NeedsAuthentication($container['contributor'], $roles['editor']));
+
+/**
+ * Tags edit {id}
+ * @url: /tags/{id}/edit
+ * @method: get, post
+ * @role: editor
+ */
+$app->get('/tags/{id}/edit', function (Request $request, Response $response, $arguments){
+    $tags = getTags($arguments['id']);
+    return $this->view->render($response, 'tags_edit.twig', ['tags' => $tags]);
+})->add(new NeedsAuthentication($container['view'], $roles['editor']));
+
+$app->post('/tags/{id}/edit', function (Request $request, Response $response, $arguments){
+    $name = $request->getParams()['name'];
+    $badge = $request->getParams()['badge'];
+    $tags = getTags($arguments['id']);
+    $tags->name = $name;
+    $tags->badge = $badge;
+    $tags->save();
+    return $this->view->render($response, 'tags_edit.twig', [ 'tags'=>$tags, 'edited' => true ]);
+})->add(new NeedsAuthentication($container['view'], $roles['editor']));
+
+/***
+ * Tags delete
+ * @url: /tags/{id}/delete
+ * @method: get
+ * @role: admin
+ */
+$app->get('/tags/{id}/delete', function (Request $request, Response $response, $arguments){
+    $tags = getTags($arguments['id']);
+    $tags->delete();
+    $this->flash->addMessage('removed', true);
+    return $response->withRedirect($this->router->pathFor('tags'));
+})->add(new NeedsAuthentication($container['view'], $roles['contributor']));
+
+/**
+ * Login
+ * @url: /login
+ * @method: get, post
+ */
 $app->get('/login', function (Request $request, Response $response) {
     $next = $request->getParams()['next'] ?? null;
 
@@ -833,7 +1102,7 @@ $app->post('/login', function (Request $request, Response $response) {
     $password = $request->getParams()['password'];
 
     $user = User::where(['email' => $email])->first();
-
+    echo password_verify($password, $user->password);
     if ($user != null && password_verify($password, $user->password)) {
         $_SESSION['user'] = $user['id'];
 
@@ -845,11 +1114,22 @@ $app->post('/login', function (Request $request, Response $response) {
     }
 });
 
+/**
+ * Logout
+ * @url: /logout
+ * @method: get
+ */
 $app->get('/logout', function (Request $request, Response $response) {
     unset($_SESSION['user']);
 
     return $response->withRedirect('/');
 })->add(new NeedsAuthentication($container['view'], $roles['user']));
+
+/**
+ * Profile
+ * @url: /profile/{username}
+ * @method: get
+ */
 
 $app->get('/profile/{username}', function (Request $request, Response $response, $args) {
     $user = User::where('username', '=', $args['username'])->first();
@@ -864,6 +1144,12 @@ $app->get('/profile/{username}', function (Request $request, Response $response,
     return $this->view->render($response, 'profile.twig', ['profile' => $user, 'wikiActivity' => $wikiActivity, 'releaseActivity' => $releaseActivity]);
 });
 
+
+/**
+ * Search
+ * @url: /search
+ * @method: get, post
+ */
 $app->get('/search', function (Request $request, Response $response) {
     return $this->view->render($response, 'search.twig', ['show' => false, 'query' => '']);
 });
@@ -891,30 +1177,34 @@ $app->post('/search', function (Request $request, Response $response) {
     return $this->view->render($response, 'search.twig', ['show' => !empty($query), 'results' => $wikis, 'query' => $query]);
 });
 
+/**
+ * Update
+ * @url: /update
+ * @method: get
+ */
 $app->get('/update', function (Request $request, Response $response) {
     $updateData = $this->cache->getItem('update');
 
     if (!$updateData->isHit()) {
         $data = [];
 
-        $data['website'] = 'https://refinedstorage.raoulvdberge.com/';
+        $data['website'] = 'https://mrs.lateur.pro/';
         $data['promos'] = [];
+        $mcVersions = ['1.13.2', '1.13.1', '1.13', '1.12.2', '1.12.1', '1.12', '1.11.2', '1.11', '1.10.2', '1.9.4', '1.9', '1.8'];
 
-        foreach (['1.12.2', '1.12.1', '1.12', '1.11.2', '1.11', '1.10.2', '1.9.4', '1.9'] as $mcVersion) {
+        foreach ($mcVersions as $mcVersion) {
             $data[$mcVersion] = [];
-
             $versions = getReleases()->where('mc_version', '=', $mcVersion)->where('status', '=', '0')->get();
-
-            foreach ($versions as $version) {
-                $data[$mcVersion][$version->version] = str_replace("\r", "", $version->changelog);
+            if($versions[0]->version !=null){
+                foreach ($versions as $version) {
+                    $data[$mcVersion][$version->version] = str_replace("\r", "", $version->changelog);
+                }
+                $data['promos'][$mcVersion . '-latest'] = $versions[0]->version;
+                $data['promos'][$mcVersion . '-recommended'] = $versions[0]->version;
             }
-
-            $data['promos'][$mcVersion . '-latest'] = $versions[0]->version;
-            $data['promos'][$mcVersion . '-recommended'] = $versions[0]->version;
         }
-
-        $updateData->set($data);
-
+        //remove null's and empty array entries
+        $updateData->set(array_filter($data));
         $this->cache->save($updateData);
     }
 

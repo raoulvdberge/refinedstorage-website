@@ -6,7 +6,7 @@
     <div class="row row-offcanvas row-offcanvas-right flex-wrap">
         <div class="col-sm-9" id="sidebar-left">
             <div class="jumbotron">
-                <h1 class="display-5">Refined Storage</h1>
+				<h1 class="display-5">Refined Storage</h1>
 
                 <p class="lead">Refined Storage is a mass storage mod for Minecraft that offers the player a network-based storage system, allowing them to store items and fluids on a massively expandable device network.</p>
 
@@ -21,7 +21,8 @@
             </div>
 
             <div id="accordion">
-                <div class="card">
+				<!-- Blocks -->
+				<div class="card">
                     <div class="card-header" id="blocksHeading">
                         <a data-toggle="collapse" href="#" data-target="#blocks" aria-expanded="true" aria-controls="blocks">Blocks</a>
                     </div>
@@ -33,6 +34,7 @@
                         </div>
                     </div>
                 </div>
+				<!-- Items -->
                 <div class="card">
                     <div class="card-header" id="itemsHeading">
                         <a data-toggle="collapse" href="#" data-target="#items" aria-expanded="true" aria-controls="items">Items</a>
@@ -64,6 +66,7 @@
                 </div>
                 <div class="card-body">
                     {% for name, release in releases %}
+                        {% if release.id is not null %}
                         <div class="pull-left">
                             <b>Minecraft {{ name }}</b>
                             <p {% if not loop.last %}style="margin-bottom: 10px"{% endif %}>Refined Storage {{ release.version }}</p>
@@ -72,6 +75,7 @@
                             <a style="margin-top: 14px" href="/releases/{{ release.id }}" class="btn btn-primary btn-sm pull-right"><span class="fa fa-download"></span></a>
                         </div>
                         <div class="clearfix"></div>
+                        {% endif%}
                     {% endfor %}
                 </div>
             </div>

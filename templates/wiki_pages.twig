@@ -10,12 +10,17 @@
         <li class="breadcrumb-item">Pages</li>
     </ol>
 
+    {% if removed %}
+        <div style="width: 80%" class="alert alert-success" role="alert">Wiki removed.</div>
+    {% endif %}
+
     <table class="table">
         <thead class="thead-default">
         <tr>
             <th width="30%">Name</th>
-            <th width="35%">URL</th>
-            <th width="35%" class="can-hide">Last modified by</th>
+            <th width="27%">URL</th>
+            <th width="23%" class="can-hide">Last modified by</th>
+            <th width="20%"></th>
         </tr>
         </thead>
         <tbody>
@@ -24,6 +29,7 @@
             <td><a href="/wiki/{{ wiki.url }}">{{ wiki.name }}</td>
             <td>{{ wiki.url }}</td>
             <td class="can-hide"><a href="/profile/{{ wiki.last_revision.user.username }}">{{ wiki.last_revision.user.username }}</a> at {{ wiki.last_revision.date|date("m/d/Y") }}</td>
+            <td><a href="/wiki/{{ wiki.url }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a><a href="/wiki/{{ wiki.url }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Remove</a></td>
         </tr>
         </tbody>
         {% endfor %}

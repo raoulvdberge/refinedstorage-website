@@ -13,17 +13,23 @@
         <li class="breadcrumb-item">Revisions</li>
     </ol>
 
+    {% if removed %}
+        <div style="width: 80%" class="alert alert-success" role="alert">Revision removed.</div>
+    {% endif %}
+
     <table class="table">
         <thead class="thead-default">
         <tr>
             <th width="10%">#</th>
-            <th width="30%">Date</th>
-            <th width="30%" class="can-hide">User</th>
-            <th width="30%" class="can-hide">Reverted</th>
+            <th width="25%">Date</th>
+            <th width="25%" class="can-hide">User</th>
+            <th width="25%" class="can-hide">Reverted</th>
+            <th width="15%"></th>
         </tr>
         </thead>
         <tbody>
         {% set id = revisions|length %}
+        {% set count = revisions|length %}
         {% for revision in revisions %}
             <tr>
                 <td>{{ id }}</td>
@@ -34,6 +40,13 @@
                         <a href="/wiki/{{ wiki.url }}/{{ revision.revertedFrom.hash }}">{{ revision.revertedFrom.hash }}</a>
                     {% else %}
                         -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if count > id %}
+                        {% if can('admin')%}
+                        <a href="/wiki/revision/{{ revision.hash }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Remove</a>
+                        {% endif %}
                     {% endif %}
                 </td>
             </tr>

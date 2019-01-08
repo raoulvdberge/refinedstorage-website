@@ -26,6 +26,7 @@
     <div class="btn-group float-lg-right" role="group">
         <a href="/wiki/{{ wiki.url }}/revisions" class="btn btn-secondary"><span class="fa fa-history"></span> Revisions</a>
         {% if can('editor') %}
+            <a href="/wiki/pages" class="btn btn-secondary">Pages</a>
             <a href="/wiki/create" class="btn btn-secondary"><span class="fa fa-plus"></span> Create</a>
             <a href="/wiki/create?copy={{ wiki.url }}" class="btn btn-secondary"><span class="fa fa-files-o"></span> Copy</a>
             {% if wiki.status == 0 %}
