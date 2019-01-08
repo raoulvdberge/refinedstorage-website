@@ -8,7 +8,7 @@ $capsule = new Capsule;
 
 $capsule->addConnection([
     'driver' => 'sqlite',
-    'database' => __DIR__ . '/../morerefinedstorage.sqlite',
+    'database' => __DIR__ . '/../refinedstorage.sqlite',
     'prefix' => ''
 ]);
 
