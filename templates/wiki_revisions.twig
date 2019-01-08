@@ -3,6 +3,27 @@
 {% block title %}Revisions{% endblock %}
 
 {% block content %}
+
+    <div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeModalLabel">Delete Revision</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this revision?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-danger btn-ok">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <h1 class="float-lg-left">Revisions</h1>
 
     <div class="clearfix"></div>
@@ -45,7 +66,7 @@
                 <td>
                     {% if count > id %}
                         {% if can('admin')%}
-                        <a href="/wiki/revision/{{ revision.hash }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Remove</a>
+                        <a class="btn btn-secondary" href="#" data-href="/wiki/revision/{{ revision.hash }}/delete"  data-toggle="modal" data-target="#removeModal"><span class="fa fa-trash-o"></span> Remove</a>
                         {% endif %}
                     {% endif %}
                 </td>
@@ -54,4 +75,9 @@
         {% endfor %}
         </tbody>
     </table>
+    <script>
+        $('#removeModal').on('show.bs.modal', function(e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+    </script>
 {% endblock %}

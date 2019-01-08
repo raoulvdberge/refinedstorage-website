@@ -338,7 +338,7 @@ $app->get('/', function (Request $request, Response $response) {
     return $this->view->render($response, 'home.twig', [
         'latest' => getLatestStableRelease(),
         'releases' => [
-            '1.13' => getRelease()->where('mc_version', '1.13.2')->first(),
+            '1.13' => getReleases()->where('mc_version', '1.13.2')->first(),
             '1.12' => getReleases()->where('mc_version', '1.12.2')->first(),
             '1.11' => getReleases()->where('mc_version', '1.11.2')->first(),
             '1.10' => getReleases()->where('mc_version', '1.10.2')->first(),
@@ -881,8 +881,8 @@ $app->get('/wiki/{url}/revisions', function (Request $request, Response $respons
     if ($wiki == null) {
         throw new NotFoundException($request, $response);
     }
-
-    return $this->view->render($response, 'wiki_revisions.twig', ['wiki' => $wiki, 'revisions' => $wiki->revisions()->orderBy('date', 'desc')->get()]);
+    $removed = $this->flash->getFirstMessage('removed') != null ? $this->flash->getFirstMessage('removed') : false;
+    return $this->view->render($response, 'wiki_revisions.twig', ['wiki' => $wiki, 'revisions' => $wiki->revisions()->orderBy('date', 'desc')->get(), 'removed' => $removed]);
 });
 
 /**
@@ -1047,7 +1047,7 @@ $app->post('/tags/create', function (Request $request, Response $response){
             'failed' => true
         ]);
     }
-})->add(new NeedsAuthentication($container['contributor'], $roles['editor']));
+})->add(new NeedsAuthentication($container['view'], $roles['editor']));
 
 /**
  * Tags edit {id}

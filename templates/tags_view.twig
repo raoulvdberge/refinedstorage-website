@@ -3,6 +3,25 @@
 {% block title %}Tags{% endblock %}
 
 {% block content %}
+    <div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeModalLabel">Delete Tag</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this tag?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-danger btn-ok">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <h1>Tags</h1>
 
@@ -31,9 +50,15 @@
             <td>{{ tag.id }}</td>
             <td>{{ tag.name }}</td>
             <td>{{ tag.badge }} </td>
-            <td><a href="/tags/{{ tag.id }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a>{% id can('contributor') %}<a href="/tags/{{ tag.id }}/delete" class="btn btn-secondary"><span class="fa fa-trash-o"></span> Remove</a>{% endif %}</td>
+            <td><a href="/tags/{{ tag.id }}/edit" class="btn btn-secondary"><span class="fa fa-pencil"></span> Edit</a>{% if can('contributor') %}<a href="#" data-href="/tags/{{ tag.id }}/delete" class="btn btn-secondary btn-ok" data-toggle="modal" data-target="#removeModal"><span class="fa fa-trash-o"></span> Remove</a>{% endif %}</td>
         </tr>
         </tbody>
         {% endfor %}
     </table>
+
+    <script>
+        $('#removeModal').on('show.bs.modal', function(e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+    </script>
 {% endblock %}
