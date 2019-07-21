@@ -73,7 +73,7 @@ $presets = [
         <h1>Curse modpack comparer</h1>
     </header>
     <main>
-        <p>Link the <strong>file URL</strong> of the modpack (for example <code>https://minecraft.curseforge.com/projects/all-the-mods-3/files/2504294</code>).
+        <p>Link the <strong>file URL</strong> of the modpack (for example <code>https://www.curseforge.com/minecraft/modpacks/all-the-mods-3/files/2697844</code>).
         </p>
         <form method="post">
             <div class="form-group">
