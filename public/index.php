@@ -344,7 +344,7 @@ $app->get('/releases/create', function (Request $request, Response $response) {
     return $this->view->render($response, 'releases_create.twig', ['errors' => []]);
 })->add(new NeedsAuthentication($container['view'], $roles['contributor']));
 
-function validateRelease($version, $type, $mc_version, $url)
+function validateRelease($version, $type, $mc_version, $fileUrl, $downloadUrl)
 {
     $errors = [];
     if (empty($version)) {
@@ -356,8 +356,11 @@ function validateRelease($version, $type, $mc_version, $url)
     if (empty($mc_version)) {
         $errors[] = 'Missing Minecraft version';
     }
-    if (!filter_var($url, FILTER_VALIDATE_URL)) {
-        $errors[] = 'Invalid URL';
+    if (!filter_var($fileUrl, FILTER_VALIDATE_URL)) {
+        $errors[] = 'Invalid file URL';
+    }
+    if (!filter_var($downloadUrl, FILTER_VALIDATE_URL)) {
+        $errors[] = 'Invalid download URL';
     }
     return $errors;
 }
@@ -366,17 +369,19 @@ $app->post('/releases/create', function (Request $request, Response $response) {
     $version = $request->getParams()['version'];
     $type = $request->getParams()['type'];
     $mc_version = $request->getParams()['mc_version'];
-    $url = $request->getParams()['url'];
+    $fileUrl = $request->getParams()['file_url'];
+    $downloadUrl = $request->getParams()['download_url'];
     $changelog = $request->getParams()['changelog'];
 
-    $errors = validateRelease($version, $type, $mc_version, $url);
+    $errors = validateRelease($version, $type, $mc_version, $fileUrl, $downloadUrl);
 
     if (count($errors) == 0) {
         $release = new Release();
         $release->version = $version;
         $release->type = $type;
         $release->mc_version = $mc_version;
-        $release->url = $url;
+        $release->file_url = $fileUrl;
+        $release->download_url = $downloadUrl;
         $release->changelog = $changelog;
         $release->user_id = getUser()->id;
         $release->date = time();
@@ -411,16 +416,18 @@ $app->post('/releases/{id}/edit', function (Request $request, Response $response
     $version = $request->getParams()['version'];
     $type = $request->getParams()['type'];
     $mc_version = $request->getParams()['mc_version'];
-    $url = $request->getParams()['url'];
+    $fileUrl = $request->getParams()['file_url'];
+    $downloadUrl = $request->getParams()['download_url'];
     $changelog = $request->getParams()['changelog'];
 
-    $errors = validateRelease($version, $type, $mc_version, $url);
+    $errors = validateRelease($version, $type, $mc_version, $fileUrl, $downloadUrl);
 
     if (count($errors) == 0) {
         $release->version = $version;
         $release->type = $type;
         $release->mc_version = $mc_version;
-        $release->url = $url;
+        $release->file_url = $fileUrl;
+        $release->download_url = $downloadUrl;
         $release->changelog = $changelog;
         $release->save();
 
