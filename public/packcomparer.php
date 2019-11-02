@@ -73,6 +73,8 @@ $presets = [
         <h1>Curse modpack comparer</h1>
     </header>
     <main>
+		<div class="alert alert-danger"><h3>Important!</h3>This tool is currently <strong>BROKEN</strong> because CurseForge is <u>blocking</u> requests made by this tool to do the comparison.</div>
+	
         <p>Link the <strong>file URL</strong> of the modpack (for example <code>https://www.curseforge.com/minecraft/modpacks/all-the-mods-3/files/2697844</code>).
         </p>
         <form method="post">
