@@ -21,7 +21,7 @@ $presets = [
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Curse modpack comparer</title>
+    <title>CurseForge modpack comparer</title>
     <script>
         function updatePreset(e) {
             if (e.value == 'none') {
@@ -70,10 +70,18 @@ $presets = [
 <body>
 <div class="container-fluid">
     <header>
-        <h1>Curse modpack comparer</h1>
+        <h1>CurseForge modpack comparer</h1>
     </header>
     <main>
-		<div class="alert alert-danger"><h3>Important!</h3>This tool is currently <strong>BROKEN</strong> because CurseForge is <u>blocking</u> requests made by this tool to do the comparison.</div>
+		<div class="alert alert-danger">
+            <h3><strong>This tool no longer works :(</strong></h3>
+            <p>
+                Due to CurseForge actively blocking external requests made by tools like these, this tool no longer works.
+            </p>
+            <p class="mb-0">
+                We are currently looking for a solution to this problem.
+            </p>
+        </div>
 	
         <p>Link the <strong>file URL</strong> of the modpack (for example <code>https://www.curseforge.com/minecraft/modpacks/all-the-mods-3/files/2697844</code>).
         </p>
