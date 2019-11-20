@@ -3,14 +3,15 @@ create table releases
   id         integer not null
     primary key
   autoincrement,
-  version    text    not null,
-  changelog  text    not null,
-  url        text    not null,
-  date       integer not null,
-  mc_version text    not null,
-  user_id    integer not null,
-  status     integer not null,
-  type       text    not null
+  version      text    not null,
+  changelog    text    not null,
+  file_url     text    not null,
+  download_url text    not null,
+  date         integer not null,
+  mc_version   text    not null,
+  user_id      integer not null,
+  status       integer not null,
+  type         text    not null
 );
 
 create table tags
