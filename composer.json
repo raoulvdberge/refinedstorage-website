@@ -1,11 +1,11 @@
 {
     "require": {
-        "slim/slim": "^3.9",
-        "slim/twig-view": "^2.3",
-        "illuminate/database": "5.6.*@dev",
+        "slim/slim": "^3.12",
+        "slim/twig-view": "^2.5",
+        "illuminate/database": "^6.7",
         "erusev/parsedown": "^1.7",
         "slim/flash": "^0.4.0",
         "twig/extensions": "^1.5",
-        "symfony/cache": "^3.4"
+        "symfony/cache": "^5.0"
     }
 }
