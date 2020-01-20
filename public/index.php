@@ -59,6 +59,8 @@ class NeedsAuthentication
 
 class User extends Illuminate\Database\Eloquent\Model
 {
+    public $timestamps = false;
+
     public function wikiRevisions()
     {
         return $this->hasMany('WikiRevision');
@@ -858,6 +860,38 @@ $app->get('/logout', function (Request $request, Response $response) {
     unset($_SESSION['user']);
 
     return $response->withRedirect('/');
+})->add(new NeedsAuthentication($container['view'], $roles['user']));
+
+$app->get('/account', function (Request $request, Response $response) {
+    return $this->view->render($response, 'account.twig', [
+        'user' => getUser(),
+        'errors' => []
+    ]);
+})->add(new NeedsAuthentication($container['view'], $roles['user']));
+
+
+$app->post('/account', function (Request $request, Response $response) {
+    $errors = [];
+    $success = false;
+
+    $user = getUser();
+    if (!password_verify($request->getParams()['current_password'], $user->password)) {
+        $errors[] = 'Your old password doesn\'t match';
+    } else if (trim($request->getParams()['new_password']) === '') {
+        $errors[] = 'New password is empty';
+    } else if ($request->getParams()['new_password'] != $request->getParams()['new_password_repeat']) {
+        $errors[] = 'Passwords doesn\'t match';
+    } else {
+        $user->password = password_hash($request->getParams()['new_password'], PASSWORD_DEFAULT);
+        $user->save();
+        $success = true;
+    }
+
+    return $this->view->render($response, 'account.twig', [
+        'user' => getUser(),
+        'errors' => $errors,
+        'success' => $success
+    ]);
 })->add(new NeedsAuthentication($container['view'], $roles['user']));
 
 $app->get('/profile/{username}', function (Request $request, Response $response, $args) {
