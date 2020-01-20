@@ -58,6 +58,10 @@
     <div class="row row-offcanvas row-offcanvas-right">
         <article class="col-sm-9">
             {{ wiki.revision.body|raw }}
+
+            <p class="text-muted font-italic">
+                Last modified by <a href="/profile/{{ wiki.revision.user.username }}">{{ wiki.revision.user.username }}</a> on {{ wiki.revision.date|date("Y-m-d H:i:s") }}
+            </p>
         </article>
         <aside class="col-sm-3 sidebar-offcanvas" id="sidebar">
             <div class="card">
