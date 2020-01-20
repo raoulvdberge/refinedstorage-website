@@ -6,8 +6,8 @@
     <h1 class="float-lg-left">Releases</h1>
 
     <div class="btn-group float-lg-right" role="group">
-        <a href="{{ latest.url }}/download" class="btn btn-secondary can-hide"><span class="fa fa-download"></span> Download latest stable</a>
-        <a href="{{ latest.url }}" class="btn btn-secondary"><span class="fa fa-external-link"></span> View latest stable on CurseForge</a>
+        <a href="{{ latest.download_url }}" class="btn btn-secondary can-hide"><span class="fa fa-download"></span> Download latest stable</a>
+        <a href="{{ latest.file_url }}" class="btn btn-secondary"><span class="fa fa-external-link"></span> View latest stable on CurseForge</a>
         <a href="https://jenkins.raoulvdberge.com" class="btn btn-secondary can-hide"><span class="fa fa-flask"></span> Development builds</a>
         {% if can('contributor') %}
             <a href="/releases/create" class="btn btn-secondary"><span class="fa fa-plus"></span> Create</a>
