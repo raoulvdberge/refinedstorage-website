@@ -6,9 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Refined Storage is a mass storage mod for Minecraft that offers the player a network-based storage system, allowing them to store items and fluids on a massively expandable device network">
+    <meta name="description"
+          content="Refined Storage is a mass storage mod for Minecraft that offers the player a network-based storage system, allowing them to store items and fluids on a massively expandable device network">
     {% block robots %}
-        <meta name="robots" content="index, follow">{% endblock %}
+        <meta name="robots" content="index, follow">
+    {% endblock %}
 
     <meta property="og:title" content="{{ block('title') }}">
     <meta property="og:image" content="https://refinedstorage.raoulvdberge.com/assets/logo.png">
@@ -20,76 +22,91 @@
 
     {% block css %}
         <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.6/dist/css/tooltipster.bundle.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.6/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-shadow.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+              integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
+              crossorigin="anonymous">
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.6/dist/css/tooltipster.bundle.min.css">
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.6/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-shadow.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="/assets/style.css?v=180720">
     {% endblock %}
 
     {% block js %}
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+                integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+                crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/tooltipster@4.2.6/dist/js/tooltipster.bundle.min.js"></script>
     {% endblock %}
 </head>
 <body>
-<div id="wrap">
-    <div id="main">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="logo"><a href="/"></a></div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <div class="logo"><a href="/"></a></div>
 
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content"
+                aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-            <div class="collapse navbar-collapse" id="navbar-content">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item {% if uri() == '/' %}active{% endif %}">
-                        <a class="nav-link" href="/">Home</a>
-                    </li>
-                    <li class="nav-item {% if 'wiki' in uri() %}active{% endif %}">
-                        <a class="nav-link" href="/wiki">Wiki</a>
-                    </li>
-                    <li class="nav-item {% if 'releases' in uri() %}active{% endif %}">
-                        <a class="nav-link" href="/releases">Releases</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Community
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="https://github.com/raoulvdberge/refinedstorage/issues">Issues</a>
-                            <a class="dropdown-item" href="https://minecraft.curseforge.com/projects/refined-storage">CurseForge</a>
-                            <a class="dropdown-item" href="/packcomparer.php">CurseForge pack comparer</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="https://discordapp.com/invite/VYzsydb">Join our Discord community</a>
-                            <a class="dropdown-item" href="https://www.patreon.com/raoulvdberge">Support the mod author</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="https://jenkins.raoulvdberge.com">Development builds (Jenkins)</a>
-                            <a class="dropdown-item" href="https://repo.raoulvdberge.com">Maven repository</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="http://partners.creeper.host/r/refinedstorage945">Sponsored by CreeperHost</a>
-                        </div>
-                    </li>
-                </ul>
-                <form class="form-inline my-2 my-lg-0" method="post" action="/search">
-                    <input class="form-control mr-sm-2" type="text" name="query" placeholder="Search" aria-label="Search">
-                    <button class="btn my-2 my-sm-0" type="submit">Search</button>
-                </form>
-            </div>
+        <div class="collapse navbar-collapse" id="navbar-content">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item {% if uri() == '/' %}active{% endif %}">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item {% if 'wiki' in uri() %}active{% endif %}">
+                    <a class="nav-link" href="/wiki">Wiki</a>
+                </li>
+                <li class="nav-item {% if 'releases' in uri() %}active{% endif %}">
+                    <a class="nav-link" href="/releases">Releases</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        About
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="https://github.com/raoulvdberge/refinedstorage/issues">Issues</a>
+                        <a class="dropdown-item"
+                           href="https://minecraft.curseforge.com/projects/refined-storage">CurseForge</a>
+                        <a class="dropdown-item" href="https://jenkins.raoulvdberge.com">Development builds on Jenkins</a>
+                        <a class="dropdown-item" href="https://repo.raoulvdberge.com">Maven repository</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        Social
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="https://discordapp.com/invite/VYzsydb">Discord</a>
+                        <a class="dropdown-item" href="https://www.patreon.com/raoulvdberge">Patreon</a>
 
-        </nav>
-
-
-        <div class="container">
-            <main>
-                {% block content %}
-                {% endblock %}
-            </main>
+                        <a class="dropdown-item" href="http://partners.creeper.host/r/refinedstorage945">CreeperHost</a>
+                    </div>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0" method="post" action="/search">
+                <input class="form-control mr-sm-2" type="text" name="query" placeholder="Search" aria-label="Search">
+                <button class="btn my-2 my-sm-0" type="submit">Search</button>
+            </form>
         </div>
     </div>
+</nav>
+
+<div class="main-content">
+    <div class="container">
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
 </div>
+
 <footer>
     <div class="container">
         <div class="pull-left footer-data">

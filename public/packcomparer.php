@@ -73,7 +73,7 @@ $presets = [
         <h1>CurseForge modpack comparer</h1>
     </header>
     <main>
-		<div class="alert alert-danger">
+        <div class="alert alert-danger">
             <h3><strong>This tool no longer works :(</strong></h3>
             <p>
                 Due to CurseForge actively blocking external requests made by tools like these, this tool no longer works.
@@ -82,7 +82,8 @@ $presets = [
                 We are currently looking for a solution to this problem.
             </p>
         </div>
-	
+        <?php exit(); ?>
+
         <p>Link the <strong>file URL</strong> of the modpack (for example <code>https://www.curseforge.com/minecraft/modpacks/all-the-mods-3/files/2697844</code>).
         </p>
         <form method="post">
