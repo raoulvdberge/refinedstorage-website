@@ -72,26 +72,27 @@
                 <div class="card-header">
                     Latest releases
                 </div>
-                <div class="card-body">
-                    {% for name, release in releases %}
-                        <div class="pull-left">
-                            <b>Minecraft {{ name }}</b>
-                            {% if release is null %}
-                                <p class="text-muted" {% if not loop.last %}style="margin-bottom: 10px"{% endif %}>No
-                                    version found</p>
-                            {% else %}
-                                <p {% if not loop.last %}style="margin-bottom: 10px"{% endif %}>Refined
-                                    Storage {{ release.version }}</p>
-                            {% endif %}
-                        </div>
-                        {% if release is not null %}
-                            <div class="pull-right">
-                                <a style="margin-top: 14px" href="/releases/{{ release.id }}"
-                                   class="btn btn-primary btn-sm pull-right"><span class="fa fa-download"></span></a>
-                            </div>
-                        {% endif %}
-                        <div class="clearfix"></div>
-                    {% endfor %}
+                <div class="card-body p-0 m-0">
+                    <div class="list-group list-group-flush">
+                        {% for name, release in releases %}
+                            <a class="list-group-item list-group-item-action" href="{{ release == null ? '#' : '/releases/' ~ release.id }}">
+                                <div class="d-flex justify-content-between">
+                                    <strong>Minecraft {{ name }}</strong>
+
+                                    {% if release != null %}
+                                        <div class="mt-sm">
+                                            <span class="fa fa-download mt-sm"></span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% if release is null %}
+                                    <p class="text-muted">No version found</p>
+                                {% else %}
+                                    <p>{{ getReleaseBadge(release.type)|raw }} Refined Storage {{ release.version }}</p>
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
