@@ -1,5 +1,7 @@
 <?php
 
+define('MIGRATETONEW', true);
+
 $roles = [
     'admin' => 300,
     'contributor' => 200,
@@ -313,6 +315,12 @@ if ($container['env']['type'] == 'live') {
 }
 
 $app->get('/', function (Request $request, Response $response) {
+    if (MIGRATETONEW) {
+        header("HTTP/1.1 301 Moved Permanently");
+        header('Location: https://refinedmods.com/refined-storage');
+        exit();
+    }
+
     return $this->view->render($response, 'home.twig', [
         'latest' => getLatestStableRelease(),
         'releases' => [
@@ -327,6 +335,12 @@ $app->get('/', function (Request $request, Response $response) {
 });
 
 $app->get('/releases', function (Request $request, Response $response) {
+    if (MIGRATETONEW) {
+        header("HTTP/1.1 301 Moved Permanently");
+        header('Location: https://refinedmods.com/refined-storage/releases');
+        exit();
+    }
+
     $releases = getReleases();
 
     $perPage = 25;
@@ -450,6 +464,12 @@ $app->get('/releases/{id:[0-9]+}', function (Request $request, Response $respons
         throw new NotFoundException($request, $response);
     }
 
+    if (MIGRATETONEW) {
+        header("HTTP/1.1 301 Moved Permanently");
+        header('Location: https://refinedmods.com/refined-storage/releases/' . str_replace('.', '-', $release['version']));
+        exit();
+    }
+
     return $this->view->render($response, 'releases_view.twig', ['release' => $release]);
 });
 
@@ -561,6 +581,12 @@ function findAndParseWiki(\Slim\Container $container, $url, $revisionHash = null
 }
 
 $app->get('/wiki', function (Request $request, Response $response) {
+    if (MIGRATETONEW) {
+        header("HTTP/1.1 301 Moved Permanently");
+        header('Location: https://refinedmods.com/refined-storage/wiki');
+        exit();
+    }
+
     return handleWiki($this, $request, $response, ['url' => '_home']);
 });
 
@@ -801,6 +827,12 @@ $app->post('/wiki/update-tab', function (Request $request, Response $response, $
 });
 
 $app->get('/wiki/{url}[/{revision}]', function (Request $request, Response $response, $args) {
+    if (MIGRATETONEW) {
+        header("HTTP/1.1 301 Moved Permanently");
+        header('Location: https://refinedmods.com/refined-storage/wiki/' . $args['url'] . '.html');
+        exit();
+    }
+
     return handleWiki($this, $request, $response, $args);
 });
 
