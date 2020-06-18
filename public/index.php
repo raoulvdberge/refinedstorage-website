@@ -1022,6 +1022,12 @@ $app->post('/search', function (Request $request, Response $response) {
 });
 
 $app->get('/update', function (Request $request, Response $response) {
+    if (MIGRATETONEW) {
+        header("HTTP/1.1 301 Moved Permanently");
+        header('Location: https://refinedmods.com/refined-storage/update.json');
+        exit();
+    }
+
     $updateData = $this->cache->getItem('update');
 
     if (!$updateData->isHit()) {
